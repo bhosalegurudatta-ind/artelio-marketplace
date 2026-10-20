@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FAFAFA;
+  color: #16233B;
+  letter-spacing: -0.01em;
+  /* Older pages (forms) read these variable names, so point them at the new font. */
+  --font-work-sans: var(--font-jakarta), system-ui, sans-serif;
+  --font-fraunces: var(--font-jakarta), system-ui, sans-serif;
+}
+
+@layer components {
+  .font-display {
+    font-weight: 700;
+  }
+}
+
+/* Selection highlight — brand amber tint */
+::selection {
+  background-color: #0E8ACF22;
+  color: #16233B;
+}
+
+:focus-visible {
+  outline: 2px solid #0E8ACF;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Hide the scrollbar on horizontally scrolling rows (still scrollable by touch or trackpad). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Thin scrollbar for other contexts */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #16233B22;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #16233B44;
+}

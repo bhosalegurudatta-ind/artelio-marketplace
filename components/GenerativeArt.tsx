@@ -3,12 +3,14 @@
 // site never looks empty before real work is listed.
 
 const SCHEMES = [
-  { bg: '#E4452C', shapes: ['#1B1E52', '#F4B63D', '#F3F3EF'] },
-  { bg: '#1B1E52', shapes: ['#F4B63D', '#E5799B', '#F3F3EF'] },
-  { bg: '#F4B63D', shapes: ['#1B1E52', '#E4452C', '#F3F3EF'] },
-  { bg: '#1F8A70', shapes: ['#F3F3EF', '#F4B63D', '#1B1E52'] },
-  { bg: '#E5799B', shapes: ['#1B1E52', '#F3F3EF', '#F4B63D'] },
-  { bg: '#8EB8E5', shapes: ['#1B1E52', '#E4452C', '#F3F3EF'] },
+  { bg: '#FF4D36', shapes: ['#1E1B4B', '#F59E0B', '#FAF7F2'] },
+  { bg: '#1E1B4B', shapes: ['#F59E0B', '#EC4899', '#FAF7F2'] },
+  { bg: '#F59E0B', shapes: ['#1E1B4B', '#FF4D36', '#FAF7F2'] },
+  { bg: '#10B981', shapes: ['#FAF7F2', '#F59E0B', '#1E1B4B'] },
+  { bg: '#8B5CF6', shapes: ['#FF4D36', '#FAF7F2', '#F59E0B'] },
+  { bg: '#0EA5E9', shapes: ['#1E1B4B', '#EC4899', '#FDE047'] },
+  { bg: '#D946EF', shapes: ['#0F172A', '#38BDF8', '#FDE047'] },
+  { bg: '#F97316', shapes: ['#4338CA', '#FDE047', '#FAF7F2'] },
 ];
 
 function hash(str: string): number {

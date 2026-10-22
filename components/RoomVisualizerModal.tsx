@@ -387,7 +387,7 @@ export default function RoomVisualizerModal({
                   <button
                     onClick={handleAnalyze}
                     disabled={loading}
-                    className="flex-1 rounded-xl bg-brand py-2.5 text-xs font-semibold text-white shadow hover:bg-brand-dark disabled:opacity-50"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-vermilion via-magenta to-brand py-2.5 text-xs font-bold text-white shadow-md hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
                   >
                     {loading ? 'AI is analyzing…' : '✦ AI Compatibility Analysis'}
                   </button>

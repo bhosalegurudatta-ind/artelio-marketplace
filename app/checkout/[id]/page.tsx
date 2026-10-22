@@ -89,7 +89,7 @@ export default function Checkout() {
         }
       },
       modal: { ondismiss: () => setPaying(false) },
-      theme: { color: '#0E8ACF' },
+      theme: { color: '#6366F1' },
     });
     razorpay.open();
   }
@@ -103,8 +103,8 @@ export default function Checkout() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <main className="mx-auto max-w-md px-5 py-16">
-        <div className="rounded-2xl border border-ink/10 bg-white p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-ink">Checkout</h1>
+        <div className="rounded-2xl border border-black/[0.08] bg-white p-8 shadow-sm">
+          <h1 className="font-serif text-2xl font-bold text-ink">Checkout</h1>
 
           <div className="mt-6 flex gap-4 border-y border-ink/10 py-5">
             <div
@@ -120,7 +120,7 @@ export default function Checkout() {
 
           <div className="mt-5 flex justify-between text-ink">
             <span>Total</span>
-            <span className="font-bold">₹{artwork.price.toLocaleString('en-IN')}</span>
+            <span className="font-serif text-lg font-bold">₹{artwork.price.toLocaleString('en-IN')}</span>
           </div>
 
           {unavailable && <p className="mt-4 text-sm text-clay">This piece has already been sold.</p>}
@@ -129,7 +129,7 @@ export default function Checkout() {
           <button
             onClick={handlePay}
             disabled={paying || unavailable}
-            className="mt-6 w-full rounded-full bg-brand py-3 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-50"
+            className="mt-6 w-full rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand py-3 text-sm font-bold text-white shadow-md hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
           >
             {paying ? 'Opening payment…' : 'Pay now'}
           </button>

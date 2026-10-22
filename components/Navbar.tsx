@@ -9,13 +9,27 @@ import { CATEGORIES } from '@/lib/categories';
 type Role = 'artist' | 'customer' | null;
 
 function Mark() {
-  // Three overlapping circles, a nod to mixing paint.
+  // A luminous artist palette with vibrant pigment drops
   return (
-    <svg width="30" height="20" viewBox="0 0 30 20" aria-hidden="true" style={{ mixBlendMode: 'multiply' }}>
-      <circle cx="10" cy="10" r="8" fill="#F4B63D" />
-      <circle cx="17" cy="10" r="8" fill="#E4452C" fillOpacity="0.85" />
-      <circle cx="22" cy="10" r="7" fill="#0E8ACF" fillOpacity="0.85" />
-    </svg>
+    <div className="relative flex items-center justify-center">
+      <svg width="34" height="26" viewBox="0 0 34 26" fill="none" aria-hidden="true" className="drop-shadow-sm">
+        {/* Wooden / Ivory Palette body */}
+        <path
+          d="M2 13C2 6.5 7.5 2 17 2C26.5 2 32 6.5 32 13C32 19 28 24 21 24C18 24 17 22 15 22C13 22 12 24 9 24C4 24 2 18.5 2 13Z"
+          fill="#FAF6EE"
+          stroke="#E2D9C8"
+          strokeWidth="1.5"
+        />
+        {/* Palette thumb hole */}
+        <ellipse cx="26" cy="17" rx="2.5" ry="3" fill="#EADFC9" />
+        {/* Vivid Pigments */}
+        <circle cx="7" cy="11" r="3" fill="#FF4D36" />
+        <circle cx="12" cy="7" r="3" fill="#F59E0B" />
+        <circle cx="18" cy="6" r="3" fill="#10B981" />
+        <circle cx="24" cy="8" r="3" fill="#2563EB" />
+        <circle cx="14" cy="16" r="3" fill="#8B5CF6" />
+      </svg>
+    </div>
   );
 }
 
@@ -105,44 +119,60 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top strip */}
-      <div className="bg-[#121926] text-xs text-white/70 py-2 border-b border-white/5">
+      {/* Top strip with rainbow spectrum accent */}
+      <div className="bg-[#0F172A] text-xs text-white/80 py-2 relative">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5">
-          <p className="truncate tracking-wide">
-            ✦ Artelio • Original fine art directly from independent creators
+          <p className="truncate tracking-wide flex items-center gap-2">
+            <span className="inline-block h-2 w-2 rounded-full bg-vermilion animate-pulse" />
+            <span className="font-medium text-white/90">Artelio Atelier</span>
+            <span className="text-white/40 hidden sm:inline">|</span>
+            <span className="text-white/70 hidden sm:inline">Original fine art directly from curated independent artists</span>
           </p>
-          <div className="hidden items-center gap-6 sm:flex">
-            <Link href="/plans" className="hover:text-white transition">Pricing &amp; Plans</Link>
-            <Link href="/spaces" className="hover:text-white transition">Collector Spaces</Link>
-            <Link href="/artist-signup" className="hover:text-white transition">Sell your art</Link>
-            <Link href="/orders" className="hover:text-white transition">Track order</Link>
+          <div className="hidden items-center gap-5 sm:flex font-medium text-xs">
+            <Link href="/plans" className="text-white/75 hover:text-amber transition flex items-center gap-1">
+              <span>✦</span> Memberships
+            </Link>
+            <Link href="/spaces" className="text-white/75 hover:text-cerulean transition">
+              Collector Spaces
+            </Link>
+            <Link href="/artist-signup" className="text-white/75 hover:text-malachite transition">
+              Sell your art
+            </Link>
+            <Link href="/orders" className="text-white/75 hover:text-white transition">
+              Track order
+            </Link>
           </div>
         </div>
+        {/* Spectrum line under top strip */}
+        <div className="absolute bottom-0 left-0 right-0 h-[2px] art-spectrum-line opacity-80" />
       </div>
 
       {/* Main header */}
-      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-white/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-canvas/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3.5">
-          <Link href="/" className="flex items-center gap-2.5 group">
+          <Link href="/" className="flex items-center gap-3 group">
             <Mark />
-            <span className="font-serif text-2xl font-bold tracking-tight text-ink transition group-hover:text-brand">
-              Artelio
-            </span>
+            <div className="flex flex-col">
+              <span className="font-serif text-2xl font-black tracking-tight text-ink transition group-hover:text-brand flex items-center gap-1">
+                Artelio
+                <span className="text-xs font-sans font-bold uppercase tracking-widest text-vermilion bg-vermilion/10 px-1.5 py-0.5 rounded-full">Art</span>
+              </span>
+            </div>
           </Link>
 
           <form
             onSubmit={handleSearch}
             role="search"
-            className="order-3 flex w-full items-center gap-3 rounded-full bg-paper/80 border border-ink/5 px-4 py-2 transition-all focus-within:border-brand/40 focus-within:bg-white focus-within:shadow-sm md:order-none md:w-auto md:max-w-xl md:flex-1"
+            className="order-3 flex w-full items-center gap-3 rounded-full bg-white border border-ink/10 px-4 py-2 transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20 focus-within:shadow-md md:order-none md:w-auto md:max-w-xl md:flex-1"
           >
-            <span className="text-ink/40"><SearchIcon /></span>
+            <span className="text-vermilion"><SearchIcon /></span>
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search original paintings, drawings, prints, or artists..."
+              placeholder="Search paintings, charcoal drawings, sculptures, prints, or artists..."
               aria-label="Search artworks"
-              className="w-full bg-transparent text-xs text-ink placeholder:text-ink/40 focus:outline-none"
+              className="w-full bg-transparent text-xs text-ink placeholder:text-ink/45 focus:outline-none font-medium"
             />
           </form>
 
@@ -150,23 +180,23 @@ export default function Navbar() {
             {loggedIn ? (
               <>
                 {role === 'artist' && (
-                  <Link href="/dashboard" className="flex items-center gap-1.5 text-xs font-semibold text-ink/80 hover:text-brand transition">
+                  <Link href="/dashboard" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
                     <UserIcon />
                     <span className="hidden sm:inline">Studio</span>
                   </Link>
                 )}
-                <Link href="/spaces" className="flex items-center gap-1.5 text-xs font-semibold text-ink/80 hover:text-brand transition">
+                <Link href="/spaces" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
                   <SpacesIcon />
                   <span className="hidden sm:inline">My Spaces</span>
                 </Link>
-                <Link href="/orders" className="flex items-center gap-1.5 text-xs font-semibold text-ink/80 hover:text-brand transition">
+                <Link href="/orders" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
                   <BagIcon />
                   <span className="hidden sm:inline">Orders</span>
                 </Link>
                 {role === 'artist' && (
                   <Link
                     href="/dashboard/upload"
-                    className="hidden rounded-full bg-brand px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-dark transition md:inline-block"
+                    className="hidden rounded-full bg-gradient-to-r from-brand to-magenta px-4 py-2 text-xs font-bold text-white shadow-md hover:opacity-90 transition md:inline-block"
                   >
                     + Upload Piece
                   </Link>
@@ -179,13 +209,13 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="rounded-full px-4 py-1.5 text-xs font-semibold text-ink hover:text-brand transition"
+                  className="rounded-full px-4 py-1.5 text-xs font-bold text-ink hover:text-brand transition"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/customer-signup"
-                  className="rounded-full bg-ink px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-black transition"
+                  className="rounded-full bg-gradient-to-r from-brand via-purple-600 to-magenta px-5 py-2 text-xs font-bold text-white shadow-md shadow-brand/25 hover:shadow-lg hover:scale-105 transition-all"
                 >
                   Join Artelio
                 </Link>
@@ -196,25 +226,25 @@ export default function Navbar() {
       </header>
 
       {/* Category pills */}
-      <nav aria-label="Categories" className="border-b border-ink/10 bg-white">
-        <div className="no-scrollbar mx-auto flex max-w-[1200px] items-center gap-3 overflow-x-auto px-5 py-3">
+      <nav aria-label="Categories" className="border-b border-black/[0.06] bg-white/70 backdrop-blur-sm">
+        <div className="no-scrollbar mx-auto flex max-w-[1240px] items-center gap-2.5 overflow-x-auto px-5 py-2.5">
           <Link
             href="/browse"
-            className="flex shrink-0 items-center gap-2 rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark"
+            className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-4 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 transition"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
               <rect x="14" y="3" width="7" height="7" rx="1.5" />
               <rect x="3" y="14" width="7" height="7" rx="1.5" />
               <rect x="14" y="14" width="7" height="7" rx="1.5" />
             </svg>
-            All categories
+            All Galleries
           </Link>
           {CATEGORIES.map((c) => (
             <Link
               key={c.slug}
               href={`/browse?category=${c.slug}`}
-              className="shrink-0 rounded-full border border-ink/15 px-4 py-2 text-sm text-ink/80 hover:border-brand hover:text-brand"
+              className="shrink-0 rounded-full border border-ink/10 bg-white/80 hover:bg-white px-3.5 py-1.5 text-xs font-semibold text-ink/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
             >
               {c.label}
             </Link>

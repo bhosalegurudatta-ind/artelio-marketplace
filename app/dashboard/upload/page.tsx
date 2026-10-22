@@ -143,9 +143,9 @@ export default function UploadArtwork() {
                 type="button"
                 onClick={handleAiSuggest}
                 disabled={aiLoading}
-                className="rounded-full border border-brand px-4 py-2 text-sm font-semibold text-brand hover:bg-brand hover:text-white disabled:opacity-50"
+                className="rounded-full bg-gradient-to-r from-purple-600 via-brand to-magenta px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
               >
-                {aiLoading ? 'Looking at your artwork…' : '✨ Suggest title, description & price with AI'}
+                {aiLoading ? 'Looking at your artwork…' : '✨ Suggest title, description & price with Gemini AI'}
               </button>
               {aiMsg && <p className="mt-2 text-xs text-ink/60">{aiMsg}</p>}
             </div>

@@ -1,10 +1,16 @@
-# Artelio Marketplace
+# Artelio Marketplace • Contemporary Atelier
 
-An online marketplace where independent artists sell original art directly to buyers. Artists get an AI listing
-assistant (suggested title, description and price range from a photo), buyers pay through Razorpay, and the platform
-keeps a 15% commission on each sale.
+An artistic online marketplace where independent creators exhibit and sell original fine art directly to collectors. Features curated physical and digital works, a rich artistic palette aesthetic, Gemini AI listing assistant & spatial interior visualization, and Razorpay escrow payments.
 
-Built with Next.js 14, TypeScript, Tailwind CSS, Supabase (database, login, storage), Razorpay and the Gemini API.
+## 🎨 Artistic Atelier Experience
+- **Vibrant Fine Art Pigments**: Venetian Vermilion, Tuscan Ochre, French Ultramarine, Verdigris Emerald, and Royal Amethyst.
+- **Museum-grade Presentation**: Framed physical mounts, watermarked collector previews, and dynamic generative art canvases.
+- **AI Spatial Room Visualizer**: Preview how paintings fit on real room walls in 4K with architectural light & scale analysis.
+- **Gemini AI Art Studio & Stylist**: Instant vector masterwork generation, color palette curation, and room harmony matching.
+
+## 🚀 Live Deployment & Links
+- **GitHub Repository**: [https://github.com/bhosalegurudatta-ind/artelio-marketplace](https://github.com/bhosalegurudatta-ind/artelio-marketplace)
+- **Deployment**: Automatic continuous deployment on push to `main` branch (Vercel / Next.js hosting).
 
 ## Run it locally
 1. Copy `.env.local.example` to `.env.local` and fill in your keys.

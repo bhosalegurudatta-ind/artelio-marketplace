@@ -215,9 +215,9 @@ export default function UpgradeModal({
                     type="button"
                     onClick={() => handleSubscribe(plan)}
                     disabled={loadingPlan === plan.id}
-                    className={`mt-6 w-full rounded-full py-2.5 text-xs font-semibold shadow-sm transition disabled:opacity-50 ${
+                    className={`mt-6 w-full rounded-full py-2.5 text-xs font-bold shadow-sm transition-all disabled:opacity-50 ${
                       plan.popular
-                        ? 'bg-brand text-white hover:bg-brand-dark'
+                        ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white hover:shadow-art-glow hover:scale-[1.01]'
                         : 'border border-ink/20 bg-white text-ink hover:border-brand hover:text-brand'
                     }`}
                   >

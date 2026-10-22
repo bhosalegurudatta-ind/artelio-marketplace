@@ -28,25 +28,41 @@ function isNew(createdAt?: string | null) {
   return Date.now() - new Date(createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
 }
 
+function mediumColorClass(medium: string) {
+  const m = (medium || '').toLowerCase();
+  if (m.includes('oil') || m.includes('acrylic')) return 'bg-amber-50 text-amber-800 border-amber-200/60';
+  if (m.includes('water') || m.includes('gouache')) return 'bg-sky-50 text-sky-800 border-sky-200/60';
+  if (m.includes('digital') || m.includes('vector')) return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200/60';
+  if (m.includes('sketch') || m.includes('draw') || m.includes('charcoal')) return 'bg-slate-100 text-slate-800 border-slate-200';
+  if (m.includes('photo')) return 'bg-emerald-50 text-emerald-800 border-emerald-200/60';
+  if (m.includes('sculpt') || m.includes('clay')) return 'bg-orange-50 text-orange-800 border-orange-200/60';
+  return 'bg-purple-50 text-purple-800 border-purple-200/60';
+}
+
 export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
   const imageStyle = artworkImageStyle(artwork);
 
   return (
     <Link
       href={`/artwork/${artwork.id}`}
-      className="group block rounded-2xl border border-ink/[0.07] bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 overflow-hidden"
+      className="group block rounded-2xl border border-black/[0.08] bg-white art-card-hover overflow-hidden relative shadow-sm"
     >
       {/* Image area */}
       <div
-        className="relative aspect-[4/5] overflow-hidden bg-paper"
+        className="relative aspect-[4/5] overflow-hidden bg-[#F3EFE6]"
         style={imageStyle ?? undefined}
       >
-        {/* Hover overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+        {/* Subtle vignette hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <FavoriteButton artworkId={artwork.id} />
 
-        {!imageStyle && <GenerativeArt seed={artwork.id} className="block h-full w-full transition-transform duration-500 group-hover:scale-105" />}
+        {!imageStyle && (
+          <GenerativeArt
+            seed={artwork.id}
+            className="block h-full w-full transition-transform duration-500 group-hover:scale-105"
+          />
+        )}
 
         {/* Zoom effect on real images */}
         {imageStyle && (
@@ -58,23 +74,32 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
         {/* "New" badge */}
         {isNew(artwork.createdAt) && (
-          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand shadow-sm uppercase">
-            ✦ New
+          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/95 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold tracking-wider text-vermilion shadow-sm uppercase border border-vermilion/20">
+            ✦ New Original
           </span>
         )}
       </div>
 
-      {/* Card body */}
-      <div className="px-3 py-3">
-        <h3 className="truncate text-sm font-semibold text-ink leading-tight">{artwork.title}</h3>
-        <p className="mt-0.5 truncate text-[11px] text-ink/50 tracking-wide">by {artwork.artist}</p>
+      {/* Card body with gallery aesthetics */}
+      <div className="p-3.5 bg-white">
+        <h3 className="truncate font-serif text-sm font-bold text-ink leading-tight group-hover:text-brand transition-colors">
+          {artwork.title}
+        </h3>
+        <p className="mt-1 truncate text-xs text-ink/60 flex items-center gap-1">
+          <span className="text-[10px] text-amber-500">🖌️</span>
+          <span>{artwork.artist}</span>
+        </p>
 
-        <div className="mt-2.5 flex items-center justify-between gap-2">
-          <span className="text-base font-bold text-ink tracking-tight">
+        <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-black/[0.04]">
+          <span className="text-base font-extrabold text-ink tracking-tight">
             ₹{artwork.price.toLocaleString('en-IN')}
           </span>
           {artwork.medium && (
-            <span className="shrink-0 truncate rounded-full bg-brand/8 px-2 py-0.5 text-[10px] font-semibold text-brand/80 uppercase tracking-wide">
+            <span
+              className={`shrink-0 truncate rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${mediumColorClass(
+                artwork.medium
+              )}`}
+            >
               {artwork.medium}
             </span>
           )}

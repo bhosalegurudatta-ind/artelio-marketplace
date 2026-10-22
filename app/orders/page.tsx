@@ -135,13 +135,13 @@ export default function Orders() {
                 {(open || delivered) && (
                   <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-ink/10 pt-4">
                     {art?.is_digital && (
-                      <button onClick={() => handleDownload(order.id)} className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-dark">
+                      <button onClick={() => handleDownload(order.id)} className="rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-4 py-2 text-xs font-bold text-white shadow-sm hover:shadow-art-glow transition-all">
                         Download original
                       </button>
                     )}
                     {open && (
-                      <button onClick={() => confirmReceipt(order.id)} className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white hover:bg-indigo">
-                        I received it
+                      <button onClick={() => confirmReceipt(order.id)} className="rounded-full bg-malachite px-4 py-2 text-xs font-bold text-white shadow-sm hover:opacity-90 transition-all">
+                        ✓ I received it
                       </button>
                     )}
                     {open && (

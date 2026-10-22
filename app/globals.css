@@ -7,9 +7,15 @@ html {
 }
 
 body {
-  background-color: #FAFAFA;
-  color: #16233B;
+  background-color: #FAF8F5;
+  color: #141E30;
   letter-spacing: -0.01em;
+  background-image: 
+    radial-gradient(at 10% 15%, rgba(255, 77, 54, 0.04) 0px, transparent 50%),
+    radial-gradient(at 90% 25%, rgba(99, 102, 241, 0.05) 0px, transparent 55%),
+    radial-gradient(at 50% 85%, rgba(245, 158, 11, 0.04) 0px, transparent 50%),
+    radial-gradient(at 85% 90%, rgba(16, 185, 129, 0.04) 0px, transparent 50%);
+  background-attachment: fixed;
   /* Older pages (forms) read these variable names, so point them at the new font. */
   --font-work-sans: var(--font-jakarta), system-ui, sans-serif;
   --font-fraunces: var(--font-jakarta), system-ui, sans-serif;
@@ -21,16 +27,49 @@ body {
   }
 }
 
-/* Selection highlight — brand amber tint */
+/* Artistic typography & effects */
+.art-gradient-text {
+  background: linear-gradient(135deg, #FF4D36 0%, #D946EF 45%, #6366F1 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.art-gradient-sunset-text {
+  background: linear-gradient(135deg, #FF4D36 0%, #F59E0B 50%, #EC4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.art-gradient-ocean-text {
+  background: linear-gradient(135deg, #0EA5E9 0%, #6366F1 50%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Artistic Rainbow Spectrum line */
+.art-spectrum-line {
+  background: linear-gradient(90deg, #FF4D36, #F59E0B, #10B981, #0EA5E9, #8B5CF6, #EC4899);
+}
+
+/* Card hover glow */
+.art-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.art-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 35px -10px rgba(99, 102, 241, 0.15), 0 10px 20px -8px rgba(255, 77, 54, 0.12);
+}
+
+/* Selection highlight — vibrant artistic lavender */
 ::selection {
-  background-color: #0E8ACF22;
-  color: #16233B;
+  background-color: rgba(99, 102, 241, 0.22);
+  color: #141E30;
 }
 
 :focus-visible {
-  outline: 2px solid #0E8ACF;
+  outline: 2px solid #6366F1;
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 /* Hide the scrollbar on horizontally scrolling rows (still scrollable by touch or trackpad). */
@@ -43,16 +82,16 @@ body {
 
 /* Thin scrollbar for other contexts */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #16233B22;
+  background: linear-gradient(180deg, #FF4D3644, #6366F144);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #16233B44;
+  background: linear-gradient(180deg, #FF4D3688, #6366F188);
 }

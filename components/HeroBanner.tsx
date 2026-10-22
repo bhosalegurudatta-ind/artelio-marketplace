@@ -7,33 +7,42 @@ import { Artwork, artworkImageStyle } from './ArtworkCard';
 
 const SLIDES = [
   {
-    bg: 'bg-[#10233F]',
-    kicker: 'Independent artists, one marketplace',
-    title: 'Original art, straight from the artist.',
-    sub: 'Browse paintings, drawings, prints and digital work, and buy directly from the person who made it.',
-    cta: { label: 'Browse artworks', href: '/browse' },
+    bg: 'bg-gradient-to-br from-[#180A2E] via-[#2F115A] to-[#12072B]',
+    glow: 'from-fuchsia-500/25 via-amber-500/20 to-transparent',
+    tagBg: 'bg-fuchsia-500/20 border-fuchsia-400/30 text-fuchsia-200',
+    kicker: 'Independent Artists • Curated Marketplace',
+    title: 'Original art, straight from the creator.',
+    sub: 'Discover masterwork oils, vibrant gouache, delicate drawings, and hand-pulled prints directly from the artists who created them.',
+    cta: { label: 'Explore the Gallery', href: '/browse' },
+    ctaClass: 'bg-gradient-to-r from-amber-400 to-rose-500 text-ink hover:from-amber-300 hover:to-rose-400 shadow-gold-glow',
   },
   {
-    bg: 'bg-[#0B5C8E]',
-    kicker: 'For artists',
-    title: 'List your first piece today.',
-    sub: 'Free to join. We only take a commission when your work sells.',
-    cta: { label: 'Create artist profile', href: '/artist-signup' },
+    bg: 'bg-gradient-to-br from-[#330C1A] via-[#66172D] to-[#1F0710]',
+    glow: 'from-rose-500/25 via-amber-500/20 to-transparent',
+    tagBg: 'bg-rose-500/20 border-rose-400/30 text-rose-200',
+    kicker: 'Artist Atelier & Studio',
+    title: 'Turn your canvas into thriving patronage.',
+    sub: 'Free to join. Keep 85% of your sale price. AI-powered listing descriptions, certificate generation, and secure Razorpay payouts.',
+    cta: { label: 'Launch Your Studio', href: '/artist-signup' },
+    ctaClass: 'bg-gradient-to-r from-rose-500 to-amber-500 text-white hover:opacity-95 shadow-art-glow',
   },
   {
-    bg: 'bg-[#0F4C4A]',
-    kicker: 'AI listing assistant',
-    title: 'From photo to listing in one click.',
-    sub: 'Upload an image and get a suggested title, description and price range. Edit anything before you publish.',
-    cta: { label: 'Start as an artist', href: '/artist-signup' },
+    bg: 'bg-gradient-to-br from-[#081B38] via-[#0E4166] to-[#052033]',
+    glow: 'from-cyan-500/25 via-purple-500/20 to-transparent',
+    tagBg: 'bg-cyan-500/20 border-cyan-400/30 text-cyan-200',
+    kicker: 'AI Spatial Visualizer & Interior Stylist',
+    title: 'Envision masterpieces in your room in 4K.',
+    sub: 'Upload your room or browse virtual collectors\' salons to see exact proportions, lighting, and palette harmony before you acquire.',
+    cta: { label: 'Experience Spaces', href: '/spaces' },
+    ctaClass: 'bg-gradient-to-r from-cyan-400 to-blue-500 text-ink hover:opacity-95 shadow-md',
   },
 ];
 
-// Three tilted frames, filled with real artworks when there are some.
+// Three tilted frames with artistic mount styling
 const FRAMES = [
-  'left-2 top-12 w-36 -rotate-6 lg:w-40',
-  'right-4 top-6 w-40 rotate-6 lg:w-44',
-  'left-1/3 bottom-6 w-32 -rotate-2 lg:w-36',
+  { pos: 'left-2 top-10 w-36 -rotate-6 lg:w-44', badge: '🎨 Curated Piece' },
+  { pos: 'right-4 top-4 w-40 rotate-6 lg:w-48', badge: '✨ Fine Art' },
+  { pos: 'left-1/3 bottom-4 w-32 -rotate-2 lg:w-40', badge: '🏛️ Gallery Master' },
 ];
 
 export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
@@ -65,31 +74,32 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
             i === index ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
         >
-          {/* Subtle ambient lighting radial overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/40 pointer-events-none" />
+          {/* Luminous colorful ambient glow */}
+          <div className={`absolute -right-20 -top-20 h-96 w-96 rounded-full bg-gradient-to-br ${slide.glow} blur-3xl pointer-events-none`} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/50 pointer-events-none" />
 
           <div className="relative z-10 flex h-full max-w-2xl flex-col justify-center px-10 md:px-16">
-            <span className="inline-flex items-center gap-1.5 self-start rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wider text-white backdrop-blur-sm">
+            <span className={`inline-flex items-center gap-1.5 self-start rounded-full border px-3.5 py-1 text-xs font-bold tracking-wider backdrop-blur-md shadow-sm ${slide.tagBg}`}>
               ✦ {slide.kicker}
             </span>
-            <h2 className="mt-4 font-serif text-3xl font-extrabold leading-[1.15] tracking-tight md:text-5xl lg:text-6xl text-white drop-shadow-sm">
+            <h2 className="mt-4 font-serif text-3xl font-extrabold leading-[1.15] tracking-tight md:text-5xl lg:text-6xl text-white drop-shadow-md">
               {slide.title}
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/80 md:text-base font-light">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/85 md:text-base font-light drop-shadow-sm">
               {slide.sub}
             </p>
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href={slide.cta.href}
                 tabIndex={i === index ? 0 : -1}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-xs font-bold text-ink shadow-lg transition hover:scale-105 hover:bg-paper"
+                className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-xs font-bold transition-all duration-200 hover:scale-105 ${slide.ctaClass}`}
               >
                 {slide.cta.label} →
               </Link>
               <Link
                 href="/spaces"
                 tabIndex={i === index ? 0 : -1}
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/5 backdrop-blur-md px-6 py-3.5 text-xs font-semibold text-white transition hover:bg-white/15"
+                className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white transition hover:bg-white/20 hover:border-white/50"
               >
                 ✦ Collector Spaces
               </Link>
@@ -97,13 +107,19 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
           </div>
 
           <div className="absolute inset-y-0 right-0 hidden w-[45%] md:block" aria-hidden="true">
-            {FRAMES.map((pos, n) => {
+            {FRAMES.map((item, n) => {
               const art = pieces[n];
               const style = art ? artworkImageStyle(art) : null;
               return (
-                <div key={n} className={`absolute aspect-[4/5] rounded-2xl bg-white/95 p-2 shadow-2xl backdrop-blur-md transition-transform duration-500 hover:scale-105 ${pos}`}>
-                  <div className="h-full w-full overflow-hidden rounded-xl" style={style ?? undefined}>
+                <div
+                  key={n}
+                  className={`absolute aspect-[4/5] rounded-2xl bg-white p-2.5 shadow-2xl ring-2 ring-white/30 backdrop-blur-md transition-all duration-500 hover:scale-110 hover:rotate-0 hover:z-30 ${item.pos}`}
+                >
+                  <div className="relative h-full w-full overflow-hidden rounded-xl border border-black/5" style={style ?? undefined}>
                     {!style && <GenerativeArt seed={`hero-${i}-${n}`} className="block h-full w-full" />}
+                    <div className="absolute bottom-2 left-2 rounded-md bg-ink/75 backdrop-blur-md px-2 py-0.5 text-[9px] font-bold text-white tracking-wider">
+                      {item.badge}
+                    </div>
                   </div>
                 </div>
               );

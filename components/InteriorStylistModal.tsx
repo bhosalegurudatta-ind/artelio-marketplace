@@ -180,7 +180,7 @@ export default function InteriorStylistModal({
                   type="button"
                   onClick={handleAnalyze}
                   disabled={loading}
-                  className="w-full rounded-full bg-brand py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark disabled:opacity-50 transition"
+                  className="w-full rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand py-3 text-sm font-bold text-white shadow-md hover:shadow-art-glow hover:scale-[1.01] disabled:opacity-50 transition-all"
                 >
                   {loading ? 'Stylist analyzing room architecture…' : '✦ Match Artworks for My Space'}
                 </button>

@@ -88,14 +88,15 @@ export default function ArtistPage() {
   return (
     <main className="mx-auto max-w-[1240px] px-5 py-12">
       {/* Artist Hero / Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#0E1420] px-8 py-14 text-white md:px-12">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-brand/20 blur-3xl" />
-        <div className="relative max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-medium text-white/80 backdrop-blur-sm">
-            <span>✦</span> Resident Artist
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1C0A36] via-[#43105C] to-[#120726] px-8 py-14 text-white md:px-12 border border-purple-500/25 shadow-2xl">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-magenta/30 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 h-80 w-80 rounded-full bg-amber/25 blur-3xl" />
+        <div className="relative max-w-2xl z-10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/20 border border-amber-300/30 px-3.5 py-1 text-xs font-bold text-amber-300 backdrop-blur-sm">
+            <span>🎨</span> Resident Artist Atelier
           </div>
 
-          <h1 className="mt-4 font-serif text-3xl font-bold md:text-5xl">{artist.name}</h1>
+          <h1 className="mt-4 font-serif text-3xl font-black md:text-5xl drop-shadow-sm">{artist.name}</h1>
 
           {avg !== null && (
             <div className="mt-3 flex items-center gap-2 text-xs text-white/80">

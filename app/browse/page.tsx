@@ -86,12 +86,14 @@ function BrowseInner() {
 
   return (
     <main className="mx-auto max-w-[1240px] px-5 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-ink/[0.08] pb-5">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/[0.08] pb-5">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-ink md:text-3xl tracking-tight">{heading}</h1>
+          <h1 className="font-serif text-2xl font-black text-ink md:text-3xl tracking-tight flex items-center gap-2">
+            <span>{heading}</span>
+          </h1>
           {!loading && (
-            <p className="mt-1.5 text-xs text-ink/45 tracking-wide">
-              {sorted.length} {sorted.length === 1 ? 'artwork' : 'artworks'}
+            <p className="mt-1.5 text-xs text-ink/60 tracking-wide font-medium">
+              ✦ {sorted.length} {sorted.length === 1 ? 'curated original' : 'curated originals'} currently available
             </p>
           )}
         </div>
@@ -99,19 +101,19 @@ function BrowseInner() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setStylistModalOpen(true)}
-            className="flex items-center gap-2 rounded-full border border-brand/25 bg-brand/[0.06] px-4 py-2.5 text-xs font-bold text-brand tracking-wide transition-all hover:bg-brand/10 hover:border-brand/40 shadow-sm"
+            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-amethyst via-brand to-magenta px-4 py-2.5 text-xs font-bold text-white tracking-wide transition-all hover:scale-105 hover:shadow-art-glow shadow-sm"
           >
-            <span>🛋️</span> Match Art for My Room
+            <span>🛋️</span> AI Room Interior Stylist
           </button>
 
-          <label className="flex items-center gap-2 text-xs text-ink/60 font-medium">
+          <label className="flex items-center gap-2 text-xs text-ink/70 font-bold">
             Sort
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
-              className="rounded-xl border border-ink/[0.12] bg-white px-3 py-2 text-xs text-ink focus:outline-none focus:border-brand/40"
+              className="rounded-xl border border-ink/10 bg-white px-3 py-2 text-xs font-semibold text-ink focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand shadow-sm"
             >
-              <option value="new">Newest</option>
+              <option value="new">Newest Additions</option>
               <option value="low">Price: low → high</option>
               <option value="high">Price: high → low</option>
             </select>
@@ -122,22 +124,22 @@ function BrowseInner() {
       <div className="no-scrollbar mt-4 flex gap-2 overflow-x-auto pb-1">
         <Link
           href="/browse"
-          className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-150 ${
+          className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all duration-150 ${
             !category && !q && !max
-              ? 'bg-ink text-white shadow-sm'
-              : 'border border-ink/[0.12] text-ink/70 hover:border-ink/30 hover:text-ink bg-white'
+              ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-sm'
+              : 'border border-ink/10 text-ink/75 hover:border-brand/40 hover:text-brand bg-white'
           }`}
         >
-          All
+          All Mediums
         </Link>
         {CATEGORIES.map((c) => (
           <Link
             key={c.slug}
             href={`/browse?category=${c.slug}`}
-            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-150 ${
+            className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all duration-150 ${
               category?.slug === c.slug
-                ? 'bg-ink text-white shadow-sm'
-                : 'border border-ink/[0.12] text-ink/70 hover:border-ink/30 hover:text-ink bg-white'
+                ? 'bg-gradient-to-r from-brand to-magenta text-white shadow-sm'
+                : 'border border-ink/10 text-ink/75 hover:border-brand/40 hover:text-brand bg-white'
             }`}
           >
             {c.label}
@@ -146,16 +148,22 @@ function BrowseInner() {
       </div>
 
       {loading ? (
-        <p className="mt-12 text-ink/60">Loading artworks…</p>
+        <div className="mt-16 text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
+          <p className="mt-4 text-xs font-bold text-ink/50 uppercase tracking-widest">Curating gallery works…</p>
+        </div>
       ) : sorted.length === 0 ? (
-        <div className="mt-12 rounded-2xl bg-paper px-6 py-14 text-center">
-          <p className="text-lg font-semibold text-ink">Nothing matches that yet.</p>
-          <p className="mt-2 text-sm text-ink/70">Try a different word, or look through everything.</p>
+        <div className="mt-12 rounded-3xl bg-white border border-black/[0.08] p-12 text-center shadow-sm">
+          <span className="text-4xl">🎨</span>
+          <p className="mt-3 text-lg font-serif font-bold text-ink">No artworks match your search filter</p>
+          <p className="mt-2 text-xs text-ink/65 max-w-sm mx-auto">
+            Try choosing a different artistic medium or clear the search filters to explore all creations.
+          </p>
           <Link
             href="/browse"
-            className="mt-6 inline-block rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-dark"
+            className="mt-6 inline-block rounded-full bg-gradient-to-r from-brand to-magenta px-6 py-3 text-xs font-bold text-white shadow-md hover:scale-105 transition-all"
           >
-            See all artworks
+            Explore All Artworks
           </Link>
         </div>
       ) : (

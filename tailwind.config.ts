@@ -11,20 +11,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#16233B',       // dark navy for text and dark buttons
-        paper: '#F5F7FA',     // light grey for image tiles and the top strip
-        brand: '#0E8ACF',     // primary blue
-        'brand-dark': '#0A6EA5',
-        'brand-soft': '#E8F4FB',
-        indigo: '#0A6EA5',    // hover colour used by older pages
-        clay: '#D63F2A',      // errors and required marks
-        marigold: '#F4B63D',
-        malachite: '#1F8A70', // small accent text, e.g. the medium on a card
+        ink: '#141E30',       // deep atelier prussian ink
+        paper: '#FAF6EE',     // archival cotton rag warm paper
+        canvas: '#FDFBF7',    // fine-art gallery wall
+        brand: '#6366F1',     // vibrant atelier iris / royal lapis
+        'brand-dark': '#4F46E5',
+        'brand-soft': '#EEF2FF',
+        indigo: '#4F46E5',    // hover colour used by older pages
+        clay: '#E11D48',      // rich vermilion for errors and badges
+        marigold: '#F59E0B',  // warm cadmium gold
+        malachite: '#10B981', // vibrant verdigris emerald
+        vermilion: '#FF4D36',
+        amethyst: '#8B5CF6',
+        magenta: '#EC4899',
+        cerulean: '#0EA5E9',
+        amber: '#F59E0B',
       },
       fontFamily: {
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
         display: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
         body: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'paint-spectrum': 'linear-gradient(135deg, #FF4D36 0%, #F59E0B 25%, #10B981 50%, #0EA5E9 75%, #8B5CF6 100%)',
+        'aurora-glow': 'linear-gradient(120deg, #6366F1 0%, #EC4899 50%, #F59E0B 100%)',
+        'atelier-dark': 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #18181B 100%)',
+      },
+      boxShadow: {
+        'art-card': '0 10px 30px -10px rgba(99, 102, 241, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.05)',
+        'art-glow': '0 0 25px -5px rgba(244, 63, 94, 0.25), 0 0 15px -3px rgba(99, 102, 241, 0.25)',
+        'gold-glow': '0 10px 25px -5px rgba(245, 158, 11, 0.25)',
       },
     },
   },

@@ -350,53 +350,61 @@ export default function SpacesPage() {
 
   return (
     <main className="min-h-screen bg-paper">
-      {/* Hero / header */}
-      <div className="border-b border-ink/10 bg-white">
-        <div className="mx-auto flex max-w-[1200px] flex-wrap items-center justify-between gap-4 px-5 py-10">
+      {/* Hero / header with artistic salon background */}
+      <div className="border-b border-black/[0.08] bg-white relative overflow-hidden">
+        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-purple-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
+
+        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-6 px-5 py-10 relative z-10">
           <div>
-            <h1 className="text-3xl font-extrabold text-ink">
-              ✦ My Collector&apos;s Spaces
+            <div className="flex items-center gap-2">
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-amethyst bg-purple-50 px-3 py-1 rounded-full border border-purple-200/60">
+                ✦ Virtual Gallery
+              </span>
+            </div>
+            <h1 className="mt-2 font-serif text-3xl font-black text-ink md:text-4xl">
+              Collector’s Private Spaces
             </h1>
-            <p className="mt-2 max-w-lg text-ink/60">
-              Your personal gallery — saved room visualizations, interior styling, and favourite artworks.
+            <p className="mt-2 max-w-lg text-xs md:text-sm text-ink/70 leading-relaxed">
+              Your curated spatial sanctum — preview how original works harmonize with real architectural interiors, lighting, and finishes in 4K.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setStudioModalOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-50 px-5 py-2.5 text-sm font-semibold text-purple-800 transition hover:bg-purple-100 shadow-sm"
+              className="flex items-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-5 py-2.5 text-xs font-black text-white transition-all hover:scale-105 shadow-md shadow-brand/20"
             >
               <span className="text-base">🎨</span> AI Artwork Studio
             </button>
             <button
               onClick={() => setStylistModalOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-brand/30 bg-brand/5 px-5 py-2.5 text-sm font-semibold text-brand transition hover:bg-brand/10 shadow-sm"
+              className="flex items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-2.5 text-xs font-bold text-ink transition-all hover:border-brand hover:text-brand shadow-xs"
             >
-              <span className="text-base">🛋️</span> Match Art for My Room
+              <span className="text-base">🛋️</span> AI Room Interior Stylist
             </button>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1200px] px-5 py-8">
+      <div className="mx-auto max-w-[1240px] px-5 py-8">
         {/* Tabs */}
-        <div className="mb-8 flex flex-wrap gap-2 border-b border-ink/10 pb-4">
+        <div className="mb-8 flex flex-wrap gap-2.5 border-b border-black/[0.06] pb-4">
           {tabs.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold transition ${
+              className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold transition-all ${
                 tab === t.id
-                  ? 'bg-brand text-white shadow'
-                  : 'border border-ink/15 text-ink/70 hover:border-brand hover:text-brand'
+                  ? 'bg-gradient-to-r from-brand via-purple-600 to-magenta text-white shadow-md'
+                  : 'border border-ink/10 bg-white text-ink/70 hover:border-brand/40 hover:text-brand'
               }`}
             >
               {t.icon}
               {t.label}
               {t.count != null && (
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                    tab === t.id ? 'bg-white/25 text-white' : 'bg-ink/10 text-ink/60'
+                  className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
+                    tab === t.id ? 'bg-white/25 text-white' : 'bg-ink/10 text-ink/70'
                   }`}
                 >
                   {t.count}

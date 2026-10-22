@@ -18,39 +18,39 @@ export default function PlansPage() {
   }
 
   return (
-    <main className="min-h-screen bg-paper py-14">
+    <main className="min-h-screen bg-canvas py-14">
       <div className="mx-auto max-w-5xl px-5">
         <div className="text-center">
-          <span className="rounded-full bg-brand/10 px-3.5 py-1 text-xs font-bold text-brand uppercase tracking-wider">
-            Artelio Memberships
+          <span className="rounded-full bg-amber-500/15 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-600 uppercase tracking-wider">
+            ✦ Artelio Atelier Memberships
           </span>
-          <h1 className="mt-3 text-3xl font-extrabold text-ink sm:text-4xl">
+          <h1 className="mt-3 font-serif text-3xl font-black text-ink sm:text-4xl md:text-5xl">
             Empowering Independent Creators &amp; Collectors
           </h1>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-ink/70">
+          <p className="mx-auto mt-3 max-w-2xl text-xs sm:text-sm text-ink/70 leading-relaxed">
             Choose the membership built for your journey. Artists unlock cutting-edge studio AI and zero sales surcharges. Collectors gain room visualization and personal AI interior styling.
           </p>
 
           {/* Toggle */}
           <div className="mt-8 flex justify-center">
-            <div className="flex rounded-full bg-white p-1 border border-ink/10 shadow-sm">
+            <div className="flex rounded-full bg-white p-1 border border-black/[0.08] shadow-sm">
               <button
                 type="button"
                 onClick={() => setRole('artist')}
-                className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
-                  role === 'artist' ? 'bg-brand text-white shadow-sm' : 'text-ink/70 hover:text-ink'
+                className={`rounded-full px-6 py-2.5 text-xs font-bold transition-all ${
+                  role === 'artist' ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-md' : 'text-ink/70 hover:text-ink'
                 }`}
               >
-                For Artists (Creator Pro)
+                🎨 For Artists (Creator Pro)
               </button>
               <button
                 type="button"
                 onClick={() => setRole('customer')}
-                className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
-                  role === 'customer' ? 'bg-brand text-white shadow-sm' : 'text-ink/70 hover:text-ink'
+                className={`rounded-full px-6 py-2.5 text-xs font-bold transition-all ${
+                  role === 'customer' ? 'bg-gradient-to-r from-brand via-purple-600 to-magenta text-white shadow-md' : 'text-ink/70 hover:text-ink'
                 }`}
               >
-                For Collectors (Collector Club)
+                ✨ For Collectors (Collector Club)
               </button>
             </div>
           </div>
@@ -63,29 +63,29 @@ export default function PlansPage() {
             .map((plan) => (
               <div
                 key={plan.id}
-                className={`relative flex flex-col justify-between rounded-3xl border bg-white p-8 transition shadow-sm ${
-                  plan.popular ? 'border-brand ring-2 ring-brand/20 shadow-lg' : 'border-ink/10 hover:shadow-md'
+                className={`relative flex flex-col justify-between rounded-3xl border bg-white p-8 transition-all hover:-translate-y-1 ${
+                  plan.popular ? 'border-brand ring-2 ring-brand/30 shadow-xl' : 'border-black/[0.08] shadow-sm hover:shadow-md'
                 }`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3 right-6 rounded-full bg-brand px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white shadow-sm">
-                    Most Popular
+                  <span className="absolute -top-3 right-6 rounded-full bg-gradient-to-r from-vermilion to-magenta px-3 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white shadow-sm">
+                    ✦ Most Popular
                   </span>
                 )}
 
                 <div>
-                  <h3 className="text-xl font-bold text-ink">{plan.name}</h3>
-                  <p className="mt-2 text-xs text-ink/60 min-h-[36px]">{plan.description}</p>
+                  <h3 className="font-serif text-xl font-bold text-ink">{plan.name}</h3>
+                  <p className="mt-2 text-xs text-ink/65 min-h-[36px] leading-relaxed">{plan.description}</p>
 
                   <div className="mt-6 flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold text-ink">₹{plan.price.toLocaleString('en-IN')}</span>
+                    <span className="font-serif text-4xl font-black text-ink">₹{plan.price.toLocaleString('en-IN')}</span>
                     <span className="text-xs text-ink/60">/ {plan.billingInterval}</span>
                   </div>
 
-                  <ul className="mt-6 space-y-3 border-t border-ink/10 pt-6 text-xs text-ink/80">
+                  <ul className="mt-6 space-y-3 border-t border-black/[0.06] pt-6 text-xs text-ink/80">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2.5">
-                        <span className="text-brand font-bold">✓</span>
+                        <span className="text-vermilion font-bold">✓</span>
                         <span className="leading-snug">{feature}</span>
                       </li>
                     ))}
@@ -95,9 +95,9 @@ export default function PlansPage() {
                 <button
                   type="button"
                   onClick={() => openModal(plan.targetRole)}
-                  className={`mt-8 w-full rounded-full py-3 text-sm font-semibold shadow-sm transition ${
+                  className={`mt-8 w-full rounded-full py-3.5 text-xs font-black shadow-sm transition-all ${
                     plan.popular
-                      ? 'bg-brand text-white hover:bg-brand-dark'
+                      ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-art-glow hover:opacity-95'
                       : 'border border-ink/20 bg-white text-ink hover:border-brand hover:text-brand'
                   }`}
                 >

@@ -204,7 +204,7 @@ export default function AIArtStudioModal({
                 <button
                   type="submit"
                   disabled={loading || !prompt.trim()}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-brand py-3 text-sm font-bold text-white transition hover:bg-brand-dark disabled:opacity-50 shadow-md"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand py-3 text-sm font-bold text-white transition-all hover:shadow-art-glow hover:scale-[1.01] disabled:opacity-50 shadow-md"
                 >
                   {loading ? (
                     <>

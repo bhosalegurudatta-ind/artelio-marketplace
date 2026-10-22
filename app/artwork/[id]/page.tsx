@@ -210,24 +210,24 @@ export default function ArtworkDetail() {
             ) : (
               <Link
                 href={`/checkout/${art.id}`}
-                className="flex items-center justify-center rounded-full bg-ink py-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:bg-brand shadow-lg"
+                className="flex items-center justify-center rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand py-4 text-sm font-black text-white shadow-lg hover:shadow-art-glow hover:scale-[1.01] transition-all"
               >
-                Acquire Artwork • ₹{art.price.toLocaleString('en-IN')}
+                Acquire Original Artwork • ₹{art.price.toLocaleString('en-IN')}
               </Link>
             )}
 
             <button
               onClick={() => setShowVisualizer(true)}
-              className="flex items-center justify-center gap-2 rounded-full border border-brand/30 bg-brand/[0.06] py-3.5 text-xs font-bold text-brand transition-colors hover:bg-brand/15 hover:border-brand/50 shadow-xs"
+              className="flex items-center justify-center gap-2 rounded-full border border-purple-300 bg-purple-50/60 py-3.5 text-xs font-bold text-amethyst transition-all hover:bg-purple-100/60 hover:border-purple-400 shadow-sm"
             >
-              <span>🛋️</span> View on Your Wall (AI Room Visualizer)
+              <span>🛋️</span> View on Your Wall (AI Spatial Visualizer)
             </button>
 
             <Link
               href={`/artist/${art.artist_id}`}
-              className="flex items-center justify-center rounded-full border border-ink/[0.12] py-3 text-xs font-semibold text-ink/70 hover:border-ink/40 hover:text-ink transition-colors"
+              className="flex items-center justify-center rounded-full border border-ink/[0.12] bg-white py-3 text-xs font-bold text-ink/80 hover:border-brand/40 hover:text-brand transition-colors shadow-xs"
             >
-              Explore more works by {art.artist_name}
+              Explore more originals by {art.artist_name}
             </Link>
           </div>
         </div>

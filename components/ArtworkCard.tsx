@@ -74,7 +74,7 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
         {/* "New" badge */}
         {isNew(artwork.createdAt) && (
-          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/95 backdrop-blur-md px-2.5 py-1 text-[10px] font-extrabold tracking-wider text-vermilion shadow-sm uppercase border border-vermilion/20">
+          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/95 backdrop-blur-md px-2.5 py-1 art-tag text-[9px] text-vermilion shadow-sm border border-vermilion/20">
             ✦ New Original
           </span>
         )}
@@ -82,21 +82,21 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
       {/* Card body with gallery aesthetics */}
       <div className="p-3.5 bg-white">
-        <h3 className="truncate font-serif text-base font-semibold text-ink leading-snug group-hover:text-brand transition-colors">
+        <h3 className="truncate font-serif text-lg font-medium text-ink leading-snug group-hover:text-brand transition-colors">
           {artwork.title}
         </h3>
-        <p className="mt-1 truncate text-xs text-ink/65 flex items-center gap-1 font-medium">
-          <span className="text-[10px] text-amber-500">🖌️</span>
-          <span>{artwork.artist}</span>
+        <p className="mt-1 truncate text-xs text-ink/70 flex items-center gap-1 font-serif italic">
+          <span className="text-[10px] text-amber-500 not-italic">🖌️</span>
+          <span>by {artwork.artist}</span>
         </p>
 
         <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-black/[0.04]">
-          <span className="font-serif text-lg font-bold text-ink tracking-tight">
+          <span className="font-serif text-xl font-bold text-ink tracking-tight">
             ₹{artwork.price.toLocaleString('en-IN')}
           </span>
           {artwork.medium && (
             <span
-              className={`shrink-0 truncate rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${mediumColorClass(
+              className={`shrink-0 truncate rounded-full border px-2 py-0.5 art-tag text-[9.5px] ${mediumColorClass(
                 artwork.medium
               )}`}
             >

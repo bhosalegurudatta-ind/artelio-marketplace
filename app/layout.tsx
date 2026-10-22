@@ -28,10 +28,25 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${jakarta.variable} ${cormorant.variable} flex min-h-screen flex-col font-body bg-canvas text-ink antialiased`}>
-        <Navbar />
-        <div className="flex-1">{children}</div>
-        <Footer />
+      <body className={`${jakarta.variable} ${cormorant.variable} relative flex min-h-screen flex-col font-body bg-canvas text-ink antialiased`}>
+        {/* Artistic "ARTELIO" Background Typographic Watermark Overlay */}
+        <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around opacity-[0.032]" aria-hidden="true">
+          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-ink -rotate-12 -translate-x-12 translate-y-[-4vw] leading-none">
+            ARTELIO · FINE ART · ATELIER · ARTELIO
+          </div>
+          <div className="font-serif whitespace-nowrap text-[14vw] font-extrabold tracking-[0.3em] text-ink -rotate-12 translate-x-[-4vw] leading-none">
+            ARTELIO · CONTEMPORARY · ARTELIO
+          </div>
+          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-ink -rotate-12 translate-x-[-12vw] translate-y-[4vw] leading-none">
+            ATELIER · ORIGINAL GALLERY · ARTELIO
+          </div>
+        </div>
+
+        <div className="relative z-10 flex min-h-screen flex-col">
+          <Navbar />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </div>
       </body>
     </html>
   );

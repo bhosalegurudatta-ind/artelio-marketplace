@@ -15,8 +15,8 @@ export default function Footer() {
         {/* Brand column */}
         <div className="md:col-span-4">
           <div className="flex items-center gap-2">
-            <p className="font-serif text-3xl font-black tracking-tight text-white">Artelio</p>
-            <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20">
+            <p className="font-serif text-3xl font-bold tracking-tight text-white">Artelio</p>
+            <span className="art-tag text-[9px] text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
               Atelier
             </span>
           </div>
@@ -25,13 +25,13 @@ export default function Footer() {
           </p>
           {/* Social / tag line */}
           <div className="mt-6 flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-7 items-center rounded-full border border-rose-400/30 bg-rose-500/10 px-3 text-[11px] font-bold text-rose-300 tracking-wide">
+            <span className="inline-flex h-7 items-center rounded-full border border-rose-400/30 bg-rose-500/10 px-3 art-tag text-[10px] text-rose-300">
               🎨 2,000+ Artworks
             </span>
-            <span className="inline-flex h-7 items-center rounded-full border border-amber-400/30 bg-amber-500/10 px-3 text-[11px] font-bold text-amber-300 tracking-wide">
+            <span className="inline-flex h-7 items-center rounded-full border border-amber-400/30 bg-amber-500/10 px-3 art-tag text-[10px] text-amber-300">
               ✦ Direct from Artists
             </span>
-            <span className="inline-flex h-7 items-center rounded-full border border-purple-400/30 bg-purple-500/10 px-3 text-[11px] font-bold text-purple-300 tracking-wide">
+            <span className="inline-flex h-7 items-center rounded-full border border-purple-400/30 bg-purple-500/10 px-3 art-tag text-[10px] text-purple-300">
               🔮 Spatial AI 4K
             </span>
           </div>
@@ -39,7 +39,7 @@ export default function Footer() {
 
         {/* Categories */}
         <div className="md:col-span-4">
-          <h3 className="text-xs font-bold tracking-widest text-amber-300/80 uppercase mb-4 flex items-center gap-2">
+          <h3 className="art-kicker text-amber-300/80 mb-4 flex items-center gap-2">
             <span>🖌️</span> Mediums &amp; Categories
           </h3>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
@@ -56,7 +56,7 @@ export default function Footer() {
 
         {/* Quick links */}
         <div className="md:col-span-2">
-          <h3 className="text-xs font-bold tracking-widest text-purple-300/80 uppercase mb-4 flex items-center gap-2">
+          <h3 className="art-kicker text-purple-300/80 mb-4 flex items-center gap-2">
             <span>✨</span> Collectors
           </h3>
           <ul className="space-y-2.5">
@@ -69,7 +69,7 @@ export default function Footer() {
         </div>
 
         <div className="md:col-span-2">
-          <h3 className="text-xs font-bold tracking-widest text-rose-300/80 uppercase mb-4 flex items-center gap-2">
+          <h3 className="art-kicker text-rose-300/80 mb-4 flex items-center gap-2">
             <span>🎨</span> Artists
           </h3>
           <ul className="space-y-2.5">

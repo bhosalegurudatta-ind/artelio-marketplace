@@ -79,27 +79,27 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-black/50 pointer-events-none" />
 
           <div className="relative z-10 flex h-full max-w-2xl flex-col justify-center px-10 md:px-16">
-            <span className={`inline-flex items-center gap-1.5 self-start rounded-full border px-3.5 py-1 text-xs font-bold tracking-wider backdrop-blur-md shadow-sm ${slide.tagBg}`}>
+            <span className={`inline-flex items-center gap-2 self-start rounded-full border px-4 py-1.5 art-kicker backdrop-blur-md shadow-sm ${slide.tagBg}`}>
               ✦ {slide.kicker}
             </span>
-            <h2 className="mt-4 font-serif text-4xl font-bold leading-[1.12] tracking-normal md:text-6xl lg:text-7xl text-white drop-shadow-md">
+            <h2 className="mt-4 font-serif text-4xl font-bold leading-[1.08] tracking-normal md:text-6xl lg:text-7xl text-white drop-shadow-md">
               {slide.title}
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/90 md:text-base font-normal drop-shadow-sm">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/90 md:text-base font-light tracking-wide drop-shadow-sm">
               {slide.sub}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href={slide.cta.href}
                 tabIndex={i === index ? 0 : -1}
-                className={`inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-xs font-bold transition-all duration-200 hover:scale-105 ${slide.ctaClass}`}
+                className={`inline-flex items-center gap-2 rounded-full px-8 py-3.5 art-tag text-[11px] transition-all duration-200 hover:scale-105 ${slide.ctaClass}`}
               >
                 {slide.cta.label} →
               </Link>
               <Link
                 href="/spaces"
                 tabIndex={i === index ? 0 : -1}
-                className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-6 py-3.5 text-xs font-bold text-white transition hover:bg-white/20 hover:border-white/50"
+                className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-7 py-3.5 art-tag text-[11px] text-white transition hover:bg-white/20 hover:border-white/50"
               >
                 ✦ Collector Spaces
               </Link>

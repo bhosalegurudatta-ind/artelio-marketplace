@@ -110,7 +110,7 @@ export default function Home() {
             className={`flex items-center gap-2.5 rounded-2xl border px-3.5 py-3 shadow-sm transition-all hover:scale-[1.02] ${item.color} bg-white`}
           >
             <span className="text-base" aria-hidden="true">{item.icon}</span>
-            <span className="text-xs font-bold text-ink/80 tracking-tight leading-tight">{item.label}</span>
+            <span className="text-[11px] font-bold text-ink/85 tracking-normal leading-tight">{item.label}</span>
           </div>
         ))}
       </div>
@@ -157,7 +157,7 @@ export default function Home() {
                       <GenerativeArt seed={`category-${c.slug}`} className="block h-full w-full transition-transform duration-500 group-hover:scale-110" />
                     </div>
                   </span>
-                  <span className="max-w-[100px] text-center text-xs font-bold text-ink/80 group-hover:text-brand transition-colors">
+                  <span className="max-w-[100px] text-center art-tag text-[10.5px] text-ink/80 group-hover:text-brand transition-colors">
                     {c.label}
                   </span>
                 </Link>
@@ -180,16 +180,16 @@ export default function Home() {
                       className={`group relative flex min-h-[220px] items-center justify-between gap-4 overflow-hidden rounded-3xl p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl ${palette.bg}`}
                     >
                       <div className="min-w-0 z-10">
-                        <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-3 ${palette.tag}`}>
+                        <span className={`inline-block art-kicker text-[9.5px] px-3 py-1 rounded-full border mb-3 ${palette.tag}`}>
                           {palette.badge}
                         </span>
-                        <p className={`font-serif truncate text-3xl font-bold leading-tight ${palette.text}`}>
+                        <p className={`font-serif truncate text-3xl font-medium leading-tight ${palette.text}`}>
                           {artist.name}
                         </p>
-                        <p className={`mt-1.5 text-xs tracking-wide font-medium ${palette.sub}`}>
+                        <p className={`mt-1.5 art-tag text-[10px] text-white/60 tracking-widest font-medium ${palette.sub}`}>
                           {artist.count} {artist.count === 1 ? 'artwork listed' : 'artworks listed'}
                         </p>
-                        <span className={`mt-5 inline-flex items-center gap-1.5 text-xs font-bold ${palette.link} transition-all`}>
+                        <span className={`mt-5 inline-flex items-center gap-1.5 art-tag text-[10.5px] ${palette.link} transition-all`}>
                           Visit Studio Atelier <span className="translate-x-0 group-hover:translate-x-1 transition-transform duration-200 inline-block">→</span>
                         </span>
                       </div>
@@ -227,11 +227,11 @@ export default function Home() {
 
               <div className="relative z-10 flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
                 <div>
-                  <span className="inline-block rounded-full bg-amber-400/20 border border-amber-300/30 px-3 py-1 text-[11px] font-bold tracking-widest text-amber-300 uppercase mb-3">
+                  <span className="inline-block rounded-full bg-amber-400/20 border border-amber-300/30 px-3.5 py-1 art-kicker text-amber-300 mb-3">
                     🎨 Calling All Creators
                   </span>
-                  <h2 className="font-serif text-3xl font-bold leading-tight md:text-5xl">
-                    Exhibit your artwork to<br />discerning collectors across India.
+                  <h2 className="font-serif text-3xl font-normal leading-[1.1] md:text-5xl">
+                    Exhibit your artwork to<br /><span className="italic font-light">discerning collectors across India.</span>
                   </h2>
                   <p className="mt-3.5 max-w-lg text-sm leading-relaxed text-white/80 font-light">
                     Join 1,000+ independent artists. Zero listing fees, AI catalog assistance, automatic certificates of authenticity, and 85% payouts directly to your bank account.
@@ -240,13 +240,13 @@ export default function Home() {
                 <div className="flex flex-col gap-3.5 sm:flex-row shrink-0">
                   <Link
                     href="/artist-signup"
-                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-vermilion to-amber-400 px-8 py-4 text-sm font-extrabold text-ink shadow-gold-glow hover:scale-105 transition-all shrink-0"
+                    className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-vermilion to-amber-400 px-8 py-4 art-tag text-xs text-ink shadow-gold-glow hover:scale-105 transition-all shrink-0"
                   >
                     Open Your Studio Free →
                   </Link>
                   <Link
                     href="/browse"
-                    className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-7 py-4 text-sm font-bold text-white hover:bg-white/20 transition-all shrink-0"
+                    className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 backdrop-blur-md px-7 py-4 art-tag text-xs text-white hover:bg-white/20 transition-all shrink-0"
                   >
                     Explore Artworks
                   </Link>

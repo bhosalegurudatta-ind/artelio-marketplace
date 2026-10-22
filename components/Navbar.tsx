@@ -122,13 +122,13 @@ export default function Navbar() {
       {/* Top strip with rainbow spectrum accent */}
       <div className="bg-[#0F172A] text-xs text-white/80 py-2 relative">
         <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5">
-          <p className="truncate tracking-wide flex items-center gap-2">
+          <p className="truncate tracking-[0.12em] uppercase text-[10px] font-bold flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-full bg-vermilion animate-pulse" />
-            <span className="font-medium text-white/90">Artelio Atelier</span>
+            <span className="font-extrabold text-white tracking-widest">Artelio Atelier</span>
             <span className="text-white/40 hidden sm:inline">|</span>
-            <span className="text-white/70 hidden sm:inline">Original fine art directly from curated independent artists</span>
+            <span className="text-white/70 font-medium normal-case tracking-normal hidden sm:inline">Original fine art directly from curated independent artists</span>
           </p>
-          <div className="hidden items-center gap-5 sm:flex font-medium text-xs">
+          <div className="hidden items-center gap-5 sm:flex art-tag text-[10px]">
             <Link href="/plans" className="text-white/75 hover:text-amber transition flex items-center gap-1">
               <span>✦</span> Memberships
             </Link>
@@ -155,7 +155,7 @@ export default function Navbar() {
             <div className="flex flex-col">
               <span className="font-serif text-3xl font-bold tracking-tight text-ink transition group-hover:text-brand flex items-center gap-1.5">
                 Artelio
-                <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-vermilion bg-vermilion/10 px-2 py-0.5 rounded-full border border-vermilion/20">Atelier</span>
+                <span className="art-tag text-[9px] text-vermilion bg-vermilion/10 px-2 py-0.5 rounded-full border border-vermilion/20">Atelier</span>
               </span>
             </div>
           </Link>
@@ -170,9 +170,9 @@ export default function Navbar() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search paintings, charcoal drawings, sculptures, prints, or artists..."
+              placeholder="Search original paintings, charcoal drawings, sculptures, prints, or artists..."
               aria-label="Search artworks"
-              className="w-full bg-transparent text-xs text-ink placeholder:text-ink/45 focus:outline-none font-medium"
+              className="w-full bg-transparent text-xs text-ink placeholder:text-ink/45 placeholder:italic focus:outline-none font-medium"
             />
           </form>
 
@@ -180,28 +180,28 @@ export default function Navbar() {
             {loggedIn ? (
               <>
                 {role === 'artist' && (
-                  <Link href="/dashboard" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
+                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
                     <UserIcon />
                     <span className="hidden sm:inline">Studio</span>
                   </Link>
                 )}
-                <Link href="/spaces" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
+                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
                   <SpacesIcon />
                   <span className="hidden sm:inline">My Spaces</span>
                 </Link>
-                <Link href="/orders" className="flex items-center gap-1.5 text-xs font-bold text-ink/80 hover:text-brand transition">
+                <Link href="/orders" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
                   <BagIcon />
                   <span className="hidden sm:inline">Orders</span>
                 </Link>
                 {role === 'artist' && (
                   <Link
                     href="/dashboard/upload"
-                    className="hidden rounded-full bg-gradient-to-r from-brand to-magenta px-4 py-2 text-xs font-bold text-white shadow-md hover:opacity-90 transition md:inline-block"
+                    className="hidden rounded-full bg-gradient-to-r from-brand to-magenta px-4 py-2 art-tag text-[11px] text-white shadow-md hover:opacity-90 transition md:inline-block"
                   >
                     + Upload Piece
                   </Link>
                 )}
-                <button onClick={handleLogout} className="text-xs font-semibold text-ink/60 hover:text-clay transition ml-1">
+                <button onClick={handleLogout} className="art-tag text-[11px] text-ink/60 hover:text-clay transition ml-1">
                   Log out
                 </button>
               </>
@@ -209,13 +209,13 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="rounded-full px-4 py-1.5 text-xs font-bold text-ink hover:text-brand transition"
+                  className="rounded-full px-4 py-1.5 art-tag text-[11px] text-ink hover:text-brand transition"
                 >
                   Log in
                 </Link>
                 <Link
                   href="/customer-signup"
-                  className="rounded-full bg-gradient-to-r from-brand via-purple-600 to-magenta px-5 py-2 text-xs font-bold text-white shadow-md shadow-brand/25 hover:shadow-lg hover:scale-105 transition-all"
+                  className="rounded-full bg-gradient-to-r from-brand via-purple-600 to-magenta px-5 py-2 art-tag text-[11px] text-white shadow-md shadow-brand/25 hover:shadow-lg hover:scale-105 transition-all"
                 >
                   Join Artelio
                 </Link>
@@ -230,7 +230,7 @@ export default function Navbar() {
         <div className="no-scrollbar mx-auto flex max-w-[1240px] items-center gap-2.5 overflow-x-auto px-5 py-2.5">
           <Link
             href="/browse"
-            className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-4 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 transition"
+            className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-4 py-2 art-tag text-[10.5px] text-white shadow-sm hover:opacity-95 transition"
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -244,7 +244,7 @@ export default function Navbar() {
             <Link
               key={c.slug}
               href={`/browse?category=${c.slug}`}
-              className="shrink-0 rounded-full border border-ink/10 bg-white/80 hover:bg-white px-3.5 py-1.5 text-xs font-semibold text-ink/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
+              className="shrink-0 rounded-full border border-ink/10 bg-white/80 hover:bg-white px-3.5 py-1.5 art-tag text-[10.5px] text-ink/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
             >
               {c.label}
             </Link>

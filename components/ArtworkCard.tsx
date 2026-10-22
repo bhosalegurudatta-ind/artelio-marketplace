@@ -45,15 +45,15 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
   return (
     <Link
       href={`/artwork/${artwork.id}`}
-      className="group block rounded-2xl border border-black/[0.08] bg-white art-card-hover overflow-hidden relative shadow-sm"
+      className="group block rounded-2xl border border-white/10 bg-[#121826] art-card-hover overflow-hidden relative shadow-md"
     >
       {/* Image area */}
       <div
-        className="relative aspect-[4/5] overflow-hidden bg-[#F3EFE6]"
+        className="relative aspect-[4/5] overflow-hidden bg-[#1A2333]"
         style={imageStyle ?? undefined}
       >
         {/* Subtle vignette hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         <FavoriteButton artworkId={artwork.id} />
 
@@ -74,24 +74,24 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
         {/* "New" badge */}
         {isNew(artwork.createdAt) && (
-          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-white/95 backdrop-blur-md px-2.5 py-1 art-tag text-[9px] text-vermilion shadow-sm border border-vermilion/20">
+          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-[#121826]/90 backdrop-blur-md px-2.5 py-1 art-tag text-[9px] text-vermilion shadow-sm border border-vermilion/30">
             ✦ New Original
           </span>
         )}
       </div>
 
       {/* Card body with gallery aesthetics */}
-      <div className="p-3.5 bg-white">
-        <h3 className="truncate font-serif text-lg font-medium text-ink leading-snug group-hover:text-brand transition-colors">
+      <div className="p-3.5 bg-[#121826]">
+        <h3 className="truncate font-serif text-lg font-medium text-white leading-snug group-hover:text-brand transition-colors">
           {artwork.title}
         </h3>
-        <p className="mt-1 truncate text-xs text-ink/70 flex items-center gap-1 font-serif italic">
+        <p className="mt-1 truncate text-xs text-white/70 flex items-center gap-1 font-serif italic">
           <span className="text-[10px] text-amber-500 not-italic">🖌️</span>
           <span>by {artwork.artist}</span>
         </p>
 
-        <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-black/[0.04]">
-          <span className="font-serif text-xl font-bold text-ink tracking-tight">
+        <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-white/10">
+          <span className="font-serif text-xl font-bold text-white tracking-tight">
             ₹{artwork.price.toLocaleString('en-IN')}
           </span>
           {artwork.medium && (

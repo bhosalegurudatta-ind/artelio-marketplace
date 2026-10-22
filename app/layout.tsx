@@ -27,17 +27,17 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${jakarta.variable} ${cormorant.variable} relative flex min-h-screen flex-col font-body bg-canvas text-ink antialiased`}>
+    <html lang="en" className="dark">
+      <body className={`${jakarta.variable} ${cormorant.variable} relative flex min-h-screen flex-col font-body bg-[#0B0F19] text-slate-100 antialiased selection:bg-brand/30 selection:text-white`}>
         {/* Artistic "ARTELIO" Background Typographic Watermark Overlay */}
-        <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around opacity-[0.032]" aria-hidden="true">
-          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-ink -rotate-12 -translate-x-12 translate-y-[-4vw] leading-none">
+        <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around opacity-[0.035]" aria-hidden="true">
+          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-white -rotate-12 -translate-x-12 translate-y-[-4vw] leading-none">
             ARTELIO · FINE ART · ATELIER · ARTELIO
           </div>
-          <div className="font-serif whitespace-nowrap text-[14vw] font-extrabold tracking-[0.3em] text-ink -rotate-12 translate-x-[-4vw] leading-none">
+          <div className="font-serif whitespace-nowrap text-[14vw] font-extrabold tracking-[0.3em] text-white -rotate-12 translate-x-[-4vw] leading-none">
             ARTELIO · CONTEMPORARY · ARTELIO
           </div>
-          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-ink -rotate-12 translate-x-[-12vw] translate-y-[4vw] leading-none">
+          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-white -rotate-12 translate-x-[-12vw] translate-y-[4vw] leading-none">
             ATELIER · ORIGINAL GALLERY · ARTELIO
           </div>
         </div>

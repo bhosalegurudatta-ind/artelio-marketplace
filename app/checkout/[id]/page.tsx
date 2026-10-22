@@ -94,8 +94,8 @@ export default function Checkout() {
     razorpay.open();
   }
 
-  if (loading) return <main className="mx-auto max-w-md px-5 py-24 text-ink/60">Loading…</main>;
-  if (!artwork) return <main className="mx-auto max-w-md px-5 py-24 text-ink/60">Artwork not found.</main>;
+  if (loading) return <main className="mx-auto max-w-md px-5 py-24 text-white/60">Loading…</main>;
+  if (!artwork) return <main className="mx-auto max-w-md px-5 py-24 text-white/60">Artwork not found.</main>;
 
   const unavailable = artwork.sold && !artwork.is_digital;
 
@@ -103,22 +103,22 @@ export default function Checkout() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <main className="mx-auto max-w-md px-5 py-16">
-        <div className="rounded-2xl border border-black/[0.08] bg-white p-8 shadow-sm">
-          <h1 className="font-serif text-2xl font-bold text-ink">Checkout</h1>
+        <div className="rounded-2xl border border-white/10 bg-[#121826] p-8 shadow-2xl backdrop-blur-md">
+          <h1 className="font-serif text-2xl font-bold text-white">Checkout</h1>
 
-          <div className="mt-6 flex gap-4 border-y border-ink/10 py-5">
+          <div className="mt-6 flex gap-4 border-y border-white/10 py-5">
             <div
-              className="h-24 w-20 shrink-0 rounded-lg bg-paper bg-cover bg-center"
+              className="h-24 w-20 shrink-0 rounded-lg bg-paper bg-cover bg-center border border-white/10"
               style={artwork.image_url ? { backgroundImage: `url(${artwork.image_url})` } : undefined}
             />
             <div>
-              <p className="font-semibold text-ink">{artwork.title}</p>
-              <p className="mt-1 text-sm text-ink/60">₹{artwork.price.toLocaleString('en-IN')}</p>
+              <p className="font-semibold text-white">{artwork.title}</p>
+              <p className="mt-1 text-sm text-white/60">₹{artwork.price.toLocaleString('en-IN')}</p>
               {artwork.is_digital && <p className="mt-2 text-xs text-malachite">Includes a full-quality digital download</p>}
             </div>
           </div>
 
-          <div className="mt-5 flex justify-between text-ink">
+          <div className="mt-5 flex justify-between text-white">
             <span>Total</span>
             <span className="font-serif text-lg font-bold">₹{artwork.price.toLocaleString('en-IN')}</span>
           </div>
@@ -134,7 +134,7 @@ export default function Checkout() {
             {paying ? 'Opening payment…' : 'Pay now'}
           </button>
 
-          <p className="mt-4 text-center text-xs text-ink/40">
+          <p className="mt-4 text-center text-xs text-white/40">
             Payments are handled securely by Razorpay. Artelio never sees your card details.
           </p>
         </div>

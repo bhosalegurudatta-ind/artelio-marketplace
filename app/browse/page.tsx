@@ -86,13 +86,13 @@ function BrowseInner() {
 
   return (
     <main className="mx-auto max-w-[1240px] px-5 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/[0.08] pb-5">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-ink md:text-4xl tracking-normal flex items-center gap-2">
+          <h1 className="font-serif text-3xl font-bold text-white md:text-4xl tracking-normal flex items-center gap-2">
             <span>{heading}</span>
           </h1>
           {!loading && (
-            <p className="mt-1.5 text-xs text-ink/60 tracking-wide font-medium">
+            <p className="mt-1.5 text-xs text-white/60 tracking-wide font-medium">
               ✦ {sorted.length} {sorted.length === 1 ? 'curated original' : 'curated originals'} currently available
             </p>
           )}
@@ -106,12 +106,12 @@ function BrowseInner() {
             <span>🛋️</span> AI Room Interior Stylist
           </button>
 
-          <label className="flex items-center gap-2 text-xs text-ink/70 font-bold">
+          <label className="flex items-center gap-2 text-xs text-white/80 font-bold">
             Sort
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
-              className="rounded-xl border border-ink/10 bg-white px-3 py-2 text-xs font-semibold text-ink focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand shadow-sm"
+              className="rounded-xl border border-white/10 bg-[#131B2A] px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand shadow-sm"
             >
               <option value="new">Newest Additions</option>
               <option value="low">Price: low → high</option>
@@ -127,7 +127,7 @@ function BrowseInner() {
           className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all duration-150 ${
             !category && !q && !max
               ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-sm'
-              : 'border border-ink/10 text-ink/75 hover:border-brand/40 hover:text-brand bg-white'
+              : 'border border-white/10 text-white/75 hover:border-brand/40 hover:text-white bg-[#131B2A]'
           }`}
         >
           All Mediums
@@ -139,7 +139,7 @@ function BrowseInner() {
             className={`shrink-0 rounded-full px-4 py-2 text-xs font-bold transition-all duration-150 ${
               category?.slug === c.slug
                 ? 'bg-gradient-to-r from-brand to-magenta text-white shadow-sm'
-                : 'border border-ink/10 text-ink/75 hover:border-brand/40 hover:text-brand bg-white'
+                : 'border border-white/10 text-white/75 hover:border-brand/40 hover:text-white bg-[#131B2A]'
             }`}
           >
             {c.label}
@@ -150,13 +150,13 @@ function BrowseInner() {
       {loading ? (
         <div className="mt-16 text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
-          <p className="mt-4 text-xs font-bold text-ink/50 uppercase tracking-widest">Curating gallery works…</p>
+          <p className="mt-4 text-xs font-bold text-white/50 uppercase tracking-widest">Curating gallery works…</p>
         </div>
       ) : sorted.length === 0 ? (
-        <div className="mt-12 rounded-3xl bg-white border border-black/[0.08] p-12 text-center shadow-sm">
+        <div className="mt-12 rounded-3xl bg-[#121826] border border-white/10 p-12 text-center shadow-lg">
           <span className="text-4xl">🎨</span>
-          <p className="mt-3 text-lg font-serif font-bold text-ink">No artworks match your search filter</p>
-          <p className="mt-2 text-xs text-ink/65 max-w-sm mx-auto">
+          <p className="mt-3 text-lg font-serif font-bold text-white">No artworks match your search filter</p>
+          <p className="mt-2 text-xs text-white/65 max-w-sm mx-auto">
             Try choosing a different artistic medium or clear the search filters to explore all creations.
           </p>
           <Link

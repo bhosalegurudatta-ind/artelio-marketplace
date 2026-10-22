@@ -7,17 +7,17 @@ html {
 }
 
 body {
-  background-color: #FAF6F0;
-  color: #141E30;
+  background-color: #0B0F19;
+  color: #F8FAFC;
   letter-spacing: -0.01em;
   background-image: 
-    radial-gradient(at 0% 5%, rgba(255, 110, 80, 0.08) 0px, transparent 45%),
-    radial-gradient(at 95% 15%, rgba(99, 102, 241, 0.10) 0px, transparent 50%),
-    radial-gradient(at 50% 40%, rgba(245, 158, 11, 0.07) 0px, transparent 40%),
-    radial-gradient(at 85% 75%, rgba(236, 72, 153, 0.08) 0px, transparent 45%),
+    radial-gradient(at 0% 5%, rgba(99, 102, 241, 0.12) 0px, transparent 45%),
+    radial-gradient(at 95% 15%, rgba(236, 72, 153, 0.10) 0px, transparent 50%),
+    radial-gradient(at 50% 40%, rgba(245, 158, 11, 0.08) 0px, transparent 40%),
+    radial-gradient(at 85% 75%, rgba(99, 102, 241, 0.10) 0px, transparent 45%),
     radial-gradient(at 15% 85%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='220' height='140' viewBox='0 0 220 140' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia, serif' font-size='15' font-weight='bold' fill='%23141E30' fill-opacity='0.022' letter-spacing='7' transform='rotate(-18 110 70)'%3EARTELIO%3C/text%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvasGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvasGrain)' opacity='0.028'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg width='220' height='140' viewBox='0 0 220 140' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia, serif' font-size='15' font-weight='bold' fill='%23FFFFFF' fill-opacity='0.024' letter-spacing='7' transform='rotate(-18 110 70)'%3EARTELIO%3C/text%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='canvasGrain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23canvasGrain)' opacity='0.035'/%3E%3C/svg%3E");
   background-attachment: fixed;
   /* Older pages (forms) read these variable names, so point them at the new font. */
   --font-work-sans: var(--font-jakarta), system-ui, sans-serif;

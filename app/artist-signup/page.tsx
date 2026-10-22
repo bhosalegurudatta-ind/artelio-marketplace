@@ -48,9 +48,9 @@ export default function ArtistSignup() {
 
   return (
     <main className="mx-auto max-w-md px-5 py-16">
-      <div className="rounded-2xl border border-ink/10 bg-white p-8 shadow-sm">
-        <h1 className="text-2xl font-bold text-ink">Sell your art on Artelio</h1>
-        <p className="mt-1 text-sm text-ink/60">Free to join. We take a commission only when your work sells.</p>
+      <div className="rounded-2xl border border-white/10 bg-[#121826] p-8 shadow-2xl backdrop-blur-md">
+        <h1 className="text-2xl font-serif font-bold text-white">Sell your art on Artelio</h1>
+        <p className="mt-1 text-sm text-white/60">Free to join. We take a commission only when your work sells.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
           <label className="block">

@@ -121,12 +121,12 @@ export default function ArtCritiqueModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm">
-      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md">
+      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-[#121826] border border-white/10 text-white p-6 shadow-2xl md:p-8">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-ink/40 transition hover:bg-paper hover:text-ink"
+          className="absolute right-5 top-5 rounded-full p-2 text-white/40 transition hover:bg-white/10 hover:text-white"
         >
           ✕
         </button>
@@ -138,7 +138,7 @@ export default function ArtCritiqueModal({
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-ink md:text-2xl">Studio AI Critique & Palette Lab</h2>
+              <h2 className="text-xl font-serif font-bold text-white md:text-2xl">Studio AI Critique & Palette Lab</h2>
               <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
                 Creator Pro
               </span>
@@ -234,10 +234,10 @@ export default function ArtCritiqueModal({
             {analysis && (
               <div className="space-y-6">
                 {/* 1. Color Palette */}
-                <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-5 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-ink/60">Extracted Palette & Harmony</h3>
-                    <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">Extracted Palette & Harmony</h3>
+                    <span className="rounded-full bg-brand/20 px-2 py-0.5 text-xs font-semibold text-brand">
                       Harmony: {analysis.composition.harmony_score}/100
                     </span>
                   </div>
@@ -247,15 +247,15 @@ export default function ArtCritiqueModal({
                       <div
                         key={i}
                         onClick={() => copyToClipboard(c.hex, 'hex', c.hex)}
-                        className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-ink/10 p-2 transition hover:border-brand/40 hover:shadow-sm"
+                        className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/10 p-2 transition hover:border-brand/40 hover:shadow-sm"
                       >
                         <span
-                          className="h-8 w-8 shrink-0 rounded-lg shadow-inner ring-1 ring-black/10"
+                          className="h-8 w-8 shrink-0 rounded-lg shadow-inner ring-1 ring-white/10"
                           style={{ backgroundColor: c.hex }}
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-semibold text-ink">{c.name}</p>
-                          <p className="text-[11px] font-mono text-ink/60">
+                          <p className="truncate text-xs font-semibold text-white">{c.name}</p>
+                          <p className="text-[11px] font-mono text-white/60">
                             {copiedHex === c.hex ? 'Copied!' : c.hex}
                           </p>
                         </div>
@@ -265,36 +265,36 @@ export default function ArtCritiqueModal({
                 </div>
 
                 {/* 2. Composition & Light Breakdown */}
-                <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-ink/60">Compositional Dynamics</h3>
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-5 shadow-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">Compositional Dynamics</h3>
                   <div className="mt-3 grid gap-3 text-xs sm:grid-cols-2">
-                    <div className="rounded-xl bg-paper p-3">
-                      <span className="font-bold text-ink">Focal Point & Flow:</span>
-                      <p className="mt-1 text-ink/80">{analysis.composition.focal_point}</p>
+                    <div className="rounded-xl bg-[#121826] p-3 border border-white/5">
+                      <span className="font-bold text-white">Focal Point & Flow:</span>
+                      <p className="mt-1 text-white/80">{analysis.composition.focal_point}</p>
                     </div>
-                    <div className="rounded-xl bg-paper p-3">
-                      <span className="font-bold text-ink">Lighting & Contrast:</span>
-                      <p className="mt-1 text-ink/80">{analysis.composition.lighting_and_contrast}</p>
+                    <div className="rounded-xl bg-[#121826] p-3 border border-white/5">
+                      <span className="font-bold text-white">Lighting & Contrast:</span>
+                      <p className="mt-1 text-white/80">{analysis.composition.lighting_and_contrast}</p>
                     </div>
-                    <div className="rounded-xl bg-paper p-3">
-                      <span className="font-bold text-ink">Balance & Visual Weight:</span>
-                      <p className="mt-1 text-ink/80">{analysis.composition.balance_and_weight}</p>
+                    <div className="rounded-xl bg-[#121826] p-3 border border-white/5">
+                      <span className="font-bold text-white">Balance & Visual Weight:</span>
+                      <p className="mt-1 text-white/80">{analysis.composition.balance_and_weight}</p>
                     </div>
-                    <div className="rounded-xl bg-paper p-3">
-                      <span className="font-bold text-ink">Depth & Texture:</span>
-                      <p className="mt-1 text-ink/80">{analysis.composition.brushwork_and_depth}</p>
+                    <div className="rounded-xl bg-[#121826] p-3 border border-white/5">
+                      <span className="font-bold text-white">Depth & Texture:</span>
+                      <p className="mt-1 text-white/80">{analysis.composition.brushwork_and_depth}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* 3. Critique & Suggestions */}
-                <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-ink/60">Curator Evaluation</h3>
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-5 shadow-sm">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">Curator Evaluation</h3>
                   
                   <div className="mt-3 space-y-2 text-xs">
                     <div>
                       <span className="font-bold text-malachite">Key Strengths:</span>
-                      <ul className="mt-1 list-inside list-disc text-ink/80">
+                      <ul className="mt-1 list-inside list-disc text-white/80">
                         {analysis.critique.key_strengths.map((s, idx) => (
                           <li key={idx}>{s}</li>
                         ))}
@@ -303,14 +303,14 @@ export default function ArtCritiqueModal({
 
                     <div className="mt-3">
                       <span className="font-bold text-clay">Refinement Opportunities:</span>
-                      <ul className="mt-1 list-inside list-disc text-ink/80">
+                      <ul className="mt-1 list-inside list-disc text-white/80">
                         {analysis.critique.enhancement_suggestions.map((s, idx) => (
                           <li key={idx}>{s}</li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="mt-3 rounded-lg border border-brand/20 bg-brand/5 p-3 text-ink/80">
+                    <div className="mt-3 rounded-lg border border-brand/20 bg-brand/10 p-3 text-white/90">
                       <span className="font-bold text-brand">Display & Framing Tip:</span>{' '}
                       {analysis.critique.curator_presentation_tip}
                     </div>
@@ -318,9 +318,9 @@ export default function ArtCritiqueModal({
                 </div>
 
                 {/* 4. Exhibition Statement */}
-                <div className="rounded-2xl border border-ink/10 bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-5 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-ink/60">Gallery Exhibition Statement</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-white/60">Gallery Exhibition Statement</h3>
                     <button
                       onClick={() => copyToClipboard(analysis.storyteller_statement, 'statement')}
                       className="text-xs font-semibold text-brand hover:underline"
@@ -328,7 +328,7 @@ export default function ArtCritiqueModal({
                       {copiedStatement ? '✓ Copied' : 'Copy Statement'}
                     </button>
                   </div>
-                  <p className="mt-2 text-xs italic leading-relaxed text-ink/80">
+                  <p className="mt-2 text-xs italic leading-relaxed text-white/80">
                     &ldquo;{analysis.storyteller_statement}&rdquo;
                   </p>
                 </div>

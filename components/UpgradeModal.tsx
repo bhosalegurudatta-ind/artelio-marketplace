@@ -117,22 +117,22 @@ export default function UpgradeModal({
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto">
-        <div className="relative my-6 w-full max-w-2xl rounded-3xl bg-white shadow-2xl overflow-hidden border border-ink/10">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md overflow-y-auto">
+        <div className="relative my-6 w-full max-w-2xl rounded-3xl bg-[#121826] text-white shadow-2xl overflow-hidden border border-white/10">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-ink/10 bg-paper/60 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-white/10 bg-[#0B0F19]/80 px-6 py-4">
             <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand text-white text-sm font-bold">
                 ✦
               </span>
               <div>
-                <h2 className="text-lg font-bold text-ink">Upgrade Your Artelio Plan</h2>
-                <p className="text-xs text-ink/60">Unlock advanced AI tools and unlimited marketplace capabilities</p>
+                <h2 className="text-lg font-serif font-bold text-white">Upgrade Your Artelio Plan</h2>
+                <p className="text-xs text-white/60">Unlock advanced AI tools and unlimited marketplace capabilities</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-ink/50 hover:bg-ink/5 hover:text-ink transition"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white transition"
             >
               ✕
             </button>
@@ -141,12 +141,12 @@ export default function UpgradeModal({
           <div className="p-6">
             {/* Role switch toggle */}
             <div className="mb-6 flex justify-center">
-              <div className="flex rounded-full bg-paper p-1 border border-ink/10">
+              <div className="flex rounded-full bg-[#151D2C] p-1 border border-white/10">
                 <button
                   type="button"
                   onClick={() => setRole('artist')}
                   className={`rounded-full px-5 py-1.5 text-xs font-semibold transition ${
-                    role === 'artist' ? 'bg-brand text-white shadow-sm' : 'text-ink/70 hover:text-ink'
+                    role === 'artist' ? 'bg-brand text-white shadow-sm' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   Artist (Creator Pro)
@@ -155,7 +155,7 @@ export default function UpgradeModal({
                   type="button"
                   onClick={() => setRole('customer')}
                   className={`rounded-full px-5 py-1.5 text-xs font-semibold transition ${
-                    role === 'customer' ? 'bg-brand text-white shadow-sm' : 'text-ink/70 hover:text-ink'
+                    role === 'customer' ? 'bg-brand text-white shadow-sm' : 'text-white/70 hover:text-white'
                   }`}
                 >
                   Collector (Collector Club)
@@ -182,8 +182,8 @@ export default function UpgradeModal({
                   key={plan.id}
                   className={`relative flex flex-col justify-between rounded-2xl border p-5 transition ${
                     plan.popular
-                      ? 'border-brand bg-brand/[0.02] shadow-md'
-                      : 'border-ink/15 bg-white shadow-sm hover:border-ink/30'
+                      ? 'border-brand bg-brand/[0.05] shadow-md'
+                      : 'border-white/10 bg-[#161F30] shadow-sm hover:border-white/25'
                   }`}
                 >
                   {plan.popular && (
@@ -193,15 +193,15 @@ export default function UpgradeModal({
                   )}
 
                   <div>
-                    <h3 className="text-base font-bold text-ink">{plan.name}</h3>
-                    <p className="mt-1 text-xs text-ink/60 min-h-[32px]">{plan.description}</p>
+                    <h3 className="text-base font-bold text-white">{plan.name}</h3>
+                    <p className="mt-1 text-xs text-white/60 min-h-[32px]">{plan.description}</p>
 
                     <div className="mt-4 flex items-baseline gap-1">
-                      <span className="text-2xl font-black text-ink">₹{plan.price.toLocaleString('en-IN')}</span>
-                      <span className="text-xs text-ink/60">/ {plan.billingInterval}</span>
+                      <span className="text-2xl font-black text-white">₹{plan.price.toLocaleString('en-IN')}</span>
+                      <span className="text-xs text-white/60">/ {plan.billingInterval}</span>
                     </div>
 
-                    <ul className="mt-4 space-y-2 border-t border-ink/10 pt-4 text-xs text-ink/80">
+                    <ul className="mt-4 space-y-2 border-t border-white/10 pt-4 text-xs text-white/80">
                       {plan.features.map((feat, i) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-brand font-bold">✓</span>
@@ -218,7 +218,7 @@ export default function UpgradeModal({
                     className={`mt-6 w-full rounded-full py-2.5 text-xs font-bold shadow-sm transition-all disabled:opacity-50 ${
                       plan.popular
                         ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white hover:shadow-art-glow hover:scale-[1.01]'
-                        : 'border border-ink/20 bg-white text-ink hover:border-brand hover:text-brand'
+                        : 'border border-white/15 bg-[#121826] text-white hover:border-brand hover:text-brand'
                     }`}
                   >
                     {loadingPlan === plan.id ? 'Opening Razorpay…' : `Upgrade to ${plan.name}`}
@@ -227,7 +227,7 @@ export default function UpgradeModal({
               ))}
             </div>
 
-            <p className="mt-6 text-center text-[11px] text-ink/50">
+            <p className="mt-6 text-center text-[11px] text-white/50">
               Secured by Razorpay • Instant access upon completion • Cancel anytime
             </p>
           </div>

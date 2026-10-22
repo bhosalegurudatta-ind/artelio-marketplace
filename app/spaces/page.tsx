@@ -142,7 +142,7 @@ function MockupCard({
   const score = mockup.harmony_score;
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#121826] shadow-sm transition hover:shadow-md">
       {/* Image */}
       <button
         onClick={() => onPreview(mockup.image_url)}
@@ -220,7 +220,7 @@ function FavCard({
 }) {
   const { artwork } = fav;
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-sm transition hover:shadow-md">
+    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#121826] shadow-sm transition hover:shadow-md">
       <Link href={`/artwork/${artwork.id}`} className="block overflow-hidden">
         <img
           src={artwork.imageUrl}
@@ -351,21 +351,21 @@ export default function SpacesPage() {
   return (
     <main className="min-h-screen bg-paper">
       {/* Hero / header with artistic salon background */}
-      <div className="border-b border-black/[0.08] bg-white relative overflow-hidden">
+      <div className="border-b border-white/10 bg-[#121826] relative overflow-hidden">
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-purple-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
 
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-6 px-5 py-10 relative z-10">
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-block text-xs font-bold uppercase tracking-wider text-amethyst bg-purple-50 px-3 py-1 rounded-full border border-purple-200/60">
+              <span className="inline-block text-xs font-bold uppercase tracking-wider text-purple-300 bg-purple-950/60 px-3 py-1 rounded-full border border-purple-500/30">
                 ✦ Virtual Gallery
               </span>
             </div>
-            <h1 className="mt-2 font-serif text-3xl font-black text-ink md:text-4xl">
+            <h1 className="mt-2 font-serif text-3xl font-black text-white md:text-4xl">
               Collector’s Private Spaces
             </h1>
-            <p className="mt-2 max-w-lg text-xs md:text-sm text-ink/70 leading-relaxed">
+            <p className="mt-2 max-w-lg text-xs md:text-sm text-white/70 leading-relaxed">
               Your curated spatial sanctum — preview how original works harmonize with real architectural interiors, lighting, and finishes in 4K.
             </p>
           </div>
@@ -378,7 +378,7 @@ export default function SpacesPage() {
             </button>
             <button
               onClick={() => setStylistModalOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-2.5 text-xs font-bold text-ink transition-all hover:border-brand hover:text-brand shadow-xs"
+              className="flex items-center gap-2 rounded-full border border-white/15 bg-[#161F30] px-5 py-2.5 text-xs font-bold text-white transition-all hover:border-brand hover:text-brand shadow-xs"
             >
               <span className="text-base">🛋️</span> AI Room Interior Stylist
             </button>
@@ -388,7 +388,7 @@ export default function SpacesPage() {
 
       <div className="mx-auto max-w-[1240px] px-5 py-8">
         {/* Tabs */}
-        <div className="mb-8 flex flex-wrap gap-2.5 border-b border-black/[0.06] pb-4">
+        <div className="mb-8 flex flex-wrap gap-2.5 border-b border-white/10 pb-4">
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -396,7 +396,7 @@ export default function SpacesPage() {
               className={`flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-bold transition-all ${
                 tab === t.id
                   ? 'bg-gradient-to-r from-brand via-purple-600 to-magenta text-white shadow-md'
-                  : 'border border-ink/10 bg-white text-ink/70 hover:border-brand/40 hover:text-brand'
+                  : 'border border-white/10 bg-[#121826] text-white/70 hover:border-brand/40 hover:text-white'
               }`}
             >
               {t.icon}
@@ -404,7 +404,7 @@ export default function SpacesPage() {
               {t.count != null && (
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
-                    tab === t.id ? 'bg-white/25 text-white' : 'bg-ink/10 text-ink/70'
+                    tab === t.id ? 'bg-white/25 text-white' : 'bg-white/10 text-white/70'
                   }`}
                 >
                   {t.count}

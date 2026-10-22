@@ -94,10 +94,10 @@ export default function FavoriteButton({
         className={`flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition shadow-sm ${
           favorited
             ? 'border-clay/40 bg-clay/10 text-clay hover:bg-clay/20'
-            : 'border-ink/20 bg-white text-ink hover:border-clay hover:text-clay'
+            : 'border-white/15 bg-[#121826] text-white/90 hover:border-clay hover:text-clay'
         }`}
       >
-        <span className={favorited ? 'text-clay scale-110' : 'text-ink/60'}>
+        <span className={favorited ? 'text-clay scale-110' : 'text-white/60'}>
           {favorited ? '♥' : '♡'}
         </span>
         <span>{favorited ? 'Saved in My Spaces' : 'Save to Favorites'}</span>
@@ -110,9 +110,9 @@ export default function FavoriteButton({
       onClick={handleToggle}
       disabled={loading}
       title={favorited ? 'Remove from favorites' : 'Save to favorites'}
-      className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm shadow backdrop-blur transition hover:scale-110 hover:bg-white"
+      className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[#121826]/90 border border-white/20 text-sm shadow backdrop-blur transition hover:scale-110 hover:bg-[#161F30]"
     >
-      <span className={favorited ? 'text-clay font-bold' : 'text-ink/50'}>
+      <span className={favorited ? 'text-clay font-bold' : 'text-white/60'}>
         {favorited ? '♥' : '♡'}
       </span>
     </button>

@@ -122,15 +122,15 @@ export default function ArtworkDetail() {
       <div className="grid gap-12 lg:grid-cols-12 items-start">
         {/* Left: Gallery Artwork Frame */}
         <div className="lg:col-span-7">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-ink/[0.08] bg-white p-3 shadow-2xl">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-white/10 bg-[#121826] p-3 shadow-2xl">
             <div
               className="relative h-full w-full overflow-hidden rounded-2xl bg-paper bg-cover bg-center transition-transform duration-700 hover:scale-[1.02]"
               style={art.image_url ? { backgroundImage: `url(${art.image_url})` } : undefined}
             >
               {!art.image_url && <GenerativeArt seed={art.id} className="block h-full w-full" />}
               {unavailable && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs">
-                  <span className="rounded-full bg-white/95 px-5 py-2 font-serif text-sm font-bold tracking-widest text-ink uppercase shadow-lg">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-xs">
+                  <span className="rounded-full bg-[#121826]/90 border border-white/20 px-5 py-2 font-serif text-sm font-bold tracking-widest text-white uppercase shadow-lg">
                     Sold Out
                   </span>
                 </div>
@@ -218,14 +218,14 @@ export default function ArtworkDetail() {
 
             <button
               onClick={() => setShowVisualizer(true)}
-              className="flex items-center justify-center gap-2 rounded-full border border-purple-300 bg-purple-50/60 py-3.5 text-xs font-bold text-amethyst transition-all hover:bg-purple-100/60 hover:border-purple-400 shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-full border border-purple-500/30 bg-purple-950/40 py-3.5 text-xs font-bold text-purple-200 transition-all hover:bg-purple-900/50 hover:border-purple-400 shadow-sm"
             >
               <span>🛋️</span> View on Your Wall (AI Spatial Visualizer)
             </button>
 
             <Link
               href={`/artist/${art.artist_id}`}
-              className="flex items-center justify-center rounded-full border border-ink/[0.12] bg-white py-3 text-xs font-bold text-ink/80 hover:border-brand/40 hover:text-brand transition-colors shadow-xs"
+              className="flex items-center justify-center rounded-full border border-white/15 bg-[#121826] py-3 text-xs font-bold text-white/80 hover:bg-[#161F30] hover:text-white transition-colors shadow-xs"
             >
               Explore more originals by {art.artist_name}
             </Link>

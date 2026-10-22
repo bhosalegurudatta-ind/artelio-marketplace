@@ -127,20 +127,20 @@ export default function InteriorStylistModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto">
-      <div className="relative my-6 w-full max-w-4xl rounded-3xl bg-white shadow-2xl overflow-hidden border border-ink/10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-md overflow-y-auto">
+      <div className="relative my-6 w-full max-w-4xl rounded-3xl bg-[#121826] text-white shadow-2xl overflow-hidden border border-white/10">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-ink/10 bg-paper/60 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/10 bg-[#0B0F19]/80 px-6 py-4">
           <div className="flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-white text-base">🛋️</span>
             <div>
-              <h2 className="text-lg font-bold text-ink">AI Interior Stylist &amp; Art Matcher</h2>
-              <p className="text-xs text-ink/60">Upload your room wall photo to get curated art pairings tailored to your decor</p>
+              <h2 className="text-lg font-serif font-bold text-white">AI Interior Stylist &amp; Art Matcher</h2>
+              <p className="text-xs text-white/60">Upload your room wall photo to get curated art pairings tailored to your decor</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-ink/50 hover:bg-ink/5 hover:text-ink transition"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white transition"
           >
             ✕
           </button>
@@ -190,29 +190,29 @@ export default function InteriorStylistModal({
 
               {/* Room Aesthetic Breakdown Card */}
               {data && (
-                <div className="rounded-2xl border border-ink/10 bg-paper/50 p-4 space-y-3">
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-4 space-y-3">
                   <div>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-brand">Detected Aesthetic</span>
-                    <p className="font-bold text-ink text-sm">{data.room_analysis.aesthetic}</p>
+                    <p className="font-bold text-white text-sm">{data.room_analysis.aesthetic}</p>
                   </div>
                   <div>
-                    <span className="text-[11px] font-medium text-ink/60">Dominant Wall &amp; Decor Tones</span>
+                    <span className="text-[11px] font-medium text-white/60">Dominant Wall &amp; Decor Tones</span>
                     <div className="mt-1 flex items-center gap-1.5">
                       {data.room_analysis.dominant_tones.map((hex, i) => (
-                        <div key={i} className="flex items-center gap-1 rounded-full border border-ink/10 bg-white px-2 py-0.5 text-[11px]">
-                          <span className="h-3 w-3 rounded-full border border-black/10" style={{ backgroundColor: hex }} />
-                          <span className="font-mono text-ink/70">{hex}</span>
+                        <div key={i} className="flex items-center gap-1 rounded-full border border-white/10 bg-[#121826] px-2 py-0.5 text-[11px]">
+                          <span className="h-3 w-3 rounded-full border border-white/10" style={{ backgroundColor: hex }} />
+                          <span className="font-mono text-white/70">{hex}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                   <div>
-                    <span className="text-[11px] font-medium text-ink/60">Lighting &amp; Ambiance</span>
-                    <p className="text-xs text-ink/80">{data.room_analysis.lighting_vibe}</p>
+                    <span className="text-[11px] font-medium text-white/60">Lighting &amp; Ambiance</span>
+                    <p className="text-xs text-white/80">{data.room_analysis.lighting_vibe}</p>
                   </div>
                   <div>
-                    <span className="text-[11px] font-medium text-ink/60">Recommended Framing</span>
-                    <p className="text-xs text-ink/80">{data.room_analysis.recommended_frame}</p>
+                    <span className="text-[11px] font-medium text-white/60">Recommended Framing</span>
+                    <p className="text-xs text-white/80">{data.room_analysis.recommended_frame}</p>
                   </div>
                 </div>
               )}
@@ -248,14 +248,14 @@ export default function InteriorStylistModal({
                     </p>
                   </div>
 
-                  <h3 className="text-sm font-bold text-ink">
+                  <h3 className="text-sm font-bold text-white">
                     Top Matched Artworks for Your Wall ({data.recommendations.length})
                   </h3>
 
                   {data.recommendations.map((rec) => (
                     <div
                       key={rec.artwork_id}
-                      className="group flex flex-col sm:flex-row items-start gap-4 rounded-2xl border border-ink/10 bg-white p-3.5 shadow-sm transition hover:shadow-md"
+                      className="group flex flex-col sm:flex-row items-start gap-4 rounded-2xl border border-white/10 bg-[#161F30] p-3.5 shadow-sm transition hover:shadow-md"
                     >
                       <Link href={`/artwork/${rec.artwork.id}`} className="shrink-0 overflow-hidden rounded-xl">
                         {/* eslint-disable-next-line @next/next/no-img-element */}

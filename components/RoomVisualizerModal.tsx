@@ -248,12 +248,12 @@ export default function RoomVisualizerModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/70 p-3 backdrop-blur-sm sm:p-5">
-      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl md:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 backdrop-blur-md sm:p-5">
+      <div className="relative max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-3xl bg-[#121826] border border-white/10 text-white p-6 shadow-2xl md:p-8">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute right-5 top-5 rounded-full p-2 text-ink/40 transition hover:bg-paper hover:text-ink"
+          className="absolute right-5 top-5 rounded-full p-2 text-white/40 transition hover:bg-white/10 hover:text-white"
         >
           ✕
         </button>
@@ -265,12 +265,12 @@ export default function RoomVisualizerModal({
           </span>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-xl font-bold text-ink md:text-2xl">Art in Your Space Visualizer</h2>
+              <h2 className="text-xl font-serif font-bold text-white md:text-2xl">Art in Your Space Visualizer</h2>
               <span className="rounded-full bg-malachite/10 px-2.5 py-0.5 text-xs font-semibold text-malachite">
                 Collector Club
               </span>
             </div>
-            <p className="text-xs text-ink/60">
+            <p className="text-xs text-white/60">
               Preview &ldquo;{artworkTitle}&rdquo; (₹{artworkPrice.toLocaleString('en-IN')}) to scale on your actual room wall with AI interior styling.
             </p>
           </div>
@@ -374,8 +374,8 @@ export default function RoomVisualizerModal({
                       onClick={() => setFrameStyle(f)}
                       className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition ${
                         frameStyle.id === f.id
-                          ? 'bg-ink text-white'
-                          : 'bg-white text-ink/80 hover:bg-ink/5 border border-ink/10'
+                          ? 'bg-brand text-white'
+                          : 'bg-[#151D2C] text-white/80 hover:bg-[#1C273C] border border-white/10'
                       }`}
                     >
                       {f.label}
@@ -441,11 +441,11 @@ export default function RoomVisualizerModal({
             {styling && (
               <div className="space-y-4">
                 {/* Score & Style */}
-                <div className="rounded-2xl border border-ink/10 bg-white p-4 shadow-sm">
+                <div className="rounded-2xl border border-white/10 bg-[#161F30] p-4 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-ink/50">Detected Room Style</p>
-                      <p className="text-base font-bold text-ink">{styling.room_style}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-white/50">Detected Room Style</p>
+                      <p className="text-base font-bold text-white">{styling.room_style}</p>
                     </div>
                     <div className="text-right">
                       <span className="inline-block rounded-full bg-malachite/15 px-3 py-1 text-xs font-bold text-malachite">

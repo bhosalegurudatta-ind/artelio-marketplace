@@ -122,7 +122,7 @@ export default function Orders() {
             const delivered = order.status === 'delivered';
             const reviewed = reviews[order.id];
             return (
-              <div key={order.id} className="rounded-xl border border-ink/10 bg-white p-5">
+              <div key={order.id} className="rounded-xl border border-white/10 bg-[#121826] p-5 shadow-lg">
                 <div className="flex items-center gap-4">
                   <div className="h-16 w-14 shrink-0 rounded-lg bg-paper bg-cover bg-center" style={art?.image_url ? { backgroundImage: `url(${art.image_url})` } : undefined} />
                   <div className="min-w-0 flex-1">

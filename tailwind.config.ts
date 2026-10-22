@@ -11,14 +11,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#141E30',       // deep atelier prussian ink
-        paper: '#FAF6EE',     // archival cotton rag warm paper
-        canvas: '#FDFBF7',    // fine-art gallery wall
+        ink: '#F8FAFC',       // crisp gallery off-white text
+        paper: '#121826',     // dark obsidian atelier surface
+        canvas: '#0B0F19',    // professional midnight museum gallery background
         brand: '#6366F1',     // vibrant atelier iris / royal lapis
         'brand-dark': '#4F46E5',
-        'brand-soft': '#EEF2FF',
-        indigo: '#4F46E5',    // hover colour used by older pages
-        clay: '#E11D48',      // rich vermilion for errors and badges
+        'brand-soft': '#1E1B4B',
+        indigo: '#6366F1',    // hover colour used by older pages
+        clay: '#FF4D36',      // rich vermilion for errors and badges
         marigold: '#F59E0B',  // warm cadmium gold
         malachite: '#10B981', // vibrant verdigris emerald
         vermilion: '#FF4D36',

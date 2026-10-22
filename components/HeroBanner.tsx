@@ -113,7 +113,7 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
               return (
                 <div
                   key={n}
-                  className={`absolute aspect-[4/5] rounded-2xl bg-white p-2.5 shadow-2xl ring-2 ring-white/30 backdrop-blur-md transition-all duration-500 hover:scale-110 hover:rotate-0 hover:z-30 ${item.pos}`}
+                  className={`absolute aspect-[4/5] rounded-2xl bg-[#121826]/90 border border-white/20 p-2.5 shadow-2xl ring-1 ring-white/20 backdrop-blur-md transition-all duration-500 hover:scale-110 hover:rotate-0 hover:z-30 ${item.pos}`}
                 >
                   <div className="relative h-full w-full overflow-hidden rounded-xl border border-black/5" style={style ?? undefined}>
                     {!style && <GenerativeArt seed={`hero-${i}-${n}`} className="block h-full w-full" />}
@@ -131,7 +131,7 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
       <button
         onClick={() => go(-1)}
         aria-label="Previous slide"
-        className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow hover:bg-white"
+        className="absolute left-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#121826]/90 border border-white/20 text-white shadow-lg hover:bg-[#161F30] transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" strokeLinecap="round" strokeLinejoin="round" />
@@ -140,7 +140,7 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
       <button
         onClick={() => go(1)}
         aria-label="Next slide"
-        className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow hover:bg-white"
+        className="absolute right-3 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#121826]/90 border border-white/20 text-white shadow-lg hover:bg-[#161F30] transition-colors"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
           <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />

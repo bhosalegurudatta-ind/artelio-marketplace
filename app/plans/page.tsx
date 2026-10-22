@@ -33,12 +33,12 @@ export default function PlansPage() {
 
           {/* Toggle */}
           <div className="mt-8 flex justify-center">
-            <div className="flex rounded-full bg-white p-1 border border-black/[0.08] shadow-sm">
+            <div className="flex rounded-full bg-[#121826] p-1 border border-white/10 shadow-sm">
               <button
                 type="button"
                 onClick={() => setRole('artist')}
                 className={`rounded-full px-6 py-2.5 text-xs font-bold transition-all ${
-                  role === 'artist' ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-md' : 'text-ink/70 hover:text-ink'
+                  role === 'artist' ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-md' : 'text-white/70 hover:text-white'
                 }`}
               >
                 🎨 For Artists (Creator Pro)
@@ -47,7 +47,7 @@ export default function PlansPage() {
                 type="button"
                 onClick={() => setRole('customer')}
                 className={`rounded-full px-6 py-2.5 text-xs font-bold transition-all ${
-                  role === 'customer' ? 'bg-gradient-to-r from-brand via-purple-600 to-magenta text-white shadow-md' : 'text-ink/70 hover:text-ink'
+                  role === 'customer' ? 'bg-gradient-to-r from-brand via-purple-600 to-magenta text-white shadow-md' : 'text-white/70 hover:text-white'
                 }`}
               >
                 ✨ For Collectors (Collector Club)
@@ -63,8 +63,8 @@ export default function PlansPage() {
             .map((plan) => (
               <div
                 key={plan.id}
-                className={`relative flex flex-col justify-between rounded-3xl border bg-white p-8 transition-all hover:-translate-y-1 ${
-                  plan.popular ? 'border-brand ring-2 ring-brand/30 shadow-xl' : 'border-black/[0.08] shadow-sm hover:shadow-md'
+                className={`relative flex flex-col justify-between rounded-3xl border bg-[#121826] p-8 transition-all hover:-translate-y-1 ${
+                  plan.popular ? 'border-brand ring-2 ring-brand/30 shadow-xl' : 'border-white/10 shadow-sm hover:shadow-md'
                 }`}
               >
                 {plan.popular && (
@@ -74,15 +74,15 @@ export default function PlansPage() {
                 )}
 
                 <div>
-                  <h3 className="font-serif text-xl font-bold text-ink">{plan.name}</h3>
-                  <p className="mt-2 text-xs text-ink/65 min-h-[36px] leading-relaxed">{plan.description}</p>
+                  <h3 className="font-serif text-xl font-bold text-white">{plan.name}</h3>
+                  <p className="mt-2 text-xs text-white/65 min-h-[36px] leading-relaxed">{plan.description}</p>
 
                   <div className="mt-6 flex items-baseline gap-1">
-                    <span className="font-serif text-4xl font-black text-ink">₹{plan.price.toLocaleString('en-IN')}</span>
-                    <span className="text-xs text-ink/60">/ {plan.billingInterval}</span>
+                    <span className="font-serif text-4xl font-black text-white">₹{plan.price.toLocaleString('en-IN')}</span>
+                    <span className="text-xs text-white/60">/ {plan.billingInterval}</span>
                   </div>
 
-                  <ul className="mt-6 space-y-3 border-t border-black/[0.06] pt-6 text-xs text-ink/80">
+                  <ul className="mt-6 space-y-3 border-t border-white/10 pt-6 text-xs text-white/80">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2.5">
                         <span className="text-vermilion font-bold">✓</span>
@@ -98,7 +98,7 @@ export default function PlansPage() {
                   className={`mt-8 w-full rounded-full py-3.5 text-xs font-black shadow-sm transition-all ${
                     plan.popular
                       ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-art-glow hover:opacity-95'
-                      : 'border border-ink/20 bg-white text-ink hover:border-brand hover:text-brand'
+                      : 'border border-white/15 bg-[#161F30] text-white hover:border-brand hover:text-brand'
                   }`}
                 >
                   Choose {plan.name}
@@ -107,9 +107,9 @@ export default function PlansPage() {
             ))}
         </div>
 
-        <div className="mt-16 rounded-2xl border border-ink/10 bg-white p-6 text-center shadow-sm">
-          <p className="text-sm font-semibold text-ink">Have custom gallery or institutional curation needs?</p>
-          <p className="mt-1 text-xs text-ink/60">
+        <div className="mt-16 rounded-2xl border border-white/10 bg-[#121826] p-6 text-center shadow-sm">
+          <p className="text-sm font-semibold text-white">Have custom gallery or institutional curation needs?</p>
+          <p className="mt-1 text-xs text-white/60">
             Reach out to our founder team for custom commissions, corporate exhibitions, and private salon viewings.
           </p>
           <Link

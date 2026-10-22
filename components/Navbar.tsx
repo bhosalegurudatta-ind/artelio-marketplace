@@ -148,12 +148,12 @@ export default function Navbar() {
       </div>
 
       {/* Main header */}
-      <header className="sticky top-0 z-50 border-b border-black/[0.06] bg-canvas/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#0B0F19]/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3.5">
           <Link href="/" className="flex items-center gap-3 group">
             <Mark />
             <div className="flex flex-col">
-              <span className="font-serif text-3xl font-bold tracking-tight text-ink transition group-hover:text-brand flex items-center gap-1.5">
+              <span className="font-serif text-3xl font-bold tracking-tight text-white transition group-hover:text-brand flex items-center gap-1.5">
                 Artelio
                 <span className="art-tag text-[9px] text-vermilion bg-vermilion/10 px-2 py-0.5 rounded-full border border-vermilion/20">Atelier</span>
               </span>
@@ -163,16 +163,16 @@ export default function Navbar() {
           <form
             onSubmit={handleSearch}
             role="search"
-            className="order-3 flex w-full items-center gap-3 rounded-full bg-white border border-ink/10 px-4 py-2 transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20 focus-within:shadow-md md:order-none md:w-auto md:max-w-xl md:flex-1"
+            className="order-3 flex w-full items-center gap-3 rounded-full bg-[#131B2A] border border-white/10 px-4 py-2 transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20 focus-within:shadow-md md:order-none md:w-auto md:max-w-xl md:flex-1"
           >
             <span className="text-vermilion"><SearchIcon /></span>
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search original paintings, charcoal drawings, sculptures, prints, or artists..."
+              placeholder="Search paintings, charcoal drawings, sculptures, prints, or artists..."
               aria-label="Search artworks"
-              className="w-full bg-transparent text-xs text-ink placeholder:text-ink/45 placeholder:italic focus:outline-none font-medium"
+              className="w-full bg-transparent text-xs text-white placeholder:text-white/40 placeholder:italic focus:outline-none font-medium"
             />
           </form>
 
@@ -180,16 +180,16 @@ export default function Navbar() {
             {loggedIn ? (
               <>
                 {role === 'artist' && (
-                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
+                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
                     <UserIcon />
                     <span className="hidden sm:inline">Studio</span>
                   </Link>
                 )}
-                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
+                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
                   <SpacesIcon />
                   <span className="hidden sm:inline">My Spaces</span>
                 </Link>
-                <Link href="/orders" className="flex items-center gap-1.5 art-tag text-[11px] text-ink/80 hover:text-brand transition">
+                <Link href="/orders" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
                   <BagIcon />
                   <span className="hidden sm:inline">Orders</span>
                 </Link>
@@ -201,7 +201,7 @@ export default function Navbar() {
                     + Upload Piece
                   </Link>
                 )}
-                <button onClick={handleLogout} className="art-tag text-[11px] text-ink/60 hover:text-clay transition ml-1">
+                <button onClick={handleLogout} className="art-tag text-[11px] text-white/60 hover:text-clay transition ml-1">
                   Log out
                 </button>
               </>
@@ -209,7 +209,7 @@ export default function Navbar() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="rounded-full px-4 py-1.5 art-tag text-[11px] text-ink hover:text-brand transition"
+                  className="rounded-full px-4 py-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition"
                 >
                   Log in
                 </Link>
@@ -226,7 +226,7 @@ export default function Navbar() {
       </header>
 
       {/* Category pills */}
-      <nav aria-label="Categories" className="border-b border-black/[0.06] bg-white/70 backdrop-blur-sm">
+      <nav aria-label="Categories" className="border-b border-white/[0.08] bg-[#0B0F19]/80 backdrop-blur-md">
         <div className="no-scrollbar mx-auto flex max-w-[1240px] items-center gap-2.5 overflow-x-auto px-5 py-2.5">
           <Link
             href="/browse"
@@ -244,7 +244,7 @@ export default function Navbar() {
             <Link
               key={c.slug}
               href={`/browse?category=${c.slug}`}
-              className="shrink-0 rounded-full border border-ink/10 bg-white/80 hover:bg-white px-3.5 py-1.5 art-tag text-[10.5px] text-ink/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
+              className="shrink-0 rounded-full border border-white/10 bg-[#131B2A] hover:bg-[#1A253A] px-3.5 py-1.5 art-tag text-[10.5px] text-white/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
             >
               {c.label}
             </Link>

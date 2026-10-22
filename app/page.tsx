@@ -107,25 +107,25 @@ export default function Home() {
         {TRUST_ITEMS.map((item, i) => (
           <div
             key={i}
-            className={`flex items-center gap-2.5 rounded-2xl border px-3.5 py-3 shadow-sm transition-all hover:scale-[1.02] ${item.color} bg-white`}
+            className={`flex items-center gap-2.5 rounded-2xl border border-white/10 px-3.5 py-3 shadow-md transition-all hover:scale-[1.02] bg-[#121826]`}
           >
             <span className="text-base" aria-hidden="true">{item.icon}</span>
-            <span className="text-[11px] font-bold text-ink/85 tracking-normal leading-tight">{item.label}</span>
+            <span className="text-[11px] font-bold text-white/90 tracking-normal leading-tight">{item.label}</span>
           </div>
         ))}
       </div>
 
       {loading ? (
-        <p className="mt-20 text-center text-ink/40 text-sm">Loading artworks…</p>
+        <p className="mt-20 text-center text-white/40 text-sm">Loading artworks…</p>
       ) : artworks.length === 0 ? (
-        <section className="mt-20 rounded-3xl bg-white border border-ink/[0.07] px-8 py-16 text-center shadow-sm">
-          <h2 className="font-serif text-3xl font-bold text-ink">Nothing is listed yet</h2>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink/60">
+        <section className="mt-20 rounded-3xl bg-[#121826] border border-white/10 px-8 py-16 text-center shadow-lg">
+          <h2 className="font-serif text-3xl font-bold text-white">Nothing is listed yet</h2>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-white/70">
             Be the first artist to list a piece. It is free to join, and we only take a commission when your work sells.
           </p>
           <Link
             href="/artist-signup"
-            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-sm font-semibold text-white hover:bg-ink/85 transition-colors"
+            className="mt-8 inline-block rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-8 py-3.5 art-tag text-xs text-white shadow-md hover:scale-105 transition-all"
           >
             Create an artist profile
           </Link>
@@ -150,14 +150,14 @@ export default function Home() {
                 <Link
                   key={c.slug}
                   href={`/browse?category=${c.slug}`}
-                  className="group shrink-0 flex flex-col items-center gap-2.5 p-2 rounded-2xl hover:bg-white/60 transition-all"
+                  className="group shrink-0 flex flex-col items-center gap-2.5 p-2 rounded-2xl hover:bg-white/5 transition-all"
                 >
-                  <span className="relative block h-24 w-24 overflow-hidden rounded-2xl bg-white p-1 ring-2 ring-black/[0.08] shadow-sm transition-all duration-300 group-hover:ring-4 group-hover:ring-brand/40 group-hover:shadow-art-card group-hover:-translate-y-1">
+                  <span className="relative block h-24 w-24 overflow-hidden rounded-2xl bg-[#161F30] p-1 ring-1 ring-white/15 shadow-sm transition-all duration-300 group-hover:ring-2 group-hover:ring-brand/40 group-hover:shadow-art-card group-hover:-translate-y-1">
                     <div className="h-full w-full overflow-hidden rounded-xl">
                       <GenerativeArt seed={`category-${c.slug}`} className="block h-full w-full transition-transform duration-500 group-hover:scale-110" />
                     </div>
                   </span>
-                  <span className="max-w-[100px] text-center art-tag text-[10.5px] text-ink/80 group-hover:text-brand transition-colors">
+                  <span className="max-w-[100px] text-center art-tag text-[10.5px] text-white/80 group-hover:text-brand transition-colors">
                     {c.label}
                   </span>
                 </Link>

@@ -131,9 +131,9 @@ export default function ArtistPage() {
         </div>
 
         {artworks.length === 0 ? (
-          <div className="rounded-2xl border border-ink/[0.07] bg-white p-12 text-center">
-            <p className="text-sm font-semibold text-ink">No works available currently.</p>
-            <p className="mt-1 text-xs text-ink/50">Follow this artist or check back soon for their upcoming releases.</p>
+          <div className="rounded-2xl border border-white/10 bg-[#121826] p-12 text-center">
+            <p className="text-sm font-semibold text-white">No works available currently.</p>
+            <p className="mt-1 text-xs text-white/50">Follow this artist or check back soon for their upcoming releases.</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
@@ -154,18 +154,18 @@ export default function ArtistPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             {reviews.map((r) => (
-              <div key={r.id} className="rounded-2xl border border-ink/[0.07] bg-white p-6 shadow-xs">
+              <div key={r.id} className="rounded-2xl border border-white/10 bg-[#121826] p-6 shadow-xs">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-sm text-ink">{r.reviewer}</span>
-                    <span className="block text-[11px] text-ink/40">{new Date(r.created_at).toLocaleDateString('en-IN')}</span>
+                    <span className="font-bold text-sm text-white">{r.reviewer}</span>
+                    <span className="block text-[11px] text-white/40">{new Date(r.created_at).toLocaleDateString('en-IN')}</span>
                   </div>
                   <div className="flex items-center text-xs">
                     <span className="text-marigold">{'★'.repeat(r.rating)}</span>
-                    <span className="text-ink/15">{'★'.repeat(5 - r.rating)}</span>
+                    <span className="text-white/15">{'★'.repeat(5 - r.rating)}</span>
                   </div>
                 </div>
-                {r.comment && <p className="mt-3 text-xs leading-relaxed text-ink/70">{r.comment}</p>}
+                {r.comment && <p className="mt-3 text-xs leading-relaxed text-white/70">{r.comment}</p>}
               </div>
             ))}
           </div>

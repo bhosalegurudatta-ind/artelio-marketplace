@@ -82,10 +82,10 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
             <span className={`inline-flex items-center gap-1.5 self-start rounded-full border px-3.5 py-1 text-xs font-bold tracking-wider backdrop-blur-md shadow-sm ${slide.tagBg}`}>
               ✦ {slide.kicker}
             </span>
-            <h2 className="mt-4 font-serif text-3xl font-extrabold leading-[1.15] tracking-tight md:text-5xl lg:text-6xl text-white drop-shadow-md">
+            <h2 className="mt-4 font-serif text-4xl font-bold leading-[1.12] tracking-normal md:text-6xl lg:text-7xl text-white drop-shadow-md">
               {slide.title}
             </h2>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/85 md:text-base font-light drop-shadow-sm">
+            <p className="mt-4 max-w-lg text-sm leading-relaxed text-white/90 md:text-base font-normal drop-shadow-sm">
               {slide.sub}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">

@@ -24,7 +24,7 @@ export default function PlansPage() {
           <span className="rounded-full bg-amber-500/15 border border-amber-400/30 px-3.5 py-1 text-xs font-bold text-amber-600 uppercase tracking-wider">
             ✦ Artelio Atelier Memberships
           </span>
-          <h1 className="mt-3 font-serif text-3xl font-black text-ink sm:text-4xl md:text-5xl">
+          <h1 className="mt-3 font-serif text-3xl font-bold text-ink sm:text-5xl md:text-6xl">
             Empowering Independent Creators &amp; Collectors
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-xs sm:text-sm text-ink/70 leading-relaxed">

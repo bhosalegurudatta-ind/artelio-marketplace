@@ -183,7 +183,7 @@ export default function Home() {
                         <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border mb-3 ${palette.tag}`}>
                           {palette.badge}
                         </span>
-                        <p className={`font-serif truncate text-2xl font-black leading-tight ${palette.text}`}>
+                        <p className={`font-serif truncate text-3xl font-bold leading-tight ${palette.text}`}>
                           {artist.name}
                         </p>
                         <p className={`mt-1.5 text-xs tracking-wide font-medium ${palette.sub}`}>
@@ -230,7 +230,7 @@ export default function Home() {
                   <span className="inline-block rounded-full bg-amber-400/20 border border-amber-300/30 px-3 py-1 text-[11px] font-bold tracking-widest text-amber-300 uppercase mb-3">
                     🎨 Calling All Creators
                   </span>
-                  <h2 className="font-serif text-3xl font-black leading-tight md:text-4xl">
+                  <h2 className="font-serif text-3xl font-bold leading-tight md:text-5xl">
                     Exhibit your artwork to<br />discerning collectors across India.
                   </h2>
                   <p className="mt-3.5 max-w-lg text-sm leading-relaxed text-white/80 font-light">

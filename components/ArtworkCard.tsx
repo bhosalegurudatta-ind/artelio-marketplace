@@ -82,16 +82,16 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
       {/* Card body with gallery aesthetics */}
       <div className="p-3.5 bg-white">
-        <h3 className="truncate font-serif text-sm font-bold text-ink leading-tight group-hover:text-brand transition-colors">
+        <h3 className="truncate font-serif text-base font-semibold text-ink leading-snug group-hover:text-brand transition-colors">
           {artwork.title}
         </h3>
-        <p className="mt-1 truncate text-xs text-ink/60 flex items-center gap-1">
+        <p className="mt-1 truncate text-xs text-ink/65 flex items-center gap-1 font-medium">
           <span className="text-[10px] text-amber-500">🖌️</span>
           <span>{artwork.artist}</span>
         </p>
 
         <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-black/[0.04]">
-          <span className="text-base font-extrabold text-ink tracking-tight">
+          <span className="font-serif text-lg font-bold text-ink tracking-tight">
             ₹{artwork.price.toLocaleString('en-IN')}
           </span>
           {artwork.medium && (

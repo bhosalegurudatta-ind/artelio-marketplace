@@ -96,7 +96,7 @@ export default function ArtistPage() {
             <span>🎨</span> Resident Artist Atelier
           </div>
 
-          <h1 className="mt-4 font-serif text-3xl font-black md:text-5xl drop-shadow-sm">{artist.name}</h1>
+          <h1 className="mt-4 font-serif text-4xl font-bold md:text-6xl drop-shadow-sm">{artist.name}</h1>
 
           {avg !== null && (
             <div className="mt-3 flex items-center gap-2 text-xs text-white/80">

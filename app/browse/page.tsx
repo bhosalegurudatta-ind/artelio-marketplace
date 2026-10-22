@@ -88,7 +88,7 @@ function BrowseInner() {
     <main className="mx-auto max-w-[1240px] px-5 py-8">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-black/[0.08] pb-5">
         <div>
-          <h1 className="font-serif text-2xl font-black text-ink md:text-3xl tracking-tight flex items-center gap-2">
+          <h1 className="font-serif text-3xl font-bold text-ink md:text-4xl tracking-normal flex items-center gap-2">
             <span>{heading}</span>
           </h1>
           {!loading && (

@@ -14,7 +14,7 @@ export default function SectionHeader({
   return (
     <div className="mb-7 flex items-end justify-between border-b border-black/[0.08] pb-4 relative">
       <div>
-        <h2 className="relative font-serif text-2xl font-black tracking-tight text-ink md:text-3xl flex items-baseline gap-2 flex-wrap">
+        <h2 className="relative font-serif text-3xl font-bold tracking-normal text-ink md:text-4xl flex items-baseline gap-2 flex-wrap">
           <span>{before}</span>
           <span className="art-gradient-text italic font-bold">
             {highlight}

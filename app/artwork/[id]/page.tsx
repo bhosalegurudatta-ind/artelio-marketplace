@@ -160,7 +160,7 @@ export default function ArtworkDetail() {
               )}
             </div>
 
-            <h1 className="mt-4 font-serif text-3xl font-bold leading-tight text-ink md:text-4xl">
+            <h1 className="mt-4 font-serif text-3xl font-bold leading-tight text-ink md:text-5xl">
               {art.title}
             </h1>
 
@@ -178,7 +178,7 @@ export default function ArtworkDetail() {
 
           <div className="py-6 border-b border-ink/[0.08]">
             <div className="flex items-baseline gap-3">
-              <span className="font-serif text-4xl font-extrabold text-ink tracking-tight">
+              <span className="font-serif text-4xl md:text-5xl font-bold text-ink tracking-tight">
                 ₹{art.price.toLocaleString('en-IN')}
               </span>
               <span className="text-xs text-ink/50">Taxes included</span>

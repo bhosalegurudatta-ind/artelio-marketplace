@@ -153,9 +153,9 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <Mark />
             <div className="flex flex-col">
-              <span className="font-serif text-2xl font-black tracking-tight text-ink transition group-hover:text-brand flex items-center gap-1">
+              <span className="font-serif text-3xl font-bold tracking-tight text-ink transition group-hover:text-brand flex items-center gap-1.5">
                 Artelio
-                <span className="text-xs font-sans font-bold uppercase tracking-widest text-vermilion bg-vermilion/10 px-1.5 py-0.5 rounded-full">Art</span>
+                <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-vermilion bg-vermilion/10 px-2 py-0.5 rounded-full border border-vermilion/20">Atelier</span>
               </span>
             </div>
           </Link>

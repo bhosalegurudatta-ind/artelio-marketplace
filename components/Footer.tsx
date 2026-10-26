@@ -13,7 +13,7 @@ export default function Footer() {
       {/* Top section */}
       <div className="mx-auto grid max-w-[1240px] gap-12 px-6 pt-16 pb-12 md:grid-cols-12">
         {/* Brand column */}
-        <div className="md:col-span-4">
+        <div className="md:col-span-3">
           <div className="flex items-center gap-2">
             <p className="font-serif text-3xl font-bold tracking-tight text-white">Artelio</p>
             <span className="art-tag text-[9px] text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
@@ -31,19 +31,19 @@ export default function Footer() {
             <span className="inline-flex h-7 items-center rounded-full border border-amber-400/30 bg-amber-500/10 px-3 art-tag text-[10px] text-amber-300">
               ✦ Direct from Artists
             </span>
-            <span className="inline-flex h-7 items-center rounded-full border border-purple-400/30 bg-purple-500/10 px-3 art-tag text-[10px] text-purple-300">
-              🔮 Spatial AI 4K
+            <span className="inline-flex h-7 items-center rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 art-tag text-[10px] text-emerald-300">
+              🛡️ Escrow Protected
             </span>
           </div>
         </div>
 
         {/* Categories */}
-        <div className="md:col-span-4">
+        <div className="md:col-span-3">
           <h3 className="art-kicker text-amber-300/80 mb-4 flex items-center gap-2">
             <span>🖌️</span> Mediums &amp; Categories
           </h3>
-          <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
-            {CATEGORIES.map((c) => (
+          <ul className="grid grid-cols-1 gap-y-2.5">
+            {CATEGORIES.slice(0, 5).map((c) => (
               <li key={c.slug}>
                 <Link href={`/browse?category=${c.slug}`} className={linkClass}>
                   <span className="text-white/30 text-xs">→</span>
@@ -79,6 +79,20 @@ export default function Footer() {
             <li><Link href="/plans" className={linkClass}><span className="text-white/30 text-xs">→</span>Creator Pro</Link></li>
           </ul>
         </div>
+
+        {/* Legal & Trust Policies (Mandatory for Razorpay & E-Commerce) */}
+        <div className="md:col-span-2">
+          <h3 className="art-kicker text-emerald-300/80 mb-4 flex items-center gap-2">
+            <span>🛡️</span> Trust &amp; Legal
+          </h3>
+          <ul className="space-y-2.5">
+            <li><Link href="/terms" className={linkClass}><span className="text-white/30 text-xs">→</span>Terms of Service</Link></li>
+            <li><Link href="/refund-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Refund &amp; Returns</Link></li>
+            <li><Link href="/shipping-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Shipping Policy</Link></li>
+            <li><Link href="/privacy-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Privacy Policy</Link></li>
+            <li><Link href="/contact" className={linkClass}><span className="text-white/30 text-xs">→</span>Contact &amp; Grievance</Link></li>
+          </ul>
+        </div>
       </div>
 
       {/* Bottom bar */}
@@ -87,12 +101,16 @@ export default function Footer() {
           <p className="text-xs text-white/45">
             © 2026 Artelio Marketplace. Hand-crafted original art directly from independent masters.
           </p>
-          <div className="flex items-center gap-5 text-xs text-white/50">
-            <Link href="/login" className="hover:text-amber-300 transition-colors">Log in</Link>
+          <div className="flex flex-wrap items-center gap-4 text-xs text-white/50">
+            <Link href="/terms" className="hover:text-amber-300 transition-colors">Terms</Link>
             <span className="text-white/20">·</span>
-            <Link href="/artist-signup" className="hover:text-amber-300 transition-colors">Become an artist</Link>
+            <Link href="/refund-policy" className="hover:text-amber-300 transition-colors">Refunds</Link>
             <span className="text-white/20">·</span>
-            <span className="text-rose-400 font-medium">Made with ♥ for Art in India</span>
+            <Link href="/shipping-policy" className="hover:text-amber-300 transition-colors">Shipping</Link>
+            <span className="text-white/20">·</span>
+            <Link href="/privacy-policy" className="hover:text-amber-300 transition-colors">Privacy</Link>
+            <span className="text-white/20">·</span>
+            <Link href="/contact" className="hover:text-amber-300 transition-colors">Contact</Link>
           </div>
         </div>
       </div>

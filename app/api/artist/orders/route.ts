@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await supabaseAdmin
     .from('orders')
-    .select('id, status, created_at, shipped_at, release_at, tracking_note, dispute_reason, artworks(title, price, is_digital), payouts(payout_amount, status)')
+    .select('id, status, created_at, shipped_at, release_at, tracking_note, courier_name, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, artworks(title, price, is_digital, medium), payouts(payout_amount, status)')
     .in('artwork_id', ids)
     .order('created_at', { ascending: false });
   if (error) return NextResponse.json({ error: 'Could not load orders.' }, { status: 500 });

@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 import ArtworkCard, { Artwork } from '@/components/ArtworkCard';
 import GenerativeArt from '@/components/GenerativeArt';
 import RoomVisualizerModal from '@/components/RoomVisualizerModal';
+import InquiryModal from '@/components/InquiryModal';
 import { CATEGORIES } from '@/lib/categories';
 
 type Detail = {
@@ -32,6 +33,7 @@ export default function ArtworkDetail() {
   const [similar, setSimilar] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [showVisualizer, setShowVisualizer] = useState(false);
+  const [showInquiry, setShowInquiry] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -201,8 +203,33 @@ export default function ArtworkDetail() {
             </div>
           )}
 
+          {/* Trust and Buyer Assurance Box */}
+          <div className="my-6 rounded-2xl border border-white/10 bg-[#121826]/70 p-4 text-xs space-y-2.5 backdrop-blur-sm">
+            <div className="flex items-center gap-2.5 text-white/80">
+              <span className="text-base text-malachite">🛡️</span>
+              <div>
+                <p className="font-semibold text-white">Escrow-Protected Acquisition</p>
+                <p className="text-[11px] text-white/60">Funds held safely in escrow until you receive and inspect the physical piece.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 text-white/80 border-t border-white/5 pt-2.5">
+              <span className="text-base text-cerulean">📦</span>
+              <div>
+                <p className="font-semibold text-white">Complimentary Insured Courier</p>
+                <p className="text-[11px] text-white/60">Shipped via Blue Dart / Delhivery in rigid moisture-barrier packaging with live tracking.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 text-white/80 border-t border-white/5 pt-2.5">
+              <span className="text-base text-marigold">📜</span>
+              <div>
+                <p className="font-semibold text-white">Certificate of Authenticity Included</p>
+                <p className="text-[11px] text-white/60">Verified 1-of-1 original provenance directly signed by {art.artist_name}.</p>
+              </div>
+            </div>
+          </div>
+
           {/* Acquisition & Action Bar */}
-          <div className="pt-6 flex flex-col gap-3">
+          <div className="pt-2 flex flex-col gap-3">
             {unavailable ? (
               <button disabled className="w-full rounded-full bg-ink/10 py-4 text-sm font-semibold text-ink/40 cursor-not-allowed">
                 Piece Acquired / Sold
@@ -215,6 +242,13 @@ export default function ArtworkDetail() {
                 Acquire Original Artwork • ₹{art.price.toLocaleString('en-IN')}
               </Link>
             )}
+
+            <button
+              onClick={() => setShowInquiry(true)}
+              className="flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/5 py-3 text-xs font-semibold text-white hover:bg-white/10 transition"
+            >
+              <span>💬</span> Ask Artist {art.artist_name} a Question
+            </button>
 
             <button
               onClick={() => setShowVisualizer(true)}
@@ -260,6 +294,12 @@ export default function ArtworkDetail() {
         artworkTitle={art.title}
         artworkImageUrl={art.image_url}
         artworkPrice={art.price}
+      />
+
+      <InquiryModal
+        isOpen={showInquiry}
+        onClose={() => setShowInquiry(false)}
+        artwork={art}
       />
     </main>
   );

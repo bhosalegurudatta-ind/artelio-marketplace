@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const user = await getUserFromRequest(req);
     if (!user) return fail('Please log in.', 401);
 
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = await req.json();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, shipping } = await req.json();
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) return fail('Missing payment details.', 400);
 
     // 1. The signature proves this payment really came from Razorpay.
@@ -70,6 +70,12 @@ export async function POST(req: NextRequest) {
         razorpay_payment_id,
         delivered_at: artwork.is_digital ? new Date(now).toISOString() : null,
         release_at: artwork.is_digital ? new Date(now + DIGITAL_RELEASE_DAYS * DAY).toISOString() : null,
+        shipping_name: shipping?.name ? String(shipping.name).trim() : null,
+        shipping_phone: shipping?.phone ? String(shipping.phone).trim() : null,
+        shipping_address: shipping?.address ? String(shipping.address).trim() : null,
+        shipping_city: shipping?.city ? String(shipping.city).trim() : null,
+        shipping_state: shipping?.state ? String(shipping.state).trim() : null,
+        shipping_postal_code: shipping?.postalCode ? String(shipping.postalCode).trim() : null,
       })
       .select()
       .single();

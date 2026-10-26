@@ -41,9 +41,9 @@ type ArtistCard = { id: string; name: string; count: number; cover: Artwork };
 const TRUST_ITEMS = [
   { icon: '🎨', color: 'bg-rose-50 text-vermilion border-rose-200/60', label: '2,000+ Original Artworks' },
   { icon: '✨', color: 'bg-amber-50 text-amber border-amber-200/60', label: 'Direct from Artist Ateliers' },
-  { icon: '🔮', color: 'bg-purple-50 text-amethyst border-purple-200/60', label: 'AI Spatial Room Visualization' },
-  { icon: '🛡️', color: 'bg-emerald-50 text-malachite border-emerald-200/60', label: 'Protected Razorpay Payments' },
-  { icon: '✦', color: 'bg-sky-50 text-cerulean border-sky-200/60', label: 'Zero Upfront Artist Fees' },
+  { icon: '🛡️', color: 'bg-emerald-50 text-malachite border-emerald-200/60', label: 'Escrow-Protected Razorpay Payments' },
+  { icon: '📦', color: 'bg-sky-50 text-cerulean border-sky-200/60', label: 'Insured Art Courier & Live Tracking' },
+  { icon: '💳', color: 'bg-purple-50 text-amethyst border-purple-200/60', label: 'Direct 90% UPI / Bank Payouts' },
 ];
 
 export default function Home() {
@@ -216,6 +216,58 @@ export default function Home() {
               </div>
             </section>
           )}
+
+          {/* New Live Feature Spotlight: Order Tracking & Artist Payouts */}
+          <section className="mt-20">
+            <div className="rounded-3xl border border-white/10 bg-[#121826]/70 p-8 md:p-10 backdrop-blur-md">
+              <div className="text-center max-w-2xl mx-auto mb-10">
+                <span className="inline-block rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-400 mb-2">
+                  🛡️ Artelio Trust & Logistics Standard
+                </span>
+                <h2 className="font-serif text-2xl font-bold text-white md:text-3xl">
+                  Built for Authentic Fine Art Commerce
+                </h2>
+                <p className="mt-2 text-xs text-white/60">
+                  Every order on Artelio includes escrow protection, insured packaging, and transparent direct artist settlements.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="rounded-2xl border border-white/5 bg-white/5 p-6 hover:bg-white/[0.08] transition">
+                  <div className="text-3xl mb-3">🛡️</div>
+                  <h3 className="text-base font-bold text-white">Escrow Buyer Protection</h3>
+                  <p className="mt-2 text-xs text-white/70 leading-relaxed">
+                    When you purchase a painting, your payment is held safely in escrow. Funds are only transferred to the artist after you safely receive and inspect the physical piece.
+                  </p>
+                  <Link href="/orders" className="mt-4 inline-block text-xs font-semibold text-brand hover:underline">
+                    Track Your Orders →
+                  </Link>
+                </div>
+
+                <div className="rounded-2xl border border-white/5 bg-white/5 p-6 hover:bg-white/[0.08] transition">
+                  <div className="text-3xl mb-3">📦</div>
+                  <h3 className="text-base font-bold text-white">Insured Art Transit</h3>
+                  <p className="mt-2 text-xs text-white/70 leading-relaxed">
+                    Dispatched through vetted couriers (Delhivery, Blue Dart, DTDC) in custom rigid packaging with moisture barrier and corner armor, plus real-time AWB tracking.
+                  </p>
+                  <span className="mt-4 inline-block text-xs font-semibold text-malachite">
+                    ✓ Verified Courier Network
+                  </span>
+                </div>
+
+                <div className="rounded-2xl border border-white/5 bg-white/5 p-6 hover:bg-white/[0.08] transition">
+                  <div className="text-3xl mb-3">💳</div>
+                  <h3 className="text-base font-bold text-white">90% Direct Artist Payouts</h3>
+                  <p className="mt-2 text-xs text-white/70 leading-relaxed">
+                    Creators retain 90% of every sale price. Earnings are deposited directly into the artist&apos;s registered UPI ID (GPay/PhonePe/Paytm) or Bank Account.
+                  </p>
+                  <Link href="/dashboard" className="mt-4 inline-block text-xs font-semibold text-marigold hover:underline">
+                    Open Artist Studio & Payouts →
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
 
           {/* CTA banner with vivid artistic background */}
           <section className="mt-24">

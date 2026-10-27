@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { COMMISSION_RATE, DIGITAL_RELEASE_DAYS, DAY } from '@/lib/mvp';
+import { sendOrderEmails } from '@/lib/mailer';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -40,7 +41,10 @@ export async function POST(req: NextRequest) {
     if (!artworkId || rzpOrder?.notes?.customer_id !== user.id) return fail('This payment does not belong to you.', 403);
 
     const { data: artwork } = await supabaseAdmin
-      .from('artworks').select('id, price, sold, is_digital, artist_id').eq('id', artworkId).single();
+      .from('artworks')
+      .select('id, title, price, sold, is_digital, artist_id')
+      .eq('id', artworkId)
+      .single();
     if (!artwork) return fail('Artwork not found.', 404);
 
     // 4. The amount paid must match the price in our database.
@@ -97,6 +101,33 @@ export async function POST(req: NextRequest) {
     if (payoutError) console.error('Payout insert failed (order was saved):', payoutError);
 
     if (!artwork.is_digital) await supabaseAdmin.from('artworks').update({ sold: true }).eq('id', artwork.id);
+
+    // 8. Fire transactional notifications asynchronously (Collector Receipt & Artist Dispatch Order)
+    try {
+      const { data: artistProfile } = await supabaseAdmin
+        .from('users')
+        .select('name, email')
+        .eq('id', artwork.artist_id)
+        .maybeSingle();
+
+      sendOrderEmails({
+        orderId: order.id,
+        artworkTitle: artwork.title,
+        artworkPrice: price,
+        isDigital: artwork.is_digital,
+        buyerName: shipping?.name || 'Art Collector',
+        buyerEmail: user.email,
+        artistName: artistProfile?.name || 'Artelio Studio Creator',
+        artistEmail: artistProfile?.email,
+        shippingAddress: shipping?.address,
+        shippingCity: shipping?.city,
+        shippingState: shipping?.state,
+        shippingPostalCode: shipping?.postalCode,
+        shippingPhone: shipping?.phone,
+      }).catch((emailErr) => console.error('[Mailer] Background order email dispatch error:', emailErr));
+    } catch (e) {
+      console.error('[Mailer] Could not prepare order notification data:', e);
+    }
 
     return NextResponse.json({ success: true, orderId: order.id });
   } catch (err) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { PHYSICAL_RELEASE_DAYS, DAY } from '@/lib/mvp';
+import { sendDispatchEmail } from '@/lib/mailer';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     // Verify order exists and belongs to artwork created by this artist
     const { data: order, error: orderErr } = await supabaseAdmin
       .from('orders')
-      .select('id, status, artwork_id, artworks(artist_id, is_digital)')
+      .select('id, status, artwork_id, customer_id, shipping_name, artworks(title, artist_id, is_digital)')
       .eq('id', orderId)
       .single();
 
@@ -55,6 +56,27 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (updateErr) {
       console.error('Ship order error:', updateErr);
       return fail('Could not update order status.', 500);
+    }
+
+    // Trigger customer dispatch notification with live tracking info asynchronously
+    try {
+      const { data: customerUser } = await supabaseAdmin
+        .from('users')
+        .select('email')
+        .eq('id', order.customer_id)
+        .maybeSingle();
+
+      sendDispatchEmail({
+        orderId,
+        artworkTitle: artwork.title || 'Original Artwork',
+        buyerName: order.shipping_name || 'Art Collector',
+        buyerEmail: customerUser?.email,
+        courierName: courierName?.trim(),
+        trackingNumber: trackingNote?.trim(),
+        trackingUrl: trackingUrl?.trim(),
+      }).catch((emailErr) => console.error('[Ship] Dispatch email error:', emailErr));
+    } catch (e) {
+      console.error('[Ship] Could not prepare dispatch email data:', e);
     }
 
     return NextResponse.json({ success: true, releaseAt });

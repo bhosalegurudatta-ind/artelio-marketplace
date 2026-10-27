@@ -8,6 +8,10 @@ import { inputClass, labelClass, primaryButton } from '@/lib/ui';
 export default function UploadArtwork() {
   const router = useRouter();
   const [form, setForm] = useState({ title: '', description: '', medium: '', price: '' });
+  const [dimensions, setDimensions] = useState('');
+  const [framing, setFraming] = useState('Stretched Canvas (Ready to Hang)');
+  const [editionType, setEditionType] = useState('1 of 1 Unique Original');
+  const [editionRun, setEditionRun] = useState('25');
   const [isDigital, setIsDigital] = useState(false);
   const [isAi, setIsAi] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -91,11 +95,32 @@ export default function UploadArtwork() {
       return;
     }
 
+    let fullDescription = form.description;
+    const specs: string[] = [];
+    if (dimensions.trim()) specs.push(`Dimensions: ${dimensions.trim()}`);
+    if (!isDigital && framing) specs.push(`Presentation: ${framing}`);
+    if (editionType === 'Limited Edition' && editionRun.trim()) {
+      specs.push(`Edition: Limited Edition of ${editionRun.trim()} prints`);
+    } else if (editionType) {
+      specs.push(`Edition: ${editionType}`);
+    }
+
+    if (specs.length > 0) {
+      fullDescription = fullDescription
+        ? `${fullDescription}\n\n✦ Curatorial Specifications:\n• ${specs.join('\n• ')}`
+        : `✦ Curatorial Specifications:\n• ${specs.join('\n• ')}`;
+    }
+
+    let fullMedium = form.medium;
+    if (dimensions.trim()) {
+      fullMedium = fullMedium ? `${fullMedium} (${dimensions.trim()})` : dimensions.trim();
+    }
+
     const body = new FormData();
     body.append('image', file);
     body.append('title', form.title);
-    body.append('description', form.description);
-    body.append('medium', form.medium);
+    body.append('description', fullDescription);
+    body.append('medium', fullMedium);
     body.append('price', form.price);
     body.append('isDigital', String(isDigital));
     body.append('isAiAssisted', String(isAi));
@@ -162,10 +187,62 @@ export default function UploadArtwork() {
           <textarea rows={4} className={`${inputClass} resize-none`} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </label>
 
-        <label className="block">
-          <span className={labelClass}>Medium</span>
-          <input type="text" placeholder="e.g. Oil on canvas, Digital print" className={inputClass} value={form.medium} onChange={(e) => setForm({ ...form, medium: e.target.value })} />
-        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label className="block">
+            <span className={labelClass}>Medium</span>
+            <input type="text" placeholder="e.g. Oil on Belgian Linen" className={inputClass} value={form.medium} onChange={(e) => setForm({ ...form, medium: e.target.value })} />
+          </label>
+
+          <label className="block">
+            <span className={labelClass}>Physical Dimensions</span>
+            <input type="text" placeholder="e.g. 24 × 36 in (60 × 90 cm)" className={inputClass} value={dimensions} onChange={(e) => setDimensions(e.target.value)} />
+          </label>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label className="block">
+            <span className={labelClass}>Edition Classification</span>
+            <select
+              className={inputClass}
+              value={editionType}
+              onChange={(e) => setEditionType(e.target.value)}
+            >
+              <option value="1 of 1 Unique Original">1 of 1 Unique Original</option>
+              <option value="Limited Edition">Limited Edition Print Run</option>
+              <option value="Open Edition">Open Edition</option>
+            </select>
+          </label>
+
+          {editionType === 'Limited Edition' ? (
+            <label className="block">
+              <span className={labelClass}>Total Edition Size</span>
+              <input
+                type="number"
+                min={2}
+                max={500}
+                placeholder="e.g. 50"
+                className={inputClass}
+                value={editionRun}
+                onChange={(e) => setEditionRun(e.target.value)}
+              />
+            </label>
+          ) : (
+            <label className="block">
+              <span className={labelClass}>Presentation / Mounting</span>
+              <select
+                className={inputClass}
+                value={framing}
+                onChange={(e) => setFraming(e.target.value)}
+                disabled={isDigital}
+              >
+                <option value="Stretched Canvas (Ready to Hang)">Stretched Canvas (Ready to Hang)</option>
+                <option value="Custom Gallery Framed">Custom Gallery Framed</option>
+                <option value="Rolled in Heavy PVC Tube">Rolled in Heavy PVC Tube</option>
+                <option value="Unframed Archival Board">Unframed Archival Board</option>
+              </select>
+            </label>
+          )}
+        </div>
 
         <label className="block">
           <span className={labelClass}>Price (₹) <span className="text-clay">*</span></span>

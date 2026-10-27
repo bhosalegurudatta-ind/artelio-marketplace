@@ -10,6 +10,8 @@ import UpgradeModal from '@/components/UpgradeModal';
 import PackingSlipModal from '@/components/PackingSlipModal';
 import ShipOrderModal from '@/components/ShipOrderModal';
 import PayoutSettingsModal from '@/components/PayoutSettingsModal';
+import CertificateModal from '@/components/CertificateModal';
+import PackagingGuideModal from '@/components/PackagingGuideModal';
 
 type Artwork = { id: string; title: string; price: number; image_url: string | null; sold: boolean; is_digital: boolean; is_ai_assisted: boolean };
 type Order = {
@@ -56,6 +58,8 @@ export default function Dashboard() {
     title: string | null;
     imageUrl: string | null;
   }>({ open: false, artworkId: null, title: null, imageUrl: null });
+  const [coaData, setCoaData] = useState<any | null>(null);
+  const [packagingGuideOpen, setPackagingGuideOpen] = useState(false);
 
   const load = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -295,10 +299,32 @@ export default function Dashboard() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <button
+                    onClick={() => setPackagingGuideOpen(true)}
+                    className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10"
+                  >
+                    <span>📦</span> Packaging Guide
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCoaData({
+                        orderId: o.id,
+                        orderDate: o.created_at,
+                        artworkTitle: o.artworks?.title || 'Fine Art',
+                        artistName: artistName || 'Artelio Studio Creator',
+                        medium: o.artworks?.medium,
+                        isDigital: o.artworks?.is_digital,
+                        collectorName: o.shipping_name,
+                      })
+                    }
+                    className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10"
+                  >
+                    <span>📜</span> Print COA
+                  </button>
+                  <button
                     onClick={() => setSlipOrder(o)}
                     className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10"
                   >
-                    <span>🖨️</span> Print Label & Packing Slip
+                    <span>🖨️</span> Print Label
                   </button>
                   <button
                     onClick={() => setShippingOrder(o)}
@@ -361,6 +387,30 @@ export default function Dashboard() {
                   Auto-release date: {new Date(o.release_at).toLocaleDateString('en-IN')} (or upon collector confirmation).
                 </p>
               )}
+              <div className="mt-3 flex items-center gap-2 border-t border-white/5 pt-2">
+                <button
+                  onClick={() =>
+                    setCoaData({
+                      orderId: o.id,
+                      orderDate: o.created_at,
+                      artworkTitle: o.artworks?.title || 'Fine Art',
+                      artistName: artistName || 'Artelio Studio Creator',
+                      medium: o.artworks?.medium,
+                      isDigital: o.artworks?.is_digital,
+                      collectorName: o.shipping_name,
+                    })
+                  }
+                  className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 hover:bg-white/10 transition"
+                >
+                  <span>📜</span> Certificate of Authenticity (COA)
+                </button>
+                <button
+                  onClick={() => setSlipOrder(o)}
+                  className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 hover:bg-white/10 transition"
+                >
+                  <span>🖨️</span> Packing Slip
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -508,6 +558,9 @@ export default function Dashboard() {
           load();
         }}
       />
+
+      <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
+      {packagingGuideOpen && <PackagingGuideModal onClose={() => setPackagingGuideOpen(false)} />}
     </main>
   );
 }

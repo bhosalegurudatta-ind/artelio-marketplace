@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { inputClass } from '@/lib/ui';
+import CertificateModal from '@/components/CertificateModal';
 
 type OrderRow = {
   id: string;
@@ -48,6 +49,7 @@ function OrdersContent() {
   const [comment, setComment] = useState('');
   const [reason, setReason] = useState('');
   const [disputeCategory, setDisputeCategory] = useState('Artwork arrived damaged');
+  const [coaData, setCoaData] = useState<any | null>(null);
 
   async function loadOrders(uid: string) {
     const { data } = await supabase
@@ -407,6 +409,24 @@ function OrdersContent() {
                       Collector Review: <span className="text-marigold font-bold">{'★'.repeat(reviewed)}</span>
                     </div>
                   )}
+
+                  <button
+                    onClick={() =>
+                      setCoaData({
+                        orderId: order.id,
+                        orderDate: order.created_at,
+                        artworkTitle: art?.title || 'Fine Art Masterpiece',
+                        artistName: 'Artelio Verified Atelier Artist',
+                        medium: art?.medium,
+                        isDigital: art?.is_digital,
+                        collectorName: order.shipping_name,
+                        imageUrl: art?.image_url,
+                      })
+                    }
+                    className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
+                  >
+                    <span>📜</span> Certificate of Authenticity
+                  </button>
                 </div>
 
                 {/* Dispute Form Modal/Inline */}
@@ -498,6 +518,9 @@ function OrdersContent() {
           })}
         </div>
       )}
+
+      {/* Archival Certificate of Authenticity Modal */}
+      <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
     </main>
   );
 }

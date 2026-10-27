@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { inputClass, labelClass, primaryButton } from '@/lib/ui';
+import GoogleAuthButton from '@/components/GoogleAuthButton';
 
 export default function CustomerSignup() {
   const router = useRouter();
@@ -50,7 +51,17 @@ export default function CustomerSignup() {
         <h1 className="text-2xl font-serif font-bold text-white">Join Artelio</h1>
         <p className="mt-1 text-sm text-white/60">Free to browse and buy original art.</p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        <div className="mt-6">
+          <GoogleAuthButton label="Sign up with Google" />
+        </div>
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/10"></div>
+          <span className="text-xs uppercase tracking-wider text-white/40">or with email</span>
+          <div className="h-px flex-1 bg-white/10"></div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
           <label className="block">
             <span className={labelClass}>Full name <span className="text-clay">*</span></span>
             <input type="text" required className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

@@ -138,7 +138,7 @@ export default function Navbar() {
             <Link href="/artist-signup" className="text-white/75 hover:text-malachite transition">
               Sell your art
             </Link>
-            <Link href="/orders" className="text-white/75 hover:text-white transition">
+            <Link href="/track" className="text-white/75 hover:text-white transition">
               Track order
             </Link>
           </div>

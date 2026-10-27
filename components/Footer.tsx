@@ -63,7 +63,7 @@ export default function Footer() {
             <li><Link href="/browse" className={linkClass}><span className="text-white/30 text-xs">→</span>Browse all</Link></li>
             <li><Link href="/spaces" className={linkClass}><span className="text-white/30 text-xs">→</span>My Spaces</Link></li>
             <li><Link href="/customer-signup" className={linkClass}><span className="text-white/30 text-xs">→</span>Join Artelio</Link></li>
-            <li><Link href="/orders" className={linkClass}><span className="text-white/30 text-xs">→</span>Track orders</Link></li>
+            <li><Link href="/track" className={linkClass}><span className="text-white/30 text-xs">→</span>Track orders</Link></li>
             <li><Link href="/plans" className={linkClass}><span className="text-white/30 text-xs">→</span>Collector Club</Link></li>
           </ul>
         </div>

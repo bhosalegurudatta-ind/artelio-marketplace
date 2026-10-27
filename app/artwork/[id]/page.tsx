@@ -31,6 +31,7 @@ export default function ArtworkDetail() {
   const [art, setArt] = useState<Detail | null>(null);
   const [rating, setRating] = useState<{ avg: number; count: number } | null>(null);
   const [similar, setSimilar] = useState<Artwork[]>([]);
+  const [artistReviews, setArtistReviews] = useState<{ id: string; rating: number; comment: string | null; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [showInquiry, setShowInquiry] = useState(false);
@@ -50,10 +51,16 @@ export default function ArtworkDetail() {
       const detail: Detail = { ...(data as any), artist_name: (data as any).users?.name ?? 'Unknown artist' };
       setArt(detail);
 
-      const { data: reviews } = await supabase.from('reviews').select('rating').eq('artist_id', detail.artist_id);
+      const { data: reviews } = await supabase
+        .from('reviews')
+        .select('id, rating, comment, created_at')
+        .eq('artist_id', detail.artist_id)
+        .order('created_at', { ascending: false });
+
       if (reviews && reviews.length > 0) {
         const total = reviews.reduce((s: number, r: any) => s + r.rating, 0);
         setRating({ avg: total / reviews.length, count: reviews.length });
+        setArtistReviews(reviews.filter((r) => r.comment));
       }
 
       // "More like this": same category, similar price, or the same artist. Plain matching, not AI.
@@ -266,6 +273,41 @@ export default function ArtworkDetail() {
           </div>
         </div>
       </div>
+
+      {/* Verified Collector Reviews */}
+      {artistReviews.length > 0 && (
+        <section className="mt-20 border-t border-white/10 pt-12">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <p className="text-[11px] font-bold tracking-widest text-brand uppercase">Verified Acquisitions</p>
+              <h2 className="font-serif text-2xl font-bold text-white md:text-3xl mt-1">Collector Reviews for {art.artist_name}</h2>
+            </div>
+            {rating && (
+              <div className="flex items-center gap-1.5 rounded-full bg-marigold/10 border border-marigold/20 px-3.5 py-1 text-xs font-bold text-marigold">
+                <span>★ {rating.avg.toFixed(1)}</span>
+                <span className="text-white/40 font-normal">({rating.count} total)</span>
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            {artistReviews.slice(0, 3).map((r) => (
+              <div key={r.id} className="rounded-2xl border border-white/10 bg-[#121826] p-5 shadow-sm">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-white">Verified Collector</span>
+                  <span className="text-marigold">{'★'.repeat(r.rating)}</span>
+                </div>
+                <p className="mt-2.5 text-xs text-white/70 leading-relaxed italic font-serif">
+                  &ldquo;{r.comment}&rdquo;
+                </p>
+                <span className="mt-3 block text-[10px] text-white/40">
+                  {new Date(r.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* More like this */}
       {similar.length > 0 && (

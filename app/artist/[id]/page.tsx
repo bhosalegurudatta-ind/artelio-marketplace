@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import ArtworkCard, { Artwork } from '@/components/ArtworkCard';
+import InquiryModal from '@/components/InquiryModal';
 
 type ArtistProfile = { id: string; name: string; bio: string | null };
 type Review = { id: string; rating: number; comment: string | null; created_at: string; reviewer: string };
@@ -15,6 +16,7 @@ export default function ArtistPage() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showInquiry, setShowInquiry] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -112,10 +114,16 @@ export default function ArtistPage() {
             <p className="mt-4 text-sm italic text-white/40">Independent artist showcasing original creations on Artelio.</p>
           )}
 
-          <div className="mt-6 flex flex-wrap gap-4 text-xs text-white/60">
+          <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-white/60">
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2">
               <span className="font-bold text-white text-sm">{artworks.length}</span> Works Available
             </div>
+            <button
+              onClick={() => setShowInquiry(true)}
+              className="flex items-center gap-2 rounded-xl bg-white/10 border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-all shadow-sm"
+            >
+              <span>💬</span> Inquire about Commission / Work
+            </button>
           </div>
         </div>
       </div>
@@ -171,6 +179,18 @@ export default function ArtistPage() {
           </div>
         </section>
       )}
+
+      {/* Direct Artist Inquiry Modal */}
+      <InquiryModal
+        isOpen={showInquiry}
+        onClose={() => setShowInquiry(false)}
+        artwork={{
+          id: 'custom-commission',
+          title: `Custom Studio Commission for ${artist.name}`,
+          artist_id: artist.id,
+          artist_name: artist.name,
+        }}
+      />
     </main>
   );
 }

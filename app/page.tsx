@@ -41,9 +41,9 @@ type ArtistCard = { id: string; name: string; count: number; cover: Artwork };
 const TRUST_ITEMS = [
   { icon: '🎨', color: 'bg-rose-50 text-vermilion border-rose-200/60', label: '2,000+ Original Artworks' },
   { icon: '✨', color: 'bg-amber-50 text-amber border-amber-200/60', label: 'Direct from Artist Ateliers' },
-  { icon: '🛡️', color: 'bg-emerald-50 text-malachite border-emerald-200/60', label: 'Escrow-Protected Razorpay Payments' },
+  { icon: '🛡️', color: 'bg-emerald-50 text-malachite border-emerald-200/60', label: 'Escrow-Protected Payments' },
   { icon: '📦', color: 'bg-sky-50 text-cerulean border-sky-200/60', label: 'Insured Art Courier & Live Tracking' },
-  { icon: '💳', color: 'bg-purple-50 text-amethyst border-purple-200/60', label: 'Direct 90% UPI / Bank Payouts' },
+  { icon: '📜', color: 'bg-purple-50 text-amethyst border-purple-200/60', label: 'Signed Certificate of Authenticity' },
 ];
 
 export default function Home() {

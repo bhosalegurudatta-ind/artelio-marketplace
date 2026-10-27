@@ -22,7 +22,7 @@ const SLIDES = [
     tagBg: 'bg-rose-500/20 border-rose-400/30 text-rose-200',
     kicker: 'Artist Atelier & Studio',
     title: 'Turn your canvas into thriving patronage.',
-    sub: 'Free to join. Keep 85% of your sale price. AI-powered listing descriptions, certificate generation, and secure Razorpay payouts.',
+    sub: 'Free to join. Keep 90% of your sale price. AI-powered listing descriptions, certificate generation, and secure Razorpay payouts.',
     cta: { label: 'Launch Your Studio', href: '/artist-signup' },
     ctaClass: 'bg-gradient-to-r from-rose-500 to-amber-500 text-white hover:opacity-95 shadow-art-glow',
   },

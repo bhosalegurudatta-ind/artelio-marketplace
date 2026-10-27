@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import CertificateModal from '@/components/CertificateModal';
+import InvoiceModal from '@/components/InvoiceModal';
 
 type TrackedOrder = {
   id: string;
@@ -39,6 +40,7 @@ function TrackContent() {
   const [errorMsg, setErrorMsg] = useState('');
   const [order, setOrder] = useState<TrackedOrder | null>(null);
   const [coaData, setCoaData] = useState<any | null>(null);
+  const [invoiceData, setInvoiceData] = useState<any | null>(null);
 
   async function handleSearch(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -298,7 +300,29 @@ function TrackContent() {
                 }
                 className="flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-400/20 transition-all shadow-sm"
               >
-                <span>📜</span> View & Print Certificate of Authenticity (COA)
+                <span>📜</span> Certificate (COA)
+              </button>
+
+              <button
+                onClick={() =>
+                  setInvoiceData({
+                    orderId: order.id,
+                    orderDate: order.created_at,
+                    artworkTitle: art?.title || 'Fine Art',
+                    artistName: art?.artistName || 'Artelio Studio Creator',
+                    price: art?.price || 0,
+                    medium: art?.medium,
+                    isDigital: art?.isDigital,
+                    buyerName: order.shipping_name,
+                    buyerAddress: order.shipping_city,
+                    buyerCity: order.shipping_city,
+                    buyerState: order.shipping_state,
+                    buyerPostalCode: order.shipping_postal_code,
+                  })
+                }
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-all shadow-sm"
+              >
+                <span>🧾</span> Tax Invoice & Receipt
               </button>
 
               <div className="flex items-center gap-3">
@@ -322,6 +346,9 @@ function TrackContent() {
 
       {/* Certificate Modal */}
       <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
+
+      {/* Invoice Modal */}
+      <InvoiceModal data={invoiceData} onClose={() => setInvoiceData(null)} />
     </main>
   );
 }

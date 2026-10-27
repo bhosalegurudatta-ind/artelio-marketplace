@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { inputClass } from '@/lib/ui';
 import CertificateModal from '@/components/CertificateModal';
+import InvoiceModal from '@/components/InvoiceModal';
 
 type OrderRow = {
   id: string;
@@ -50,6 +51,7 @@ function OrdersContent() {
   const [reason, setReason] = useState('');
   const [disputeCategory, setDisputeCategory] = useState('Artwork arrived damaged');
   const [coaData, setCoaData] = useState<any | null>(null);
+  const [invoiceData, setInvoiceData] = useState<any | null>(null);
 
   async function loadOrders(uid: string) {
     const { data } = await supabase
@@ -427,6 +429,29 @@ function OrdersContent() {
                   >
                     <span>📜</span> Certificate of Authenticity
                   </button>
+
+                  <button
+                    onClick={() =>
+                      setInvoiceData({
+                        orderId: order.id,
+                        orderDate: order.created_at,
+                        artworkTitle: art?.title || 'Fine Art',
+                        artistName: 'Artelio Verified Atelier Artist',
+                        price: art?.price || 0,
+                        medium: art?.medium,
+                        isDigital: art?.is_digital,
+                        buyerName: order.shipping_name,
+                        buyerAddress: order.shipping_address,
+                        buyerCity: order.shipping_city,
+                        buyerState: order.shipping_state,
+                        buyerPostalCode: order.shipping_postal_code,
+                        buyerPhone: order.shipping_phone,
+                      })
+                    }
+                    className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
+                  >
+                    <span>🧾</span> Tax Invoice
+                  </button>
                 </div>
 
                 {/* Dispute Form Modal/Inline */}
@@ -521,6 +546,9 @@ function OrdersContent() {
 
       {/* Archival Certificate of Authenticity Modal */}
       <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
+
+      {/* Official Tax Invoice & Acquisition Receipt Modal */}
+      <InvoiceModal data={invoiceData} onClose={() => setInvoiceData(null)} />
     </main>
   );
 }

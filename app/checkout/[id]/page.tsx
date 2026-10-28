@@ -133,8 +133,15 @@ export default function Checkout() {
     }
 
     // 2. Open Razorpay checkout modal
+    const razorpayKey = orderData.keyId || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    if (!razorpayKey) {
+      setErrorMsg('Razorpay payment gateway is not configured. Please contact support.');
+      setPaying(false);
+      return;
+    }
+
     const razorpay = new window.Razorpay({
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      key: razorpayKey,
       amount: orderData.amount,
       currency: 'INR',
       name: 'Artelio Marketplace',

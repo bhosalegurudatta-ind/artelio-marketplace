@@ -27,6 +27,7 @@ type OrderEmailData = {
 
 export async function sendOrderEmails(data: OrderEmailData) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://artelio.in';
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Artelio Atelier <concierge@artelio.in>';
 
   console.log('[Artelio Mailer] Preparing transactional notifications for order:', data.orderId);
 
@@ -113,34 +114,48 @@ export async function sendOrderEmails(data: OrderEmailData) {
   // If a transactional mail provider API key is present (Resend / SendGrid), send live
   if (process.env.RESEND_API_KEY && data.buyerEmail) {
     try {
-      await fetch('https://api.resend.com/emails', {
+      const resBuyer = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from: 'Artelio Atelier <concierge@artelio.in>',
+          from: fromEmail,
           to: [data.buyerEmail],
           subject: buyerSubject,
           html: buyerHtml,
         }),
       });
 
+      if (!resBuyer.ok) {
+        const errJson = await resBuyer.json().catch(() => ({}));
+        console.error('[Artelio Mailer] Resend error delivering collector email:', errJson);
+      } else {
+        console.log('[Artelio Mailer] Successfully sent collector confirmation to:', data.buyerEmail);
+      }
+
       if (data.artistEmail) {
-        await fetch('https://api.resend.com/emails', {
+        const resArtist = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: 'Artelio Atelier <concierge@artelio.in>',
+            from: fromEmail,
             to: [data.artistEmail],
             subject: artistSubject,
             html: artistHtml,
           }),
         });
+
+        if (!resArtist.ok) {
+          const errJson = await resArtist.json().catch(() => ({}));
+          console.error('[Artelio Mailer] Resend error delivering artist email:', errJson);
+        } else {
+          console.log('[Artelio Mailer] Successfully sent artist sale notification to:', data.artistEmail);
+        }
       }
     } catch (err) {
       console.error('[Artelio Mailer] Live dispatch error:', err);
@@ -173,6 +188,7 @@ export async function sendDispatchEmail({
   trackingUrl?: string | null;
 }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://artelio.in';
+  const fromEmail = process.env.RESEND_FROM_EMAIL || 'Artelio Atelier <concierge@artelio.in>';
 
   const subject = `Your artwork "${artworkTitle}" has been dispatched via ${courierName || 'Insured Courier'}`;
   const html = `
@@ -215,19 +231,26 @@ export async function sendDispatchEmail({
 
   if (process.env.RESEND_API_KEY && buyerEmail) {
     try {
-      await fetch('https://api.resend.com/emails', {
+      const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
         },
         body: JSON.stringify({
-          from: 'Artelio Atelier <concierge@artelio.in>',
+          from: fromEmail,
           to: [buyerEmail],
           subject,
           html,
         }),
       });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        console.error('[Artelio Mailer] Resend error delivering dispatch email:', errJson);
+      } else {
+        console.log('[Artelio Mailer] Successfully sent dispatch tracking alert to:', buyerEmail);
+      }
     } catch (err) {
       console.error('[Artelio Mailer] Live dispatch email error:', err);
     }

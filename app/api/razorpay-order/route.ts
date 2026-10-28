@@ -36,7 +36,11 @@ export async function POST(req: NextRequest) {
       notes: { artwork_id: String(artwork.id), customer_id: user.id },
     });
 
-    return NextResponse.json({ orderId: order.id, amount: order.amount });
+    return NextResponse.json({
+      orderId: order.id,
+      amount: order.amount,
+      keyId: process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+    });
   } catch (err) {
     console.error('Razorpay order creation failed:', err);
     return fail('Could not create payment order', 500);

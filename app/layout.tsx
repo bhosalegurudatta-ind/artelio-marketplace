@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Cormorant_Garamond } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import WhatsAppConcierge from '@/components/WhatsAppConcierge';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <div className="flex-1">{children}</div>
           <Footer />
+          <WhatsAppConcierge />
         </div>
       </body>
     </html>

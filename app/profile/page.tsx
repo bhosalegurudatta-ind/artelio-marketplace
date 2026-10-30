@@ -80,79 +80,122 @@ function ProfileContent() {
   const [slipOrder, setSlipOrder] = useState<any | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     async function loadProfile() {
-      const { data: authData } = await supabase.auth.getUser();
-      if (!authData.user) {
-        router.push('/login');
-        return;
-      }
-
-      const { data: session } = await supabase.auth.getSession();
-      const token = session.session?.access_token;
-      if (!token) return;
-
-      // 1. Fetch user profile
       try {
-        const pRes = await fetch('/api/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const pData = await pRes.json();
-        if (pData?.profile) {
-          setProfile(pData.profile);
-          // Set default tab: Artists default to 'artworks', Buyers default to 'acquisitions'
-          if (pData.profile.role === 'artist') {
+        const { data: authData } = await supabase.auth.getUser();
+        if (!authData?.user) {
+          if (mounted) setLoading(false);
+          router.push('/login');
+          return;
+        }
+
+        const user = authData.user;
+        const meta = user.user_metadata || {};
+
+        // Fallback default profile from auth session
+        let resolvedProfile: UserProfile = {
+          id: user.id,
+          name: meta.name || meta.full_name || (user.email ? user.email.split('@')[0] : 'Member'),
+          email: user.email || '',
+          role: (meta.role === 'artist' ? 'artist' : 'customer') as any,
+          bio: meta.bio || null,
+          address: meta.address || null,
+          created_at: user.created_at || new Date().toISOString(),
+        };
+
+        const { data: session } = await supabase.auth.getSession();
+        const token = session.session?.access_token;
+
+        // 1. Fetch user profile from database
+        try {
+          const { data: dbProfile } = await supabase
+            .from('users')
+            .select('id, name, email, role, bio, address, paid_until, payout_method, payout_upi_id, created_at')
+            .eq('id', user.id)
+            .maybeSingle();
+
+          if (dbProfile) {
+            resolvedProfile = { ...resolvedProfile, ...dbProfile };
+          } else if (token) {
+            const pRes = await fetch('/api/profile', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const pData = await pRes.json().catch(() => ({}));
+            if (pData?.profile) {
+              resolvedProfile = { ...resolvedProfile, ...pData.profile };
+            }
+          }
+        } catch (e) {
+          console.error('Error fetching profile:', e);
+        }
+
+        if (mounted) {
+          setProfile(resolvedProfile);
+          if (resolvedProfile.role === 'artist') {
             setActiveTab('artworks');
           } else {
             setActiveTab('acquisitions');
           }
         }
-      } catch (e) {
-        console.error('Error fetching profile:', e);
-      }
 
-      // 2. Fetch Buyer Acquisitions (Purchases)
-      try {
-        const { data: ordersData } = await supabase
-          .from('orders')
-          .select('id, status, created_at, shipped_at, delivered_at, courier_name, tracking_note, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, artworks(id, title, price, image_url, is_digital, medium, artist_id)')
-          .eq('customer_id', authData.user.id)
-          .order('created_at', { ascending: false });
+        // 2. Fetch Buyer Acquisitions (Purchases)
+        try {
+          const { data: ordersData } = await supabase
+            .from('orders')
+            .select('id, status, created_at, shipped_at, delivered_at, courier_name, tracking_note, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, artworks(id, title, price, image_url, is_digital, medium, artist_id)')
+            .eq('customer_id', user.id)
+            .order('created_at', { ascending: false });
 
-        setPurchases((ordersData as any) || []);
-      } catch (e) {
-        console.error('Error loading purchases:', e);
-      }
-
-      // 3. Fetch Uploaded Artworks (Both Artists and Users who uploaded)
-      try {
-        const { data: artData } = await supabase
-          .from('artworks')
-          .select('id, title, price, image_url, sold, is_digital, medium, created_at')
-          .eq('artist_id', authData.user.id)
-          .order('created_at', { ascending: false });
-
-        setArtworks(artData || []);
-      } catch (e) {
-        console.error('Error loading artworks:', e);
-      }
-
-      // 4. Fetch Sales of their artwork (which reached, which in transit)
-      try {
-        const salesRes = await fetch('/api/artist/orders', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const salesData = await salesRes.json();
-        if (salesData?.orders) {
-          setArtistSales(salesData.orders);
+          if (mounted) {
+            setPurchases((ordersData as any) || []);
+          }
+        } catch (e) {
+          console.error('Error loading purchases:', e);
         }
-      } catch (e) {
-        // Sales orders endpoint optional for purely buyer accounts
-      }
 
-      setLoading(false);
+        // 3. Fetch Uploaded Artworks (Both Artists and Users who uploaded)
+        try {
+          const { data: artData } = await supabase
+            .from('artworks')
+            .select('id, title, price, image_url, sold, is_digital, medium, created_at')
+            .eq('artist_id', user.id)
+            .order('created_at', { ascending: false });
+
+          if (mounted) {
+            setArtworks(artData || []);
+          }
+        } catch (e) {
+          console.error('Error loading artworks:', e);
+        }
+
+        // 4. Fetch Sales of their artwork (which reached, which in transit)
+        if (token) {
+          try {
+            const salesRes = await fetch('/api/artist/orders', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const salesData = await salesRes.json().catch(() => ({}));
+            if (salesData?.orders && mounted) {
+              setArtistSales(salesData.orders);
+            }
+          } catch {
+            // Optional
+          }
+        }
+      } catch (err) {
+        console.error('Overall profile load error:', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
 
     loadProfile();
+
+    return () => {
+      mounted = false;
+    };
   }, [router]);
 
   if (loading) {
@@ -163,7 +206,17 @@ function ProfileContent() {
     );
   }
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <main className="mx-auto max-w-md px-5 py-24 text-center">
+        <h1 className="text-xl font-bold text-white">Sign In Required</h1>
+        <p className="mt-2 text-sm text-slate-400">Please log in to access your profile and acquisitions.</p>
+        <Link href="/login" className="mt-4 inline-block rounded-full bg-amber-500 px-6 py-2.5 text-xs font-bold text-slate-950">
+          Go to Login
+        </Link>
+      </main>
+    );
+  }
 
   // Compute artwork delivery statuses for uploaded pieces
   const getArtworkDeliveryStatus = (artId: string, isSold: boolean) => {

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const { data: profile, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, email, role, bio, address, phone, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
+      .select('id, name, email, role, bio, address, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -49,20 +49,19 @@ export async function POST(req: NextRequest) {
     if (!user) return fail('Please log in.', 401);
 
     const body = await req.json().catch(() => ({}));
-    const { name, bio, address, phone, role } = body;
+    const { name, bio, address, role } = body;
 
     const updates: Record<string, any> = {};
     if (typeof name === 'string' && name.trim()) updates.name = name.trim();
     if (typeof bio === 'string') updates.bio = bio.trim();
     if (typeof address === 'string') updates.address = address.trim();
-    if (typeof phone === 'string') updates.phone = phone.trim();
     if (role && ['artist', 'customer'].includes(role)) updates.role = role;
 
     const { data: updated, error } = await supabaseAdmin
       .from('users')
       .update(updates)
       .eq('id', user.id)
-      .select('id, name, email, role, bio, address, phone, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
+      .select('id, name, email, role, bio, address, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
       .single();
 
     if (error) {

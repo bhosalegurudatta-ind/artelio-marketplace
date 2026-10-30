@@ -2,17 +2,80 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function WhatsAppConcierge() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isPremiumUser, setIsPremiumUser] = useState(false);
   const widgetRef = useRef<HTMLDivElement>(null);
 
   // Phone number configured via environment variable, or fallback concierge line
   const rawPhone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210';
-  // Clean phone number (strip spaces, dashes, + signs)
   const phone = rawPhone.replace(/[^0-9]/g, '');
+
+  useEffect(() => {
+    let active = true;
+
+    async function checkPremiumStatus() {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        if (!authData?.user) {
+          if (active) setIsPremiumUser(false);
+          return;
+        }
+
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role, paid_until')
+          .eq('id', authData.user.id)
+          .maybeSingle();
+
+        if (!active) return;
+
+        // WhatsApp Concierge is strictly an exclusive perk for Premium Collector Users
+        const isUserRole = profile?.role === 'customer' || !profile?.role;
+        const hasActivePlan =
+          profile?.paid_until && new Date(profile.paid_until).getTime() > Date.now();
+
+        setIsPremiumUser(Boolean(isUserRole && hasActivePlan));
+      } catch {
+        if (active) setIsPremiumUser(false);
+      }
+    }
+
+    checkPremiumStatus();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      checkPremiumStatus();
+    });
+
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Close when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (widgetRef.current && !widgetRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // If user is not logged in as a Premium Collector, do not display the widget
+  if (!isPremiumUser) {
+    return null;
+  }
 
   const quickTopics = [
     {
@@ -77,12 +140,12 @@ export default function WhatsAppConcierge() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-1.5">
-                  Artelio Concierge
-                  <span className="inline-block rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20">
-                    Live
+                  Artelio VIP Concierge
+                  <span className="inline-block rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30">
+                    VIP Pass
                   </span>
                 </h3>
-                <p className="text-[11px] text-slate-400">Typically replies within 5 mins</p>
+                <p className="text-[11px] text-slate-400">Direct VIP Curator Line</p>
               </div>
             </div>
 
@@ -101,7 +164,7 @@ export default function WhatsAppConcierge() {
           {/* Body Intro */}
           <div className="py-3">
             <p className="text-xs leading-relaxed text-slate-300">
-              Welcome to the Atelier. Connect directly with our curator concierge team on WhatsApp for acquiring art, logistics tracking, or bespoke artist commissions.
+              Welcome, VIP Collector. Connect directly with our senior curator team on WhatsApp for exclusive fine art acquisitions, framing advice, or private commissions.
             </p>
 
             {/* Quick action chips */}

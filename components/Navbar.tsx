@@ -151,11 +151,14 @@ export default function Navbar() {
             <Link href="/plans" className="text-white/75 hover:text-amber transition flex items-center gap-1">
               <span>✦</span> Memberships
             </Link>
+            <Link href="/dashboard/upload" className="text-amber-400 hover:text-amber-300 font-bold transition">
+              + Upload Artwork
+            </Link>
             <Link href="/spaces" className="text-white/75 hover:text-cerulean transition">
               Collector Spaces
             </Link>
             <Link href="/artist-signup" className="text-white/75 hover:text-malachite transition">
-              Sell your art
+              Artist Registration
             </Link>
             <Link href="/track" className="text-white/75 hover:text-white transition">
               Track order
@@ -195,7 +198,7 @@ export default function Navbar() {
             />
           </form>
 
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-3 sm:gap-4">
             {loggedIn ? (
               <>
                 {role === 'artist' && (
@@ -212,31 +215,40 @@ export default function Navbar() {
                   <BagIcon />
                   <span className="hidden sm:inline">Orders</span>
                 </Link>
-                {role === 'artist' && (
-                  <Link
-                    href="/dashboard/upload"
-                    className="hidden rounded-full bg-gradient-to-r from-brand to-magenta px-4 py-2 art-tag text-[11px] text-white shadow-md hover:opacity-90 transition md:inline-block"
-                  >
-                    + Upload Piece
-                  </Link>
-                )}
+
+                {/* Upload artwork button - visible to BOTH artists and users */}
+                <Link
+                  href="/dashboard/upload"
+                  className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 hover:scale-105 transition-all active:scale-95"
+                >
+                  <span className="text-sm font-black leading-none">+</span>
+                  <span>Upload Art</span>
+                </Link>
+
                 <button onClick={handleLogout} className="art-tag text-[11px] text-white/60 hover:text-clay transition ml-1">
                   Log out
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <Link
-                  href="/login"
-                  className="rounded-full px-4 py-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition"
+                  href="/login?role=artist"
+                  className="hidden sm:inline-block text-[11px] text-white/70 hover:text-amber-300 font-medium transition"
+                >
+                  Artist Login
+                </Link>
+                <Link
+                  href="/login?role=customer"
+                  className="rounded-full px-3 py-1.5 art-tag text-[11px] text-white/80 hover:text-white transition"
                 >
                   Log in
                 </Link>
                 <Link
-                  href="/customer-signup"
-                  className="rounded-full bg-gradient-to-r from-brand via-purple-600 to-magenta px-5 py-2 art-tag text-[11px] text-white shadow-md shadow-brand/25 hover:shadow-lg hover:scale-105 transition-all"
+                  href="/dashboard/upload"
+                  className="flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
                 >
-                  Join Artelio
+                  <span className="text-sm font-black leading-none">+</span>
+                  <span>Upload Art</span>
                 </Link>
               </div>
             )}

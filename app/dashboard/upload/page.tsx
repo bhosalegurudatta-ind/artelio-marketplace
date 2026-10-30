@@ -133,14 +133,18 @@ export default function UploadArtwork() {
       setStatus('error');
       return;
     }
-    router.push('/dashboard');
+    if (data.id) {
+      router.push(`/artwork/${data.id}`);
+    } else {
+      router.push('/browse');
+    }
   }
 
   return (
     <main className="mx-auto max-w-xl px-5 py-12">
-      <h1 className="text-2xl font-bold text-ink md:text-3xl">Upload a new piece</h1>
+      <h1 className="text-2xl font-bold text-ink md:text-3xl font-serif">List Artwork for Sale</h1>
       <p className="mt-2 text-sm text-ink/60">
-        Buyers see a smaller, watermarked preview. Your full-quality file is never published.
+        Open to all creators, artists, and collectors. Buyers see a watermarked preview; full-resolution files are secured in private escrow storage.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">

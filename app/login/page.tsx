@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -9,6 +9,7 @@ import GoogleAuthButton from '@/components/GoogleAuthButton';
 
 export default function Login() {
   const router = useRouter();
+  const [loginRole, setLoginRole] = useState<'customer' | 'artist'>('customer');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -16,6 +17,15 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isForgot, setIsForgot] = useState(false);
   const [resending, setResending] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const roleParam = new URLSearchParams(window.location.search).get('role');
+      if (roleParam === 'artist') {
+        setLoginRole('artist');
+      }
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +36,7 @@ export default function Login() {
     if (isForgot) {
       try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?role=${loginRole}`,
         });
         if (error) throw error;
         setInfoMsg('Password reset link sent! Please check your email inbox.');
@@ -61,19 +71,19 @@ export default function Login() {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${session.access_token}`,
           },
+          body: JSON.stringify({ role: loginRole }),
         });
         const syncData = await res.json().catch(() => ({}));
-        const userRole = syncData?.profile?.role;
+        const userRole = syncData?.profile?.role || loginRole;
         router.push(userRole === 'artist' ? '/dashboard' : '/');
         router.refresh();
         return;
       }
     } catch {
-      // Fallback redirect
+      // Fallback redirect based on selected login tab
     }
 
-    const { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
-    router.push(profile?.role === 'artist' ? '/dashboard' : '/');
+    router.push(loginRole === 'artist' ? '/dashboard' : '/');
     router.refresh();
   }
 
@@ -89,7 +99,7 @@ export default function Login() {
         type: 'signup',
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?role=${loginRole}`,
         },
       });
       if (error) throw error;
@@ -104,19 +114,69 @@ export default function Login() {
   return (
     <main className="mx-auto max-w-md px-5 py-16">
       <div className="rounded-2xl border border-white/10 bg-[#121826] p-8 shadow-2xl backdrop-blur-md">
+        
+        {/* Role Selection Tabs: Artist vs User */}
+        {!isForgot && (
+          <div className="mb-6 grid grid-cols-2 rounded-xl border border-white/10 bg-white/5 p-1 text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setLoginRole('customer');
+                setErrorMsg('');
+              }}
+              className={`flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all ${
+                loginRole === 'customer'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>🖼️</span>
+              <span>Collector / User</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setLoginRole('artist');
+                setErrorMsg('');
+              }}
+              className={`flex items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all ${
+                loginRole === 'artist'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <span>🎨</span>
+              <span>Artist / Creator</span>
+            </button>
+          </div>
+        )}
+
         <h1 className="text-2xl font-serif font-bold text-white">
-          {isForgot ? 'Reset Password' : 'Log in'}
+          {isForgot
+            ? 'Reset Password'
+            : loginRole === 'artist'
+            ? 'Artist Studio Login'
+            : 'Collector / User Login'}
         </h1>
         <p className="mt-1 text-sm text-white/60">
           {isForgot
             ? 'Enter your account email to receive a password recovery link.'
-            : 'Welcome back to Artelio Atelier.'}
+            : loginRole === 'artist'
+            ? 'Access your creator atelier, list artworks, and manage sales.'
+            : 'Access your collection, track acquisitions, and view orders.'}
         </p>
 
         {!isForgot && (
           <>
             <div className="mt-6">
-              <GoogleAuthButton label="Continue with Google" />
+              <GoogleAuthButton
+                role={loginRole}
+                label={
+                  loginRole === 'artist'
+                    ? 'Continue with Google as Artist'
+                    : 'Continue with Google as Collector'
+                }
+              />
             </div>
 
             <div className="my-6 flex items-center gap-3">
@@ -196,7 +256,9 @@ export default function Login() {
                 : 'Logging in…'
               : isForgot
               ? 'Send Reset Link'
-              : 'Log in'}
+              : loginRole === 'artist'
+              ? 'Enter Studio Dashboard'
+              : 'Log in as Collector'}
           </button>
 
           {isForgot && (
@@ -207,7 +269,7 @@ export default function Login() {
                 setErrorMsg('');
                 setInfoMsg('');
               }}
-              className="w-full text-center text-xs text-slate-400 hover:text-white transition mt-2"
+              className="mt-2 w-full text-center text-xs text-slate-400 hover:text-white transition"
             >
               ← Back to Log In
             </button>
@@ -215,16 +277,31 @@ export default function Login() {
         </form>
 
         {!isForgot && (
-          <p className="mt-6 text-center text-sm text-ink/60">
-            New here?{' '}
-            <Link href="/customer-signup" className="font-semibold text-brand hover:underline">
-              Create a buyer account
-            </Link>
-            {' or '}
-            <Link href="/artist-signup" className="font-semibold text-brand hover:underline">
-              sell your art
-            </Link>
-          </p>
+          <div className="mt-6 border-t border-white/10 pt-4 text-center text-sm text-ink/60">
+            {loginRole === 'artist' ? (
+              <p>
+                Not registered as an artist yet?{' '}
+                <Link href="/artist-signup" className="font-semibold text-brand hover:underline">
+                  Create artist atelier
+                </Link>
+              </p>
+            ) : (
+              <p>
+                New collector?{' '}
+                <Link href="/customer-signup" className="font-semibold text-brand hover:underline">
+                  Create a buyer account
+                </Link>
+                {' · Or want to sell? '}
+                <button
+                  type="button"
+                  onClick={() => setLoginRole('artist')}
+                  className="font-semibold text-amber-400 hover:underline"
+                >
+                  Switch to Artist Login
+                </button>
+              </p>
+            )}
+          </div>
         )}
       </div>
     </main>

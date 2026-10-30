@@ -17,13 +17,32 @@ export async function POST(req: NextRequest) {
 
   try {
     const user = await getUserFromRequest(req);
-    if (!user) return fail('Please log in first.', 401);
+    if (!user) return fail('Please log in first to upload artwork.', 401);
 
-    const { data: profile } = await supabaseAdmin
-      .from('users').select('role, approved, trial_ends_at, paid_until').eq('id', user.id).single();
-    if (profile?.role !== 'artist') return fail('Only artist accounts can list artwork.', 403);
-    if (!profile.approved) return fail('Your artist application is waiting for approval. We will email you once it is approved.', 403);
-    if (!hasListingAccess(profile)) return fail('Your free trial has ended. Subscribe to keep listing your work.', 402);
+    // Ensure the user exists in public.users table so foreign keys work
+    let { data: profile } = await supabaseAdmin
+      .from('users')
+      .select('id, role, name')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      const meta = user.user_metadata || {};
+      const name = meta.name || meta.full_name || (user.email ? user.email.split('@')[0] : 'Creator');
+      const { data: newProfile, error: pErr } = await supabaseAdmin
+        .from('users')
+        .upsert({
+          id: user.id,
+          name,
+          email: user.email || '',
+          role: meta.role === 'artist' ? 'artist' : 'customer',
+          approved: true,
+        })
+        .select('id, role, name')
+        .single();
+      if (pErr) console.error('Error auto-creating profile on upload:', pErr);
+      profile = newProfile;
+    }
 
     const form = await req.formData();
     const file = form.get('image');

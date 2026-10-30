@@ -75,7 +75,7 @@ export default function Login() {
         });
         const syncData = await res.json().catch(() => ({}));
         const userRole = syncData?.profile?.role || loginRole;
-        router.push(userRole === 'artist' ? '/dashboard' : '/');
+        router.push(userRole === 'artist' ? '/dashboard' : '/profile');
         router.refresh();
         return;
       }
@@ -83,7 +83,7 @@ export default function Login() {
       // Fallback redirect based on selected login tab
     }
 
-    router.push(loginRole === 'artist' ? '/dashboard' : '/');
+    router.push(loginRole === 'artist' ? '/dashboard' : '/profile');
     router.refresh();
   }
 

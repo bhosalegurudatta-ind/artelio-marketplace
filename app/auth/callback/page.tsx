@@ -87,11 +87,11 @@ export default function AuthCallback() {
         if (userRole === 'artist') {
           router.push('/dashboard');
         } else {
-          router.push('/');
+          router.push('/profile');
         }
       } catch (e) {
-        // Even if sync has a network glitch, push to home
-        router.push('/');
+        // Even if sync has a network glitch, push to profile
+        router.push('/profile');
       }
     }
 

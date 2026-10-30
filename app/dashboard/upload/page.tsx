@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { inputClass, labelClass, primaryButton } from '@/lib/ui';
 
@@ -22,6 +23,36 @@ export default function UploadArtwork() {
   const [aiLoading, setAiLoading] = useState(false);
   const [aiMsg, setAiMsg] = useState('');
   const [priceHint, setPriceHint] = useState('');
+
+  // Payout / UPI states
+  const [payoutConfigured, setPayoutConfigured] = useState<boolean | null>(null);
+  const [existingUpi, setExistingUpi] = useState<string>('');
+  const [firstTimeUpi, setFirstTimeUpi] = useState('');
+  const [accountHolder, setAccountHolder] = useState('');
+
+  useEffect(() => {
+    async function checkPayout() {
+      const { data: session } = await supabase.auth.getSession();
+      const token = session.session?.access_token;
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/artist/payout-settings', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data && data.configured) {
+          setPayoutConfigured(true);
+          setExistingUpi(data.upiId || data.accountNumberMasked || 'Linked Account');
+        } else {
+          setPayoutConfigured(false);
+        }
+      } catch {
+        setPayoutConfigured(false);
+      }
+    }
+    checkPayout();
+  }, []);
 
   useEffect(() => {
     if (!file) {
@@ -93,6 +124,42 @@ export default function UploadArtwork() {
       setErrorMsg('You need to be logged in to upload artwork.');
       setStatus('error');
       return;
+    }
+
+    // First-time uploader: must supply UPI payout destination
+    if (!payoutConfigured) {
+      if (!firstTimeUpi.trim() || !accountHolder.trim()) {
+        setErrorMsg('Please enter your Account Holder Name and UPI ID below so you can receive sales payouts.');
+        setStatus('error');
+        return;
+      }
+
+      const upiRegex = /^[\w.-]+@[\w.-]+$/;
+      if (!upiRegex.test(firstTimeUpi.trim())) {
+        setErrorMsg('Please enter a valid UPI ID (e.g. yourname@okaxis, 9876543210@paytm).');
+        setStatus('error');
+        return;
+      }
+
+      const payRes = await fetch('/api/artist/payout-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          method: 'upi',
+          upiId: firstTimeUpi.trim(),
+          accountHolder: accountHolder.trim(),
+        }),
+      });
+
+      if (!payRes.ok) {
+        const pErr = await payRes.json().catch(() => ({}));
+        setErrorMsg(pErr.error || 'Failed to save payout details. Please double-check your UPI ID.');
+        setStatus('error');
+        return;
+      }
+
+      setPayoutConfigured(true);
+      setExistingUpi(firstTimeUpi.trim());
     }
 
     let fullDescription = form.description;
@@ -267,6 +334,77 @@ export default function UploadArtwork() {
             <span className="font-semibold text-ink">This work is AI-assisted.</span> Tick this if AI helped create any part of the piece. Otherwise it is listed as an original. Buyers see this label.
           </span>
         </label>
+
+        {/* Sales Payout Destination & UPI Section */}
+        {payoutConfigured === true ? (
+          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
+                ✓
+              </span>
+              <div>
+                <span className="text-xs font-bold text-emerald-400 block">
+                  Payout Destination Verified (90% Net Proceeds)
+                </span>
+                <span className="text-xs text-white font-mono">{existingUpi}</span>
+              </div>
+            </div>
+            <Link
+              href="/settings"
+              className="text-xs text-amber-400 underline hover:text-amber-300 font-medium self-end sm:self-auto"
+            >
+              Change in Settings
+            </Link>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-transparent p-5 space-y-4">
+            <div className="flex items-start gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
+                ⚡
+              </span>
+              <div>
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  First-Time Setup: Enter Your UPI Payout Details
+                  <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-300 border border-amber-500/30">
+                    Required
+                  </span>
+                </h3>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Where should we transfer your 90% sales revenue when this artwork is bought?
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label className="block">
+                <span className={labelClass}>Account Holder Full Name <span className="text-amber-400">*</span></span>
+                <input
+                  type="text"
+                  required
+                  value={accountHolder}
+                  onChange={(e) => setAccountHolder(e.target.value)}
+                  className={inputClass}
+                  placeholder="e.g. Gurudatta Bhosale"
+                />
+              </label>
+
+              <label className="block">
+                <span className={labelClass}>UPI ID (VPA) <span className="text-amber-400">*</span></span>
+                <input
+                  type="text"
+                  required
+                  value={firstTimeUpi}
+                  onChange={(e) => setFirstTimeUpi(e.target.value)}
+                  className={inputClass}
+                  placeholder="e.g. yourname@okaxis or 9876543210@paytm"
+                />
+              </label>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              🔒 Safe & Direct: Powered by Razorpay Escrow. Payouts settle directly to this UPI address.
+            </p>
+          </div>
+        )}
 
         {errorMsg && <p className="text-sm text-clay">{errorMsg}</p>}
 

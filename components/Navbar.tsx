@@ -160,6 +160,9 @@ export default function Navbar() {
             <Link href="/artist-signup" className="text-white/75 hover:text-malachite transition">
               Artist Registration
             </Link>
+            <Link href="/settings" className="text-white/75 hover:text-amber-300 transition">
+              Settings
+            </Link>
             <Link href="/track" className="text-white/75 hover:text-white transition">
               Track order
             </Link>
@@ -201,19 +204,26 @@ export default function Navbar() {
           <div className="ml-auto flex items-center gap-3 sm:gap-4">
             {loggedIn ? (
               <>
+                <Link href="/profile" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
+                  <UserIcon />
+                  <span className="hidden sm:inline">Profile</span>
+                </Link>
                 {role === 'artist' && (
-                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
-                    <UserIcon />
+                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-amber-400 transition">
                     <span className="hidden sm:inline">Studio</span>
                   </Link>
                 )}
-                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
-                  <SpacesIcon />
-                  <span className="hidden sm:inline">My Spaces</span>
-                </Link>
                 <Link href="/orders" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
                   <BagIcon />
                   <span className="hidden sm:inline">Orders</span>
+                </Link>
+                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
+                  <SpacesIcon />
+                  <span className="hidden sm:inline">Spaces</span>
+                </Link>
+                <Link href="/settings" className="flex items-center gap-1 art-tag text-[11px] text-white/70 hover:text-white transition">
+                  <span>⚙️</span>
+                  <span className="hidden md:inline">Settings</span>
                 </Link>
 
                 {/* Upload artwork button - visible to BOTH artists and users */}

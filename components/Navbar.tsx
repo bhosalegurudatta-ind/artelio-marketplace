@@ -87,7 +87,26 @@ export default function Navbar() {
         return;
       }
       setLoggedIn(true);
-      const { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).single();
+      let { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
+      if (!profile) {
+        // Auto-heal missing profile via sync endpoint
+        try {
+          const { data: sessionData } = await supabase.auth.getSession();
+          if (sessionData.session?.access_token) {
+            const syncRes = await fetch('/api/auth/sync', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${sessionData.session.access_token}`,
+              },
+            });
+            const syncJson = await syncRes.json().catch(() => ({}));
+            profile = syncJson?.profile || null;
+          }
+        } catch {
+          // Ignore network hiccup
+        }
+      }
       if (active) setRole((profile?.role as Role) ?? null);
     }
 

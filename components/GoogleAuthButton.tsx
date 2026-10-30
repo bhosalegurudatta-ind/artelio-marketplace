@@ -18,7 +18,7 @@ export default function GoogleAuthButton({
     setErrorMsg('');
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/auth/callback?role=${encodeURIComponent(role)}`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

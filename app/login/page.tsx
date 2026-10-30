@@ -303,6 +303,16 @@ export default function Login() {
             )}
           </div>
         )}
+
+        <div className="mt-6 border-t border-white/[0.06] pt-4 text-center">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-amber-400 transition"
+          >
+            <span>🔒</span>
+            <span>Platform Owner Admin Portal</span>
+          </Link>
+        </div>
       </div>
     </main>
   );

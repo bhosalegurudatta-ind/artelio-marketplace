@@ -73,6 +73,7 @@ export default function Navbar() {
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>(null);
+  const [userEmail, setUserEmail] = useState<string>('');
   const [query, setQuery] = useState('');
 
   useEffect(() => {
@@ -84,9 +85,11 @@ export default function Navbar() {
       if (!data.user) {
         setLoggedIn(false);
         setRole(null);
+        setUserEmail('');
         return;
       }
       setLoggedIn(true);
+      setUserEmail(data.user.email || '');
       let { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
       if (!profile) {
         // Auto-heal missing profile via sync endpoint
@@ -225,6 +228,16 @@ export default function Navbar() {
                   <span>⚙️</span>
                   <span className="hidden md:inline">Settings</span>
                 </Link>
+
+                {userEmail === 'bhosalegurudatta@gmail.com' && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 art-tag text-[10.5px] font-bold text-amber-300 hover:bg-amber-400/20 transition shadow-sm"
+                  >
+                    <span>👑</span>
+                    <span className="hidden sm:inline">Admin</span>
+                  </Link>
+                )}
 
                 {/* Upload artwork button - visible to BOTH artists and users */}
                 <Link

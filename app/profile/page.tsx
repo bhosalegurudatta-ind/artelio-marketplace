@@ -64,13 +64,13 @@ function ProfileContent() {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'acquisitions' | 'artworks' | 'sales'>('acquisitions');
+  const [activeTab, setActiveTab] = useState<'acquisitions' | 'artworks' | 'sales' | 'shipping'>('acquisitions');
 
   // Buyer purchases
   const [purchases, setPurchases] = useState<Order[]>([]);
-  // Uploaded artworks
+  // Uploaded artworks (artists only)
   const [artworks, setArtworks] = useState<Artwork[]>([]);
-  // Artist sales orders
+  // Artist sales orders (artists only)
   const [artistSales, setArtistSales] = useState<any[]>([]);
 
   // Modals
@@ -94,7 +94,6 @@ function ProfileContent() {
         const user = authData.user;
         const meta = user.user_metadata || {};
 
-        // Fallback default profile from auth session
         let resolvedProfile: UserProfile = {
           id: user.id,
           name: meta.name || meta.full_name || (user.email ? user.email.split('@')[0] : 'Member'),
@@ -140,7 +139,7 @@ function ProfileContent() {
           }
         }
 
-        // 2. Fetch Buyer Acquisitions (Purchases)
+        // 2. Fetch Buyer Acquisitions (Purchases for all users)
         try {
           const { data: ordersData } = await supabase
             .from('orders')
@@ -155,33 +154,34 @@ function ProfileContent() {
           console.error('Error loading purchases:', e);
         }
 
-        // 3. Fetch Uploaded Artworks (Both Artists and Users who uploaded)
-        try {
-          const { data: artData } = await supabase
-            .from('artworks')
-            .select('id, title, price, image_url, sold, is_digital, medium, created_at')
-            .eq('artist_id', user.id)
-            .order('created_at', { ascending: false });
-
-          if (mounted) {
-            setArtworks(artData || []);
-          }
-        } catch (e) {
-          console.error('Error loading artworks:', e);
-        }
-
-        // 4. Fetch Sales of their artwork (which reached, which in transit)
-        if (token) {
+        // 3. Only fetch artist data if user is an artist
+        if (resolvedProfile.role === 'artist') {
           try {
-            const salesRes = await fetch('/api/artist/orders', {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const salesData = await salesRes.json().catch(() => ({}));
-            if (salesData?.orders && mounted) {
-              setArtistSales(salesData.orders);
+            const { data: artData } = await supabase
+              .from('artworks')
+              .select('id, title, price, image_url, sold, is_digital, medium, created_at')
+              .eq('artist_id', user.id)
+              .order('created_at', { ascending: false });
+
+            if (mounted) {
+              setArtworks(artData || []);
             }
-          } catch {
-            // Optional
+          } catch (e) {
+            console.error('Error loading artworks:', e);
+          }
+
+          if (token) {
+            try {
+              const salesRes = await fetch('/api/artist/orders', {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const salesData = await salesRes.json().catch(() => ({}));
+              if (salesData?.orders && mounted) {
+                setArtistSales(salesData.orders);
+              }
+            } catch {
+              // Optional
+            }
           }
         }
       } catch (err) {
@@ -210,7 +210,7 @@ function ProfileContent() {
     return (
       <main className="mx-auto max-w-md px-5 py-24 text-center">
         <h1 className="text-xl font-bold text-white">Sign In Required</h1>
-        <p className="mt-2 text-sm text-slate-400">Please log in to access your profile and acquisitions.</p>
+        <p className="mt-2 text-sm text-slate-400">Please log in to access your profile and collection.</p>
         <Link href="/login" className="mt-4 inline-block rounded-full bg-amber-500 px-6 py-2.5 text-xs font-bold text-slate-950">
           Go to Login
         </Link>
@@ -218,7 +218,9 @@ function ProfileContent() {
     );
   }
 
-  // Compute artwork delivery statuses for uploaded pieces
+  const isArtist = profile.role === 'artist';
+
+  // Compute artwork delivery statuses for artist's uploaded pieces
   const getArtworkDeliveryStatus = (artId: string, isSold: boolean) => {
     if (!isSold) return { label: 'Active in Gallery', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' };
     const matchingSale = artistSales.find((s) => s.artworks?.id === artId);
@@ -230,7 +232,9 @@ function ProfileContent() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-12 md:px-6">
-      {/* Profile Header Card */}
+      {/* ============================================================== */}
+      {/* PROFILE HEADER CARD                                            */}
+      {/* ============================================================== */}
       <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-[#161F33] to-[#0E1524] p-6 sm:p-8 shadow-2xl backdrop-blur-xl mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="flex items-center gap-5">
@@ -248,9 +252,9 @@ function ProfileContent() {
                   {profile.name}
                 </h1>
                 <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200 border border-white/10">
-                  {profile.role === 'artist' ? '🎨 Artist Atelier' : '🖼️ Art Collector'}
+                  {isArtist ? '🎨 Verified Artist Atelier' : '🖼️ Art Patron & Collector'}
                 </span>
-                {profile.payout_upi_id && (
+                {isArtist && profile.payout_upi_id && (
                   <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
                     <span>⚡ UPI:</span>
                     <span>{profile.payout_upi_id}</span>
@@ -263,22 +267,31 @@ function ProfileContent() {
             </div>
           </div>
 
-          {/* Action Buttons - Upload is ONLY visible to artists */}
+          {/* Action Buttons: Different for Collector vs Artist */}
           <div className="flex flex-wrap items-center gap-2.5">
-            {profile.role === 'artist' ? (
-              <Link
-                href="/dashboard/upload"
-                className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
-              >
-                <span className="text-sm font-black">+</span>
-                <span>Upload Artwork</span>
-              </Link>
+            {isArtist ? (
+              <>
+                <Link
+                  href="/dashboard/upload"
+                  className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
+                >
+                  <span className="text-sm font-black">+</span>
+                  <span>Upload Artwork</span>
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2 text-xs font-semibold text-amber-300 transition"
+                >
+                  <span>🎨</span>
+                  <span>Studio</span>
+                </Link>
+              </>
             ) : (
               <Link
                 href="/browse"
                 className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 px-4 py-2 text-xs font-bold text-slate-950 shadow-md transition"
               >
-                <span>Explore Gallery</span>
+                <span>Explore Fine Art Gallery →</span>
               </Link>
             )}
 
@@ -292,33 +305,69 @@ function ProfileContent() {
           </div>
         </div>
 
-        {/* Quick Stats Strip */}
-        <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-          <div className="rounded-xl bg-white/5 p-3">
-            <span className="block text-xs text-slate-400 font-medium">Acquisitions</span>
-            <span className="font-serif text-xl font-bold text-white">{purchases.length}</span>
+        {/* ============================================================== */}
+        {/* STATS STRIP: STRICTLY SEPARATE FOR COLLECTOR VS ARTIST        */}
+        {/* ============================================================== */}
+        {isArtist ? (
+          /* ARTIST STATS STRIP */
+          <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Artworks Listed</span>
+              <span className="font-serif text-xl font-bold text-white">{artworks.length}</span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Pieces Sold</span>
+              <span className="font-serif text-xl font-bold text-emerald-400">
+                {artworks.filter((a) => a.sold).length}
+              </span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Active in Gallery</span>
+              <span className="font-serif text-xl font-bold text-amber-300">
+                {artworks.filter((a) => !a.sold).length}
+              </span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Payout Destination</span>
+              <span className="text-xs font-bold text-amber-400 flex items-center justify-center gap-1 mt-1">
+                {profile.payout_upi_id ? '✓ UPI Configured' : '⚠ Set UPI in Settings'}
+              </span>
+            </div>
           </div>
-          <div className="rounded-xl bg-white/5 p-3">
-            <span className="block text-xs text-slate-400 font-medium">Artworks Uploaded</span>
-            <span className="font-serif text-xl font-bold text-white">{artworks.length}</span>
+        ) : (
+          /* BUYER / COLLECTOR STATS STRIP (ZERO SELLER STATS) */
+          <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Art Pieces Acquired</span>
+              <span className="font-serif text-xl font-bold text-white">{purchases.length}</span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Physical Pieces</span>
+              <span className="font-serif text-xl font-bold text-amber-300">
+                {purchases.filter((p) => !p.artworks?.is_digital).length}
+              </span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Digital Masterpieces</span>
+              <span className="font-serif text-xl font-bold text-blue-400">
+                {purchases.filter((p) => p.artworks?.is_digital).length}
+              </span>
+            </div>
+            <div className="rounded-xl bg-white/5 p-3">
+              <span className="block text-xs text-slate-400 font-medium">Membership</span>
+              <span className="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1 mt-1">
+                ✓ Verified Patron
+              </span>
+            </div>
           </div>
-          <div className="rounded-xl bg-white/5 p-3">
-            <span className="block text-xs text-slate-400 font-medium">Pieces Reached Buyers</span>
-            <span className="font-serif text-xl font-bold text-emerald-400">
-              {artworks.filter((a) => a.sold).length}
-            </span>
-          </div>
-          <div className="rounded-xl bg-white/5 p-3">
-            <span className="block text-xs text-slate-400 font-medium">Payout Status</span>
-            <span className="text-xs font-bold text-amber-400 flex items-center justify-center gap-1 mt-1">
-              {profile.payout_upi_id ? '✓ UPI Linked' : '⚠ Set UPI in Settings'}
-            </span>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Navigation Tabs */}
+      {/* ============================================================== */}
+      {/* NAVIGATION TABS: STRICTLY SEPARATE                            */}
+      {/* ============================================================== */}
       <div className="mb-6 flex flex-wrap gap-2 border-b border-white/10 pb-1">
+        {/* Tab 1: Acquisitions (Always available for purchases) */}
         <button
           onClick={() => setActiveTab('acquisitions')}
           className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
@@ -328,60 +377,88 @@ function ProfileContent() {
           }`}
         >
           <span>🛍️</span>
-          <span>My Acquisitions (Bought Until Now)</span>
+          <span>{isArtist ? 'Personal Acquisitions' : 'My Collection & Purchases'}</span>
           <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">
             {purchases.length}
           </span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('artworks')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
-            activeTab === 'artworks'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
-        >
-          <span>🎨</span>
-          <span>Uploaded Artworks & Delivery Status</span>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">
-            {artworks.length}
-          </span>
-        </button>
+        {/* Tab 2: Uploaded Artworks (STRICTLY FOR ARTISTS ONLY) */}
+        {isArtist && (
+          <button
+            onClick={() => setActiveTab('artworks')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+              activeTab === 'artworks'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>🎨</span>
+            <span>My Artworks in Gallery</span>
+            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">
+              {artworks.length}
+            </span>
+          </button>
+        )}
+
+        {/* Tab 3: Sales Orders to Dispatch (STRICTLY FOR ARTISTS ONLY) */}
+        {isArtist && (
+          <button
+            onClick={() => setActiveTab('sales')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+              activeTab === 'sales'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>📦</span>
+            <span>Orders to Ship</span>
+            <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-slate-300">
+              {artistSales.length}
+            </span>
+          </button>
+        )}
+
+        {/* Tab 4: Delivery Address (For Collectors) */}
+        {!isArtist && (
+          <button
+            onClick={() => setActiveTab('shipping')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+              activeTab === 'shipping'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>📍</span>
+            <span>Delivery Address</span>
+          </button>
+        )}
       </div>
 
       {/* ============================================================== */}
-      {/* TAB 1: BUYER ACQUISITIONS (What you bought until now)           */}
+      {/* TAB CONTENT: BUYER PURCHASES (ACQUISITIONS)                    */}
       {/* ============================================================== */}
       {activeTab === 'acquisitions' && (
         <div className="space-y-4">
           {purchases.length === 0 ? (
-            /* Empty State for Buyers */
             <div className="rounded-3xl border border-white/10 bg-[#121826] p-12 text-center shadow-xl">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-3xl">
                 🖼️
               </div>
-              <h2 className="font-serif text-2xl font-bold text-white">No Artworks Acquired Yet</h2>
+              <h2 className="font-serif text-2xl font-bold text-white">Your Art Collection is Empty</h2>
               <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-                You haven't bought any artworks until now. Explore our curated fine art galleries to acquire original paintings and masterworks directly from independent creators.
+                You haven't acquired any artworks yet. Discover one-of-a-kind original paintings, archival prints, and digital masterworks from verified artists.
               </p>
-              <div className="mt-6 flex justify-center gap-3">
+              <div className="mt-6 flex justify-center">
                 <Link
                   href="/browse"
-                  className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 hover:to-amber-500 transition"
+                  className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
                 >
-                  Explore the Gallery
-                </Link>
-                <Link
-                  href="/spaces"
-                  className="rounded-full border border-white/20 bg-white/5 px-6 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
-                >
-                  Virtual Room Visualizer
+                  Explore the Gallery →
                 </Link>
               </div>
             </div>
           ) : (
-            /* List of Purchases */
             <div className="grid grid-cols-1 gap-4">
               {purchases.map((order) => {
                 const art = order.artworks;
@@ -394,12 +471,12 @@ function ProfileContent() {
                       {art?.image_url ? (
                         <img
                           src={art.image_url}
-                          alt={art.title}
+                          alt={art.title || 'Artwork'}
                           className="h-20 w-20 rounded-xl object-cover border border-white/10 shrink-0"
                         />
                       ) : (
                         <div className="h-20 w-20 rounded-xl bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
-                          🎨
+                          🖼️
                         </div>
                       )}
                       <div>
@@ -410,79 +487,90 @@ function ProfileContent() {
                           <span
                             className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold border uppercase tracking-wider ${
                               order.status === 'delivered'
-                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
                                 : order.status === 'shipped'
                                 ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
-                                : 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                             }`}
                           >
                             {order.status === 'delivered'
-                              ? 'Delivered (Reached)'
+                              ? 'Delivered'
                               : order.status === 'shipped'
                               ? 'In Transit'
-                              : 'Paid (Escrow Secured)'}
+                              : 'Order Confirmed'}
                           </span>
                         </div>
                         <p className="text-xs text-slate-400 mt-0.5">
-                          Acquired on {new Date(order.created_at).toLocaleDateString()} • Format:{' '}
-                          <span className="text-white font-medium">
-                            {art?.is_digital ? 'Digital Archival Master' : 'Original Physical Piece'}
-                          </span>
+                          {art?.medium || (art?.is_digital ? 'Archival Digital Art' : 'Physical Artwork')} •{' '}
+                          Purchased on {new Date(order.created_at).toLocaleDateString()}
                         </p>
                         <p className="text-sm font-bold text-amber-400 mt-1">
-                          ₹{art?.price?.toLocaleString('en-IN') || 0}
+                          ₹{art?.price?.toLocaleString('en-IN') || '—'}
                         </p>
+
+                        {/* Courier and tracking snippet */}
+                        {order.courier_name && (
+                          <div className="mt-2 text-xs text-slate-300 bg-white/5 rounded-lg px-3 py-1.5 inline-block">
+                            <span>🚚 {order.courier_name}</span>
+                            {order.tracking_note && <span className="text-slate-400 font-mono ml-2">#{order.tracking_note}</span>}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Action buttons for buyer */}
+                    {/* Action buttons */}
                     <div className="flex flex-wrap items-center gap-2 self-stretch sm:self-auto justify-end">
-                      <button
-                        onClick={() =>
-                          setInvoiceData({
-                            orderId: order.id,
-                            artworkTitle: art?.title || 'Fine Art',
-                            artworkPrice: art?.price || 0,
-                            isDigital: art?.is_digital,
-                            buyerName: order.shipping_name || profile.name,
-                            buyerAddress: order.shipping_address,
-                            buyerCity: order.shipping_city,
-                            buyerState: order.shipping_state,
-                            buyerPostalCode: order.shipping_postal_code,
-                            date: new Date(order.created_at).toLocaleDateString(),
-                          })
-                        }
-                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
-                      >
-                        📄 Tax Invoice
-                      </button>
+                      {order.tracking_url && (
+                        <a
+                          href={order.tracking_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-lg border border-purple-500/30 bg-purple-500/10 px-3 py-1.5 text-xs font-semibold text-purple-300 hover:bg-purple-500/20 transition"
+                        >
+                          📍 Track Courier
+                        </a>
+                      )}
+
+                      {art?.is_digital && (
+                        <a
+                          href={`/api/download/${order.id}`}
+                          className="rounded-lg bg-emerald-500/20 border border-emerald-500/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/30 transition"
+                        >
+                          ⬇ Download High-Res
+                        </a>
+                      )}
 
                       <button
                         onClick={() =>
                           setCoaData({
-                            artworkTitle: art?.title || 'Fine Art',
-                            artistName: 'Verified Independent Artist',
-                            editionType: art?.is_digital ? 'Archival Digital Edition' : '1 of 1 Original',
-                            medium: art?.medium || 'Fine Art Pigments on Canvas',
+                            artworkTitle: art?.title || 'Original Artwork',
+                            artistName: 'Artelio Verified Artist',
+                            editionType: art?.is_digital ? 'Archival Digital Edition' : '1 of 1 Original Fine Art',
+                            medium: art?.medium || 'Fine Art Pigments',
                             date: new Date(order.created_at).toLocaleDateString(),
                             certificateId: `COA-${order.id.slice(0, 8).toUpperCase()}`,
                           })
                         }
                         className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 transition"
                       >
-                        📜 View COA
+                        📜 Certificate (COA)
                       </button>
 
-                      {order.tracking_url && (
-                        <a
-                          href={order.tracking_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-blue-500 transition"
-                        >
-                          📦 Track Courier ↗
-                        </a>
-                      )}
+                      <button
+                        onClick={() =>
+                          setInvoiceData({
+                            orderId: order.id,
+                            artworkTitle: art?.title || 'Fine Art Artwork',
+                            buyerName: order.shipping_name || profile.name,
+                            buyerAddress: order.shipping_address || profile.address || 'Registered Address',
+                            amount: art?.price || 0,
+                            date: new Date(order.created_at).toLocaleDateString(),
+                          })
+                        }
+                        className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
+                      >
+                        🧾 Invoice
+                      </button>
                     </div>
                   </div>
                 );
@@ -493,58 +581,41 @@ function ProfileContent() {
       )}
 
       {/* ============================================================== */}
-      {/* TAB 2: UPLOADED ARTWORKS (Which reached and which have not)      */}
+      {/* TAB CONTENT: ARTIST LISTED ARTWORKS (ARTISTS ONLY)             */}
       {/* ============================================================== */}
-      {activeTab === 'artworks' && (
+      {isArtist && activeTab === 'artworks' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2">
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">
-              Artworks Uploaded by You ({artworks.length})
+              Artworks Listed by Your Atelier ({artworks.length})
             </h2>
-            {profile.role === 'artist' && (
-              <Link
-                href="/dashboard/upload"
-                className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 transition"
-              >
-                + Upload Another Piece
-              </Link>
-            )}
+            <Link
+              href="/dashboard/upload"
+              className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 transition"
+            >
+              + Upload Another Piece
+            </Link>
           </div>
 
           {artworks.length === 0 ? (
-            /* Empty State for Artworks */
             <div className="rounded-3xl border border-white/10 bg-[#121826] p-12 text-center shadow-xl">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-3xl">
                 🎨
               </div>
-              <h2 className="font-serif text-2xl font-bold text-white">
-                {profile.role === 'artist' ? 'No Artworks Uploaded Yet' : 'Artist Atelier Exclusive'}
-              </h2>
+              <h2 className="font-serif text-2xl font-bold text-white">No Artworks Listed Yet</h2>
               <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-                {profile.role === 'artist'
-                  ? "You haven't listed any art pieces yet. List your original paintings, sculptures, or digital art pieces for collectors."
-                  : 'Only verified artist atelier accounts can upload and list artworks. If you want to sell your artwork, you can switch to an Artist in Settings.'}
+                You haven't uploaded any artworks yet. List your original paintings, sculptures, or digital art pieces to present them to global art collectors.
               </p>
               <div className="mt-6 flex justify-center">
-                {profile.role === 'artist' ? (
-                  <Link
-                    href="/dashboard/upload"
-                    className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
-                  >
-                    Upload Your First Artwork
-                  </Link>
-                ) : (
-                  <Link
-                    href="/settings"
-                    className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
-                  >
-                    Switch to Artist in Settings
-                  </Link>
-                )}
+                <Link
+                  href="/dashboard/upload"
+                  className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
+                >
+                  Upload Your First Artwork →
+                </Link>
               </div>
             </div>
           ) : (
-            /* List of Uploaded Artworks with Status */
             <div className="grid grid-cols-1 gap-4">
               {artworks.map((art) => {
                 const statusInfo = getArtworkDeliveryStatus(art.id, art.sold);
@@ -584,7 +655,6 @@ function ProfileContent() {
                       </div>
                     </div>
 
-                    {/* Quick action buttons */}
                     <div className="flex flex-wrap items-center gap-2 self-stretch sm:self-auto justify-end">
                       <Link
                         href={`/artwork/${art.id}`}
@@ -614,6 +684,123 @@ function ProfileContent() {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB CONTENT: ARTIST DISPATCH ORDERS (ARTISTS ONLY)            */}
+      {/* ============================================================== */}
+      {isArtist && activeTab === 'sales' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-2">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">
+              Orders from Collectors Awaiting Shipment ({artistSales.length})
+            </h2>
+            <Link
+              href="/dashboard"
+              className="text-xs text-amber-400 hover:underline"
+            >
+              Open Full Studio Dashboard →
+            </Link>
+          </div>
+
+          {artistSales.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-[#121826] p-12 text-center shadow-xl">
+              <span className="text-3xl block mb-3">📦</span>
+              <h2 className="font-serif text-xl font-bold text-white">No Pending Orders</h2>
+              <p className="mt-1 text-xs text-slate-400">
+                When a collector buys your artwork, order details and buyer shipping addresses will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4">
+              {artistSales.map((sale) => (
+                <div
+                  key={sale.id}
+                  className="rounded-2xl border border-white/10 bg-[#121826] p-5 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                >
+                  <div>
+                    <span className="text-xs font-mono text-slate-400">Order #{sale.id.slice(0, 8).toUpperCase()}</span>
+                    <h3 className="font-serif text-lg font-bold text-white mt-1">
+                      {sale.artworks?.title || 'Fine Art Piece'}
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-1">
+                      Ship to: <strong>{sale.shipping_name || 'Collector'}</strong> • {sale.shipping_city || ''}, {sale.shipping_state || ''}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setSlipOrder(sale)}
+                      className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10 transition"
+                    >
+                      📄 Packing Slip
+                    </button>
+                    <button
+                      onClick={() => setShippingOrder(sale)}
+                      className="rounded-lg bg-amber-500 hover:bg-amber-400 px-3 py-1.5 text-xs font-bold text-slate-950 transition"
+                    >
+                      🚚 Ship Order
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* TAB CONTENT: DELIVERY ADDRESS (BUYERS ONLY)                    */}
+      {/* ============================================================== */}
+      {!isArtist && activeTab === 'shipping' && (
+        <div className="rounded-3xl border border-white/10 bg-[#121826] p-8 shadow-xl">
+          <h2 className="font-serif text-xl font-bold text-white mb-2">Saved Delivery Address</h2>
+          <p className="text-xs text-slate-400 mb-6">
+            This address will be pre-filled when you purchase original physical artworks for safe white-glove courier delivery.
+          </p>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">
+              Primary Delivery Address
+            </span>
+            <p className="text-sm text-white font-medium">
+              {profile.address ? profile.address : 'No delivery address saved yet.'}
+            </p>
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Link
+              href="/settings"
+              className="rounded-xl bg-amber-500 hover:bg-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 transition"
+            >
+              Update Address in Settings →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* COLLECTOR INVITATION TO BECOME AN ARTIST                       */}
+      {/* ============================================================== */}
+      {!isArtist && (
+        <div className="mt-12 rounded-3xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-[#121826] to-purple-500/10 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <div>
+            <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 uppercase tracking-wider border border-amber-500/30">
+              Creator Program
+            </span>
+            <h3 className="font-serif text-xl font-bold text-white mt-2">
+              Are you an independent artist or sculptor?
+            </h3>
+            <p className="text-xs text-slate-300 mt-1 max-w-xl">
+              You can upgrade your account to an Artist Atelier to list original artworks, get featured in curated galleries, and receive direct 90% payouts to your UPI ID.
+            </p>
+          </div>
+          <Link
+            href="/settings"
+            className="shrink-0 rounded-full border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 px-5 py-2.5 text-xs font-bold text-amber-300 transition"
+          >
+            Apply for Artist Atelier in Settings →
+          </Link>
         </div>
       )}
 

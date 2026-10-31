@@ -211,26 +211,28 @@ export default function SettingsPage() {
           <span>Profile & Shipping</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab('payout')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
-            activeTab === 'payout'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
-          }`}
-        >
-          <span>💳</span>
-          <span>UPI & Payout Details</span>
-          {hasExistingPayout ? (
-            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-400 border border-emerald-500/30">
-              Active
-            </span>
-          ) : (
-            <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300 border border-amber-500/30">
-              Required for sellers
-            </span>
-          )}
-        </button>
+        {role === 'artist' && (
+          <button
+            onClick={() => setActiveTab('payout')}
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+              activeTab === 'payout'
+                ? 'border-amber-500 text-amber-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <span>💳</span>
+            <span>UPI & Payout Details</span>
+            {hasExistingPayout ? (
+              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-400 border border-emerald-500/30">
+                Active
+              </span>
+            ) : (
+              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300 border border-amber-500/30">
+                Required for sellers
+              </span>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Tab 1: Profile Settings */}

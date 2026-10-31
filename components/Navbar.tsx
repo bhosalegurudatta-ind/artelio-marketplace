@@ -257,16 +257,16 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link
-                  href="/login?role=artist"
-                  className="hidden sm:inline-block text-[11px] text-white/70 hover:text-amber-300 font-medium transition"
+                  href="/artist-signup"
+                  className="hidden sm:inline-block text-xs font-semibold text-amber-400 hover:text-amber-300 transition px-2 py-1"
                 >
-                  Artist Login
+                  Sell Art
                 </Link>
                 <Link
-                  href="/login?role=customer"
-                  className="rounded-full px-3 py-1.5 art-tag text-[11px] text-white/80 hover:text-white transition"
+                  href="/login"
+                  className="rounded-full bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-1.5 art-tag text-[11px] font-semibold text-white transition"
                 >
-                  Log in
+                  Sign In
                 </Link>
               </div>
             )}

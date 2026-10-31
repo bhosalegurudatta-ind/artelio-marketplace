@@ -263,15 +263,24 @@ function ProfileContent() {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Upload is ONLY visible to artists */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <Link
-              href="/dashboard/upload"
-              className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
-            >
-              <span className="text-sm font-black">+</span>
-              <span>Upload Artwork</span>
-            </Link>
+            {profile.role === 'artist' ? (
+              <Link
+                href="/dashboard/upload"
+                className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-4 py-2 text-xs font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
+              >
+                <span className="text-sm font-black">+</span>
+                <span>Upload Artwork</span>
+              </Link>
+            ) : (
+              <Link
+                href="/browse"
+                className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 px-4 py-2 text-xs font-bold text-slate-950 shadow-md transition"
+              >
+                <span>Explore Gallery</span>
+              </Link>
+            )}
 
             <Link
               href="/settings"
@@ -492,12 +501,14 @@ function ProfileContent() {
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-300">
               Artworks Uploaded by You ({artworks.length})
             </h2>
-            <Link
-              href="/dashboard/upload"
-              className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 transition"
-            >
-              + Upload Another Piece
-            </Link>
+            {profile.role === 'artist' && (
+              <Link
+                href="/dashboard/upload"
+                className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 transition"
+              >
+                + Upload Another Piece
+              </Link>
+            )}
           </div>
 
           {artworks.length === 0 ? (
@@ -506,17 +517,30 @@ function ProfileContent() {
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-500/10 text-3xl">
                 🎨
               </div>
-              <h2 className="font-serif text-2xl font-bold text-white">No Artworks Uploaded Yet</h2>
+              <h2 className="font-serif text-2xl font-bold text-white">
+                {profile.role === 'artist' ? 'No Artworks Uploaded Yet' : 'Artist Atelier Exclusive'}
+              </h2>
               <p className="mt-2 text-sm text-slate-400 max-w-md mx-auto">
-                You haven't listed any art pieces yet. Anyone on Artelio can upload and sell original fine art or digital masterworks directly to collectors.
+                {profile.role === 'artist'
+                  ? "You haven't listed any art pieces yet. List your original paintings, sculptures, or digital art pieces for collectors."
+                  : 'Only verified artist atelier accounts can upload and list artworks. If you want to sell your artwork, you can switch to an Artist in Settings.'}
               </p>
               <div className="mt-6 flex justify-center">
-                <Link
-                  href="/dashboard/upload"
-                  className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
-                >
-                  Upload Your First Artwork
-                </Link>
+                {profile.role === 'artist' ? (
+                  <Link
+                    href="/dashboard/upload"
+                    className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
+                  >
+                    Upload Your First Artwork
+                  </Link>
+                ) : (
+                  <Link
+                    href="/settings"
+                    className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg hover:from-amber-400 transition"
+                  >
+                    Switch to Artist in Settings
+                  </Link>
+                )}
               </div>
             </div>
           ) : (

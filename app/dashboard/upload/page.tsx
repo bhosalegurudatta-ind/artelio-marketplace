@@ -24,35 +24,60 @@ export default function UploadArtwork() {
   const [aiMsg, setAiMsg] = useState('');
   const [priceHint, setPriceHint] = useState('');
 
-  // Payout / UPI states
+  // Role & Payout states
+  const [userRole, setUserRole] = useState<'artist' | 'customer' | null>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
   const [payoutConfigured, setPayoutConfigured] = useState<boolean | null>(null);
   const [existingUpi, setExistingUpi] = useState<string>('');
   const [firstTimeUpi, setFirstTimeUpi] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
 
   useEffect(() => {
-    async function checkPayout() {
-      const { data: session } = await supabase.auth.getSession();
-      const token = session.session?.access_token;
-      if (!token) return;
+    async function checkUserAndPayout() {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) {
+        setRoleLoading(false);
+        router.push('/login?role=artist');
+        return;
+      }
 
       try {
-        const res = await fetch('/api/artist/payout-settings', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data && data.configured) {
-          setPayoutConfigured(true);
-          setExistingUpi(data.upiId || data.accountNumberMasked || 'Linked Account');
-        } else {
-          setPayoutConfigured(false);
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user) {
+          const { data: dbProfile } = await supabase
+            .from('users')
+            .select('role, payout_upi_id, payout_method')
+            .eq('id', userData.user.id)
+            .maybeSingle();
+
+          const currentRole = dbProfile?.role || userData.user.user_metadata?.role || 'customer';
+          setUserRole(currentRole as 'artist' | 'customer');
+
+          if (dbProfile?.payout_upi_id) {
+            setPayoutConfigured(true);
+            setExistingUpi(dbProfile.payout_upi_id);
+          } else {
+            const res = await fetch('/api/artist/payout-settings', {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (data && data.configured) {
+              setPayoutConfigured(true);
+              setExistingUpi(data.upiId || data.accountNumberMasked || 'Linked Account');
+            } else {
+              setPayoutConfigured(false);
+            }
+          }
         }
       } catch {
         setPayoutConfigured(false);
+      } finally {
+        setRoleLoading(false);
       }
     }
-    checkPayout();
-  }, []);
+    checkUserAndPayout();
+  }, [router]);
 
   useEffect(() => {
     if (!file) {
@@ -126,10 +151,16 @@ export default function UploadArtwork() {
       return;
     }
 
-    // First-time uploader: must supply UPI payout destination
+    if (userRole !== 'artist') {
+      setErrorMsg('Only registered artist accounts can list artworks. Please switch to an artist account in Settings.');
+      setStatus('error');
+      return;
+    }
+
+    // Compulsory check: artist MUST have payout details configured to receive 90% artwork price
     if (!payoutConfigured) {
       if (!firstTimeUpi.trim() || !accountHolder.trim()) {
-        setErrorMsg('Please enter your Account Holder Name and UPI ID below so you can receive sales payouts.');
+        setErrorMsg('Compulsory: Please enter your Account Holder Name and UPI ID below so you can receive your artwork payout after commission.');
         setStatus('error');
         return;
       }
@@ -207,11 +238,52 @@ export default function UploadArtwork() {
     }
   }
 
+  if (roleLoading) {
+    return (
+      <main className="mx-auto flex min-h-[50vh] max-w-lg items-center justify-center px-5 py-24 text-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-r-transparent" />
+      </main>
+    );
+  }
+
+  if (userRole === 'customer') {
+    return (
+      <main className="mx-auto flex min-h-[60vh] max-w-lg flex-col items-center justify-center px-5 py-24 text-center">
+        <div className="rounded-3xl border border-amber-500/30 bg-[#121826] p-8 shadow-2xl backdrop-blur-xl">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/20 text-2xl">
+            🎨
+          </div>
+          <h1 className="font-serif text-2xl font-bold text-white">Artist Atelier Only</h1>
+          <p className="mt-2 text-xs text-slate-300 leading-relaxed">
+            Only registered artist accounts can upload and list artworks for sale on Artelio. Buyer accounts cannot list art pieces.
+          </p>
+          <p className="mt-3 text-xs text-amber-400 font-medium">
+            Are you an artist wanting to sell your artwork? You can easily switch your account role to Artist in Settings.
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/settings"
+              className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 px-5 py-2.5 text-xs font-bold text-slate-950 transition shadow-md"
+            >
+              Switch to Artist in Settings →
+            </Link>
+            <Link
+              href="/browse"
+              className="w-full sm:w-auto rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 px-5 py-2.5 text-xs font-semibold text-white transition"
+            >
+              Browse Gallery
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="mx-auto max-w-xl px-5 py-12">
-      <h1 className="text-2xl font-bold text-ink md:text-3xl font-serif">List Artwork for Sale</h1>
+      <h1 className="text-2xl font-bold text-ink md:text-3xl font-serif">Artist Atelier: List Artwork for Sale</h1>
       <p className="mt-2 text-sm text-ink/60">
-        Open to all creators, artists, and collectors. Buyers see a watermarked preview; full-resolution files are secured in private escrow storage.
+        Exclusive to verified artists. Upload your original physical or digital masterpiece. Buyers see a watermarked preview; full-resolution files and originals are secured in escrow.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -335,7 +407,7 @@ export default function UploadArtwork() {
           </span>
         </label>
 
-        {/* Sales Payout Destination & UPI Section */}
+        {/* Compulsory Sales Payout Destination & UPI Section */}
         {payoutConfigured === true ? (
           <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -344,7 +416,7 @@ export default function UploadArtwork() {
               </span>
               <div>
                 <span className="text-xs font-bold text-emerald-400 block">
-                  Payout Destination Verified (90% Net Proceeds)
+                  ✓ Compulsory Payout Destination Configured (90% Net Earnings)
                 </span>
                 <span className="text-xs text-white font-mono">{existingUpi}</span>
               </div>
@@ -353,24 +425,24 @@ export default function UploadArtwork() {
               href="/settings"
               className="text-xs text-amber-400 underline hover:text-amber-300 font-medium self-end sm:self-auto"
             >
-              Change in Settings
+              Update in Settings
             </Link>
           </div>
         ) : (
-          <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-b from-amber-500/10 to-transparent p-5 space-y-4">
+          <div className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/15 to-[#121826] p-5 space-y-4 shadow-xl">
             <div className="flex items-start gap-3">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
                 ⚡
               </span>
               <div>
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  First-Time Setup: Enter Your UPI Payout Details
-                  <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] text-amber-300 border border-amber-500/30">
-                    Required
+                  <span>Compulsory: Enter Your UPI Payout Details</span>
+                  <span className="rounded bg-amber-500/30 px-2 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-500/40 uppercase">
+                    Mandatory for Artists
                   </span>
                 </h3>
-                <p className="text-xs text-slate-300 mt-0.5">
-                  Where should we transfer your 90% sales revenue when this artwork is bought?
+                <p className="text-xs text-slate-300 mt-1">
+                  You must enter your payment details so Artelio can transfer your 90% artwork earnings directly to your UPI/bank account after deducting the 10% platform commission.
                 </p>
               </div>
             </div>
@@ -401,7 +473,7 @@ export default function UploadArtwork() {
               </label>
             </div>
             <p className="text-[11px] text-slate-400">
-              🔒 Safe & Direct: Powered by Razorpay Escrow. Payouts settle directly to this UPI address.
+              🔒 Safe & Direct: Powered by Razorpay Escrow. Your 90% payout is settled directly to this UPI address after sales.
             </p>
           </div>
         )}

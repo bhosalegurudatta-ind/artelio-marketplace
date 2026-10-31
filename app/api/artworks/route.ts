@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     // Ensure the user exists in public.users table so foreign keys work
     let { data: profile } = await supabaseAdmin
       .from('users')
-      .select('id, role, name')
+      .select('id, role, name, payout_upi_id, payout_method')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -38,10 +38,20 @@ export async function POST(req: NextRequest) {
           role: meta.role === 'artist' ? 'artist' : 'customer',
           approved: true,
         })
-        .select('id, role, name')
+        .select('id, role, name, payout_upi_id, payout_method')
         .single();
       if (pErr) console.error('Error auto-creating profile on upload:', pErr);
       profile = newProfile;
+    }
+
+    // Enforce Rule 1: ONLY verified artists can add/list artwork - nobody else
+    if (profile?.role !== 'artist') {
+      return fail('Only verified artist accounts can list artworks. Please switch to an artist account in Settings to upload.', 403);
+    }
+
+    // Enforce Rule 2: Compulsory payment details (UPI ID required for payouts after commission)
+    if (!profile?.payout_upi_id && !profile?.payout_method) {
+      return fail('Compulsory payout details required: You must provide your UPI ID to receive payments after platform commission before listing artwork.', 400);
     }
 
     const form = await req.formData();

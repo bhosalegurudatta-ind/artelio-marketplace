@@ -186,12 +186,14 @@ export default function SettingsPage() {
           >
             ← View Profile
           </Link>
-          <Link
-            href="/dashboard/upload"
-            className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition"
-          >
-            + Upload Artwork
-          </Link>
+          {role === 'artist' && (
+            <Link
+              href="/dashboard/upload"
+              className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition"
+            >
+              + Upload Artwork
+            </Link>
+          )}
         </div>
       </div>
 

@@ -239,14 +239,16 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                {/* Upload artwork button - visible to BOTH artists and users */}
-                <Link
-                  href="/dashboard/upload"
-                  className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 hover:scale-105 transition-all active:scale-95"
-                >
-                  <span className="text-sm font-black leading-none">+</span>
-                  <span>Upload Art</span>
-                </Link>
+                {/* Upload artwork button - ONLY visible to verified artists */}
+                {role === 'artist' && (
+                  <Link
+                    href="/dashboard/upload"
+                    className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 hover:scale-105 transition-all active:scale-95"
+                  >
+                    <span className="text-sm font-black leading-none">+</span>
+                    <span>Upload Art</span>
+                  </Link>
+                )}
 
                 <button onClick={handleLogout} className="art-tag text-[11px] text-white/60 hover:text-clay transition ml-1">
                   Log out
@@ -265,13 +267,6 @@ export default function Navbar() {
                   className="rounded-full px-3 py-1.5 art-tag text-[11px] text-white/80 hover:text-white transition"
                 >
                   Log in
-                </Link>
-                <Link
-                  href="/dashboard/upload"
-                  className="flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 transition hover:scale-105 active:scale-95"
-                >
-                  <span className="text-sm font-black leading-none">+</span>
-                  <span>Upload Art</span>
                 </Link>
               </div>
             )}

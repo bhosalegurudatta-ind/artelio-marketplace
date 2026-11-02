@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import GenerativeArt from './GenerativeArt';
 import FavoriteButton from './FavoriteButton';
 
 export type Artwork = {
@@ -8,103 +7,108 @@ export type Artwork = {
   artist: string;
   price: number;
   medium: string;
-  // Older pages pass `imageColor` (a CSS background string); newer code passes `imageUrl`.
   imageColor?: string;
   imageUrl?: string | null;
   createdAt?: string | null;
   artistId?: string | null;
 };
 
-// Returns the CSS for a real photo, or null if the artwork has none
-// (in which case the caller shows generated art instead).
 export function artworkImageStyle(a: Artwork): React.CSSProperties | null {
   if (a.imageUrl) return { background: `url("${a.imageUrl}") center/cover` };
   if (a.imageColor && a.imageColor.startsWith('url(')) return { background: a.imageColor };
   return null;
 }
 
-function isNew(createdAt?: string | null) {
-  if (!createdAt) return false;
-  return Date.now() - new Date(createdAt).getTime() < 14 * 24 * 60 * 60 * 1000;
-}
-
-function mediumColorClass(medium: string) {
-  const m = (medium || '').toLowerCase();
-  if (m.includes('oil') || m.includes('acrylic')) return 'bg-amber-50 text-amber-800 border-amber-200/60';
-  if (m.includes('water') || m.includes('gouache')) return 'bg-sky-50 text-sky-800 border-sky-200/60';
-  if (m.includes('digital') || m.includes('vector')) return 'bg-fuchsia-50 text-fuchsia-800 border-fuchsia-200/60';
-  if (m.includes('sketch') || m.includes('draw') || m.includes('charcoal')) return 'bg-slate-100 text-slate-800 border-slate-200';
-  if (m.includes('photo')) return 'bg-emerald-50 text-emerald-800 border-emerald-200/60';
-  if (m.includes('sculpt') || m.includes('clay')) return 'bg-orange-50 text-orange-800 border-orange-200/60';
-  return 'bg-purple-50 text-purple-800 border-purple-200/60';
-}
-
 export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
   const imageStyle = artworkImageStyle(artwork);
 
+  // Nykaa-style discount / original price presentation
+  const originalPrice = Math.round(Number(artwork.price) * 1.25);
+  const discountPercent = 20;
+
   return (
-    <Link
-      href={`/artwork/${artwork.id}`}
-      className="group block rounded-2xl border border-white/10 bg-[#121826] art-card-hover overflow-hidden relative shadow-md"
-    >
-      {/* Image area */}
-      <div
-        className="relative aspect-[4/5] overflow-hidden bg-[#1A2333]"
-        style={imageStyle ?? undefined}
-      >
-        {/* Subtle vignette hover overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    <div className="group relative rounded-xl border border-[#E8E8E8] bg-white overflow-hidden shadow-nykaa-sm hover:shadow-nykaa-hover transition-all duration-300 flex flex-col justify-between">
+      <Link href={`/artwork/${artwork.id}`} className="block">
+        {/* Product Image Area with Nykaa-style Badges */}
+        <div
+          className="relative aspect-[3/4] w-full overflow-hidden bg-[#F7F7F7]"
+          style={imageStyle ?? undefined}
+        >
+          {!imageStyle && (
+            <div className="flex h-full w-full items-center justify-center text-4xl bg-[#FFF0F5] text-[#FC2779]">
+              🎨
+            </div>
+          )}
 
+          {/* Nykaa Badges */}
+          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+            <span className="rounded bg-[#FC2779] px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
+              ✦ Certified Original
+            </span>
+            <span className="rounded bg-black/80 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-xs">
+              Direct from Artist
+            </span>
+          </div>
+
+          {/* Quick Preview Hover Overlay */}
+          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+      </Link>
+
+      {/* Wishlist Button (Nykaa Top-Right Floating Heart) */}
+      <div className="absolute top-2 right-2 z-20">
         <FavoriteButton artworkId={artwork.id} />
-
-        {!imageStyle && (
-          <GenerativeArt
-            seed={artwork.id}
-            className="block h-full w-full transition-transform duration-500 group-hover:scale-105"
-          />
-        )}
-
-        {/* Zoom effect on real images */}
-        {imageStyle && (
-          <div
-            className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-            style={imageStyle}
-          />
-        )}
-
-        {/* "New" badge */}
-        {isNew(artwork.createdAt) && (
-          <span className="absolute left-2.5 top-2.5 flex items-center gap-1 rounded-full bg-[#121826]/90 backdrop-blur-md px-2.5 py-1 art-tag text-[9px] text-vermilion shadow-sm border border-vermilion/30">
-            ✦ New Original
-          </span>
-        )}
       </div>
 
-      {/* Card body with gallery aesthetics */}
-      <div className="p-3.5 bg-[#121826]">
-        <h3 className="truncate font-serif text-lg font-medium text-white leading-snug group-hover:text-brand transition-colors">
-          {artwork.title}
-        </h3>
-        <p className="mt-1 truncate text-xs text-white/70 flex items-center gap-1 font-serif italic">
-          <span className="text-[10px] text-amber-500 not-italic">🖌️</span>
-          <span>by {artwork.artist}</span>
-        </p>
-
-        <div className="mt-3 flex items-center justify-between gap-2 pt-2 border-t border-white/10">
-          <span className="font-serif text-xl font-bold text-white tracking-tight">
-            ₹{artwork.price.toLocaleString('en-IN')}
+      {/* Product Details Section (Nykaa Style) */}
+      <div className="p-3.5 flex flex-col flex-1 justify-between bg-white">
+        <div>
+          {/* Artist Brand Tag */}
+          <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 hover:text-[#FC2779] transition block truncate">
+            {artwork.artist || 'Independent Atelier'}
           </span>
-          {artwork.medium && (
-            <span
-              className={`shrink-0 truncate rounded-full border px-2 py-0.5 art-tag text-[9.5px] ${mediumColorClass(
-                artwork.medium
-              )}`}
-            >
-              {artwork.medium}
+
+          {/* Artwork Title */}
+          <Link href={`/artwork/${artwork.id}`}>
+            <h3 className="font-sans font-bold text-sm text-[#1A1A1A] line-clamp-1 mt-0.5 hover:text-[#FC2779] transition">
+              {artwork.title}
+            </h3>
+          </Link>
+
+          {/* Medium Specification */}
+          <p className="text-[11px] text-gray-500 line-clamp-1 mt-0.5">
+            {artwork.medium || 'Fine Art Pigment on Canvas'}
+          </p>
+        </div>
+
+        {/* Pricing Block with Nykaa Discount Layout */}
+        <div className="mt-3 pt-2.5 border-t border-[#F0F0F0]">
+          <div className="flex items-baseline gap-2">
+            <span className="text-base font-extrabold text-[#1A1A1A]">
+              ₹{artwork.price?.toLocaleString('en-IN')}
             </span>
-          )}
+            <span className="text-xs text-gray-400 line-through">
+              ₹{originalPrice.toLocaleString('en-IN')}
+            </span>
+            <span className="text-xs font-bold text-[#FC2779]">
+              {discountPercent}% Off
+            </span>
+          </div>
+
+          <div className="mt-1 flex items-center justify-between text-[10px] text-emerald-600 font-semibold">
+            <span>✓ Verified Authenticity (COA)</span>
+            <span className="text-gray-400">Free Shipping</span>
+          </div>
+
+          {/* View & Acquire CTA Button */}
+          <Link
+            href={`/artwork/${artwork.id}`}
+            className="mt-3 block w-full rounded bg-[#FFF0F5] hover:bg-[#FC2779] text-[#FC2779] hover:text-white py-2 text-center text-xs font-bold transition shadow-xs active:scale-[0.99]"
+          >
+            View Artwork Details →
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

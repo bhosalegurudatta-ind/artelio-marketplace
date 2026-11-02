@@ -3,50 +3,73 @@ import { CATEGORIES } from '@/lib/categories';
 
 export default function Footer() {
   const linkClass =
-    'flex items-center gap-1.5 text-sm text-white/70 hover:text-amber-300 transition-colors duration-200';
+    'text-xs text-gray-500 hover:text-[#FC2779] transition-colors duration-150 leading-relaxed';
 
   return (
-    <footer className="mt-28 bg-[#0D131F] text-white relative">
-      {/* Radiant artistic spectrum accent top line */}
-      <div className="h-[3px] w-full art-spectrum-line" />
+    <footer className="mt-20 bg-white border-t border-[#E8E8E8] text-[#1A1A1A]">
+      {/* 1. Nykaa Pink Top Accent Line */}
+      <div className="h-1 w-full bg-[#FC2779]" />
 
-      {/* Top section */}
-      <div className="mx-auto grid max-w-[1240px] gap-12 px-6 pt-16 pb-12 md:grid-cols-12">
-        {/* Brand column */}
-        <div className="md:col-span-3">
-          <div className="flex items-center gap-2">
-            <p className="font-serif text-3xl font-bold tracking-tight text-white">Artelio</p>
-            <span className="art-tag text-[9px] text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
-              Atelier
-            </span>
+      {/* 2. Top Trust Pillars (Nykaa style) */}
+      <div className="border-b border-[#E8E8E8] bg-[#FAFAFA] py-6">
+        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <span className="text-2xl">✨</span>
+            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">100% Genuine Artworks</h4>
+            <p className="text-[11px] text-gray-500">Sourced directly from certified artists</p>
           </div>
-          <p className="mt-3.5 max-w-xs text-sm leading-relaxed text-white/65 font-light">
-            An online fine art marketplace where collectors discover authentic originals directly from independent painters, illustrators, and sculptors.
+          <div>
+            <span className="text-2xl">🚚</span>
+            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Insured Courier Delivery</h4>
+            <p className="text-[11px] text-gray-500">Free delivery on original paintings across India</p>
+          </div>
+          <div>
+            <span className="text-2xl">📜</span>
+            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Authenticity Guaranteed</h4>
+            <p className="text-[11px] text-gray-500">Every piece comes with a signed physical COA</p>
+          </div>
+          <div>
+            <span className="text-2xl">🔒</span>
+            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Secure Razorpay Escrow</h4>
+            <p className="text-[11px] text-gray-500">Safe payments with UPI, Cards &amp; NetBanking</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Main Footer Links */}
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+        {/* Brand Column */}
+        <div className="col-span-2">
+          <Link href="/" className="flex items-center gap-1.5">
+            <span className="font-extrabold text-2xl tracking-tighter text-[#1A1A1A] font-sans">
+              ARTELIO
+            </span>
+            <span className="text-[9px] font-extrabold tracking-widest text-[#FC2779] bg-[#FFF0F5] px-1.5 py-0.5 rounded uppercase border border-[#FC2779]/20">
+              LUXE
+            </span>
+          </Link>
+          <p className="mt-3 max-w-sm text-xs text-gray-500 leading-relaxed">
+            Artelio is India’s premier online curated fine art marketplace, connecting passionate art collectors with independent painters, sculptors, and digital creators across India.
           </p>
-          {/* Social / tag line */}
-          <div className="mt-6 flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-7 items-center rounded-full border border-rose-400/30 bg-rose-500/10 px-3 art-tag text-[10px] text-rose-300">
-              🎨 2,000+ Artworks
-            </span>
-            <span className="inline-flex h-7 items-center rounded-full border border-amber-400/30 bg-amber-500/10 px-3 art-tag text-[10px] text-amber-300">
-              ✦ Direct from Artists
-            </span>
-            <span className="inline-flex h-7 items-center rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 art-tag text-[10px] text-emerald-300">
-              🛡️ Escrow Protected
-            </span>
+
+          <div className="mt-5 flex items-center gap-3">
+            <span className="text-xs font-bold text-[#1A1A1A]">Payment Partners:</span>
+            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">UPI</span>
+            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">GPay</span>
+            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">PhonePe</span>
+            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">Visa/Mastercard</span>
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="md:col-span-3">
-          <h3 className="art-kicker text-amber-300/80 mb-4 flex items-center gap-2">
-            <span>🖌️</span> Mediums &amp; Categories
-          </h3>
-          <ul className="grid grid-cols-1 gap-y-2.5">
+        {/* Mediums */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
+            Art Categories
+          </h4>
+          <ul className="space-y-2">
             {CATEGORIES.slice(0, 5).map((c) => (
               <li key={c.slug}>
                 <Link href={`/browse?category=${c.slug}`} className={linkClass}>
-                  <span className="text-white/30 text-xs">→</span>
                   {c.label}
                 </Link>
               </li>
@@ -54,64 +77,62 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Quick links */}
-        <div className="md:col-span-2">
-          <h3 className="art-kicker text-purple-300/80 mb-4 flex items-center gap-2">
-            <span>✨</span> Collectors
-          </h3>
-          <ul className="space-y-2.5">
-            <li><Link href="/browse" className={linkClass}><span className="text-white/30 text-xs">→</span>Browse all</Link></li>
-            <li><Link href="/spaces" className={linkClass}><span className="text-white/30 text-xs">→</span>My Spaces</Link></li>
-            <li><Link href="/customer-signup" className={linkClass}><span className="text-white/30 text-xs">→</span>Join Artelio</Link></li>
-            <li><Link href="/track" className={linkClass}><span className="text-white/30 text-xs">→</span>Track orders</Link></li>
-            <li><Link href="/plans" className={linkClass}><span className="text-white/30 text-xs">→</span>Collector Club</Link></li>
+        {/* Collector Corner */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
+            Collector Services
+          </h4>
+          <ul className="space-y-2">
+            <li>
+              <Link href="/browse" className={linkClass}>All Galleries</Link>
+            </li>
+            <li>
+              <Link href="/spaces" className={linkClass}>3D Room Studio</Link>
+            </li>
+            <li>
+              <Link href="/track" className={linkClass}>Track Delivery</Link>
+            </li>
+            <li>
+              <Link href="/plans" className={linkClass}>VIP Patron Membership</Link>
+            </li>
+            <li>
+              <Link href="/contact" className={linkClass}>Art Concierge &amp; Advisory</Link>
+            </li>
           </ul>
         </div>
 
-        <div className="md:col-span-2">
-          <h3 className="art-kicker text-rose-300/80 mb-4 flex items-center gap-2">
-            <span>🎨</span> Artists
-          </h3>
-          <ul className="space-y-2.5">
-            <li><Link href="/artist-signup" className={linkClass}><span className="text-white/30 text-xs">→</span>Sell your art</Link></li>
-            <li><Link href="/dashboard" className={linkClass}><span className="text-white/30 text-xs">→</span>Artist Studio</Link></li>
-            <li><Link href="/dashboard/upload" className={linkClass}><span className="text-white/30 text-xs">→</span>Upload piece</Link></li>
-            <li><Link href="/plans" className={linkClass}><span className="text-white/30 text-xs">→</span>Creator Pro</Link></li>
-          </ul>
-        </div>
-
-        {/* Legal & Trust Policies (Mandatory for Razorpay & E-Commerce) */}
-        <div className="md:col-span-2">
-          <h3 className="art-kicker text-emerald-300/80 mb-4 flex items-center gap-2">
-            <span>🛡️</span> Trust &amp; Legal
-          </h3>
-          <ul className="space-y-2.5">
-            <li><Link href="/terms" className={linkClass}><span className="text-white/30 text-xs">→</span>Terms of Service</Link></li>
-            <li><Link href="/refund-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Refund &amp; Returns</Link></li>
-            <li><Link href="/shipping-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Shipping Policy</Link></li>
-            <li><Link href="/privacy-policy" className={linkClass}><span className="text-white/30 text-xs">→</span>Privacy Policy</Link></li>
-            <li><Link href="/contact" className={linkClass}><span className="text-white/30 text-xs">→</span>Contact &amp; Grievance</Link></li>
+        {/* Policies & Legal */}
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
+            Help &amp; Legal
+          </h4>
+          <ul className="space-y-2">
+            <li>
+              <Link href="/shipping-policy" className={linkClass}>Shipping &amp; Courier Policy</Link>
+            </li>
+            <li>
+              <Link href="/refund-policy" className={linkClass}>Refund &amp; Return Policy</Link>
+            </li>
+            <li>
+              <Link href="/terms" className={linkClass}>Terms of Service</Link>
+            </li>
+            <li>
+              <Link href="/privacy-policy" className={linkClass}>Privacy Policy</Link>
+            </li>
+            <li>
+              <Link href="/artist-signup" className="text-xs font-bold text-[#FC2779] hover:underline">
+                Sell Art on Artelio →
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
-      {/* Bottom bar */}
-      <div className="border-t border-white/[0.08]">
-        <div className="mx-auto flex max-w-[1240px] flex-col items-center justify-between gap-3 px-6 py-5 sm:flex-row">
-          <p className="text-xs text-white/45">
-            © 2026 Artelio Marketplace. Hand-crafted original art directly from independent masters.
-          </p>
-          <div className="flex flex-wrap items-center gap-4 text-xs text-white/50">
-            <Link href="/terms" className="hover:text-amber-300 transition-colors">Terms</Link>
-            <span className="text-white/20">·</span>
-            <Link href="/refund-policy" className="hover:text-amber-300 transition-colors">Refunds</Link>
-            <span className="text-white/20">·</span>
-            <Link href="/shipping-policy" className="hover:text-amber-300 transition-colors">Shipping</Link>
-            <span className="text-white/20">·</span>
-            <Link href="/privacy-policy" className="hover:text-amber-300 transition-colors">Privacy</Link>
-            <span className="text-white/20">·</span>
-            <Link href="/contact" className="hover:text-amber-300 transition-colors">Contact</Link>
-          </div>
+      {/* 4. Bottom Copyright Strip */}
+      <div className="border-t border-[#E8E8E8] py-4 bg-[#F7F7F7] text-center text-xs text-gray-500">
+        <div className="mx-auto max-w-[1280px] px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p>© {new Date().getFullYear()} Artelio Fine Arts India Pvt. Ltd. All rights reserved.</p>
+          <p className="text-[11px] text-gray-400">Authentic Art • Verified Artist Ateliers • Escrow Protected</p>
         </div>
       </div>
     </footer>

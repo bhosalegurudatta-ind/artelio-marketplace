@@ -1,8 +1,5 @@
 import type { Config } from 'tailwindcss';
 
-// Storefront palette. The original token names (ink, paper, indigo, clay, marigold)
-// are kept so the pages that were not redesigned (login, signup, dashboard,
-// checkout) pick up the new look automatically.
 const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -11,19 +8,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        ink: '#F8FAFC',       // crisp gallery off-white text
-        paper: '#121826',     // dark obsidian atelier surface
-        canvas: '#0B0F19',    // professional midnight museum gallery background
-        brand: '#6366F1',     // vibrant atelier iris / royal lapis
-        'brand-dark': '#4F46E5',
-        'brand-soft': '#1E1B4B',
-        indigo: '#6366F1',    // hover colour used by older pages
-        clay: '#FF4D36',      // rich vermilion for errors and badges
-        marigold: '#F59E0B',  // warm cadmium gold
-        malachite: '#10B981', // vibrant verdigris emerald
-        vermilion: '#FF4D36',
+        // Nykaa signature palette
+        nykaa: {
+          pink: '#FC2779',         // Iconic Nykaa Hot Pink
+          darkpink: '#D81B60',     // Deep Raspberry Pink for active/hover
+          lightpink: '#FFF0F5',    // Soft Lavender Blush
+          softpink: '#FCE4EC',     // Pastel Rose
+          gold: '#C5A059',         // Nykaa Luxe Metallic Gold
+          charcoal: '#1A1A1A',     // High-contrast primary text
+          gray: '#5C5C5C',         // Secondary body text
+          border: '#E8E8E8',       // Crisp clean borders
+          bg: '#FAFAFA',           // Soft off-white canvas
+        },
+        ink: '#1A1A1A',
+        paper: '#FFFFFF',
+        canvas: '#FAFAFA',
+        brand: '#FC2779',
+        'brand-dark': '#D81B60',
+        'brand-soft': '#FFF0F5',
+        clay: '#E53935',
+        marigold: '#F59E0B',
+        malachite: '#10B981',
+        vermilion: '#FC2779',
         amethyst: '#8B5CF6',
-        magenta: '#EC4899',
+        magenta: '#FC2779',
         cerulean: '#0EA5E9',
         amber: '#F59E0B',
       },
@@ -32,15 +40,11 @@ const config: Config = {
         display: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
         body: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
       },
-      backgroundImage: {
-        'paint-spectrum': 'linear-gradient(135deg, #FF4D36 0%, #F59E0B 25%, #10B981 50%, #0EA5E9 75%, #8B5CF6 100%)',
-        'aurora-glow': 'linear-gradient(120deg, #6366F1 0%, #EC4899 50%, #F59E0B 100%)',
-        'atelier-dark': 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #18181B 100%)',
-      },
       boxShadow: {
-        'art-card': '0 10px 30px -10px rgba(99, 102, 241, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.05)',
-        'art-glow': '0 0 25px -5px rgba(244, 63, 94, 0.25), 0 0 15px -3px rgba(99, 102, 241, 0.25)',
-        'gold-glow': '0 10px 25px -5px rgba(245, 158, 11, 0.25)',
+        'nykaa-sm': '0 1px 4px 0 rgba(0, 0, 0, 0.08)',
+        'nykaa-card': '0 2px 10px 0 rgba(0, 0, 0, 0.06)',
+        'nykaa-hover': '0 8px 24px 0 rgba(252, 39, 121, 0.15)',
+        'nykaa-pink': '0 4px 14px 0 rgba(252, 39, 121, 0.35)',
       },
     },
   },

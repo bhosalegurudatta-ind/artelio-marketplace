@@ -21,28 +21,15 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: 'Artelio | Original Art & Contemporary Curations',
+  title: 'Artelio | India’s Premier Art & Fine Living Destination',
   description:
-    'Discover and acquire original artworks directly from independent artists, paired with generative AI spatial visualization and interior styling.',
+    'Discover authentic original paintings, sculptures, and curated masterworks directly from independent artist ateliers. 100% authentic with Certificates of Authenticity.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${jakarta.variable} ${cormorant.variable} relative flex min-h-screen flex-col font-body bg-[#0B0F19] text-slate-100 antialiased selection:bg-brand/30 selection:text-white`}>
-        {/* Artistic "ARTELIO" Background Typographic Watermark Overlay */}
-        <div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden flex flex-col justify-around opacity-[0.035]" aria-hidden="true">
-          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-white -rotate-12 -translate-x-12 translate-y-[-4vw] leading-none">
-            ARTELIO · FINE ART · ATELIER · ARTELIO
-          </div>
-          <div className="font-serif whitespace-nowrap text-[14vw] font-extrabold tracking-[0.3em] text-white -rotate-12 translate-x-[-4vw] leading-none">
-            ARTELIO · CONTEMPORARY · ARTELIO
-          </div>
-          <div className="font-serif whitespace-nowrap text-[12vw] font-bold tracking-[0.25em] text-white -rotate-12 translate-x-[-12vw] translate-y-[4vw] leading-none">
-            ATELIER · ORIGINAL GALLERY · ARTELIO
-          </div>
-        </div>
-
+    <html lang="en">
+      <body className={`${jakarta.variable} ${cormorant.variable} relative flex min-h-screen flex-col font-body bg-[#FAFAFA] text-[#1A1A1A] antialiased selection:bg-[#FCE4EC] selection:text-[#D81B60]`}>
         <div className="relative z-10 flex min-h-screen flex-col">
           <Navbar />
           <div className="flex-1">{children}</div>

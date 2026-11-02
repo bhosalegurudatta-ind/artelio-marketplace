@@ -8,73 +8,13 @@ import { CATEGORIES } from '@/lib/categories';
 
 type Role = 'artist' | 'customer' | null;
 
-function Mark() {
-  // A luminous artist palette with vibrant pigment drops
-  return (
-    <div className="relative flex items-center justify-center">
-      <svg width="34" height="26" viewBox="0 0 34 26" fill="none" aria-hidden="true" className="drop-shadow-sm">
-        {/* Wooden / Ivory Palette body */}
-        <path
-          d="M2 13C2 6.5 7.5 2 17 2C26.5 2 32 6.5 32 13C32 19 28 24 21 24C18 24 17 22 15 22C13 22 12 24 9 24C4 24 2 18.5 2 13Z"
-          fill="#FAF6EE"
-          stroke="#E2D9C8"
-          strokeWidth="1.5"
-        />
-        {/* Palette thumb hole */}
-        <ellipse cx="26" cy="17" rx="2.5" ry="3" fill="#EADFC9" />
-        {/* Vivid Pigments */}
-        <circle cx="7" cy="11" r="3" fill="#FF4D36" />
-        <circle cx="12" cy="7" r="3" fill="#F59E0B" />
-        <circle cx="18" cy="6" r="3" fill="#10B981" />
-        <circle cx="24" cy="8" r="3" fill="#2563EB" />
-        <circle cx="14" cy="16" r="3" fill="#8B5CF6" />
-      </svg>
-    </div>
-  );
-}
-
-function UserIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function BagIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M5 8h14l-1 12H6L5 8z" strokeLinejoin="round" />
-      <path d="M9 8V6a3 3 0 016 0v2" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SearchIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-      <circle cx="11" cy="11" r="7" />
-      <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function SpacesIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M3 12L12 4l9 8v8a1 1 0 01-1 1H5a1 1 0 01-1-1v-8z" strokeLinejoin="round" />
-      <path d="M9 21V12h6v9" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 export default function Navbar() {
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>(null);
   const [userEmail, setUserEmail] = useState<string>('');
   const [query, setQuery] = useState('');
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -92,7 +32,6 @@ export default function Navbar() {
       setUserEmail(data.user.email || '');
       let { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
       if (!profile) {
-        // Auto-heal missing profile via sync endpoint
         try {
           const { data: sessionData } = await supabase.auth.getSession();
           if (sessionData.session?.access_token) {
@@ -107,7 +46,7 @@ export default function Navbar() {
             profile = syncJson?.profile || null;
           }
         } catch {
-          // Ignore network hiccup
+          // ignore
         }
       }
       if (active) setRole((profile?.role as Role) ?? null);
@@ -115,7 +54,6 @@ export default function Navbar() {
 
     refresh();
     const { data: sub } = supabase.auth.onAuthStateChange(() => {
-      // Deferred so we never call Supabase from inside its own auth callback.
       setTimeout(refresh, 0);
     });
 
@@ -137,169 +75,186 @@ export default function Navbar() {
     router.push(q ? `/browse?q=${encodeURIComponent(q)}` : '/browse');
   }
 
-  const actionClass = 'flex items-center gap-2 whitespace-nowrap text-sm font-medium text-ink hover:text-brand';
-
   return (
     <>
-      {/* Top strip with rainbow spectrum accent */}
-      <div className="bg-[#0F172A] text-xs text-white/80 py-2 relative">
-        <div className="mx-auto flex max-w-[1240px] items-center justify-between px-5">
-          <p className="truncate tracking-[0.12em] uppercase text-[10px] font-bold flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full bg-vermilion animate-pulse" />
-            <span className="font-extrabold text-white tracking-widest">Artelio Atelier</span>
-            <span className="text-white/40 hidden sm:inline">|</span>
-            <span className="text-white/70 font-medium normal-case tracking-normal hidden sm:inline">Original fine art directly from curated independent artists</span>
-          </p>
-          <div className="hidden items-center gap-5 sm:flex art-tag text-[10px]">
-            <Link href="/plans" className="text-white/75 hover:text-amber transition flex items-center gap-1">
-              <span>✦</span> Memberships
+      {/* 1. NYKAA TOP ANNOUNCEMENT BAR */}
+      <div className="bg-[#FC2779] text-white text-[11px] font-semibold tracking-wide py-1.5 px-4">
+        <div className="mx-auto max-w-[1280px] flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
+            <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider">
+              ✦ ARTELIO GRAND ART UTSAV
+            </span>
+            <span className="hidden sm:inline">
+              Get Up to 40% Off on Curated Originals + Free Insured White-Glove Courier Delivery Across India!
+            </span>
+            <span className="sm:hidden">Grand Art Sale • Free All-India Delivery</span>
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0 text-white/90">
+            <Link href="/track" className="hover:text-white transition hidden md:inline">
+              🚚 Track Order
             </Link>
-            <Link href="/dashboard/upload" className="text-amber-400 hover:text-amber-300 font-bold transition">
-              + Upload Artwork
+            <span className="hidden md:inline">|</span>
+            <Link href="/contact" className="hover:text-white transition hidden sm:inline">
+              Help &amp; Concierge
             </Link>
-            <Link href="/spaces" className="text-white/75 hover:text-cerulean transition">
-              Collector Spaces
-            </Link>
-            <Link href="/artist-signup" className="text-white/75 hover:text-malachite transition">
-              Artist Registration
-            </Link>
-            <Link href="/settings" className="text-white/75 hover:text-amber-300 transition">
-              Settings
-            </Link>
-            <Link href="/track" className="text-white/75 hover:text-white transition">
-              Track order
+            <span>|</span>
+            <Link href="/artist-signup" className="text-white font-bold hover:underline">
+              Sell on Artelio
             </Link>
           </div>
         </div>
-        {/* Spectrum line under top strip */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] art-spectrum-line opacity-80" />
       </div>
 
-      {/* Main header */}
-      <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#0B0F19]/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-3.5">
-          <Link href="/" className="flex items-center gap-3 group">
-            <Mark />
-            <div className="flex flex-col">
-              <span className="font-serif text-3xl font-bold tracking-tight text-white transition group-hover:text-brand flex items-center gap-1.5">
-                Artelio
-                <span className="art-tag text-[9px] text-vermilion bg-vermilion/10 px-2 py-0.5 rounded-full border border-vermilion/20">Atelier</span>
-              </span>
-            </div>
+      {/* 2. NYKAA MAIN HEADER */}
+      <header className="sticky top-0 z-50 bg-white border-b border-[#E8E8E8] shadow-xs">
+        <div className="mx-auto flex max-w-[1280px] items-center gap-4 px-4 py-3 sm:px-6">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-1.5 group shrink-0">
+            <span className="font-extrabold text-2xl sm:text-3xl tracking-tighter text-[#1A1A1A] group-hover:text-[#FC2779] transition font-sans">
+              ARTELIO
+            </span>
+            <span className="text-[10px] font-extrabold tracking-widest text-[#FC2779] bg-[#FFF0F5] px-1.5 py-0.5 rounded uppercase border border-[#FC2779]/20">
+              LUXE
+            </span>
           </Link>
 
-          <form
-            onSubmit={handleSearch}
-            role="search"
-            className="order-3 flex w-full items-center gap-3 rounded-full bg-[#131B2A] border border-white/10 px-4 py-2 transition-all focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20 focus-within:shadow-md md:order-none md:w-auto md:max-w-xl md:flex-1"
-          >
-            <span className="text-vermilion"><SearchIcon /></span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search paintings, charcoal drawings, sculptures, prints, or artists..."
-              aria-label="Search artworks"
-              className="w-full bg-transparent text-xs text-white placeholder:text-white/40 placeholder:italic focus:outline-none font-medium"
-            />
+          {/* Quick Hub Links (Beauty/Fashion style) */}
+          <div className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-wider text-[#333333] ml-4">
+            <Link href="/browse" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779]">
+              Galleries
+            </Link>
+            <Link href="/browse?category=paintings" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779]">
+              Paintings
+            </Link>
+            <Link href="/spaces" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779] text-[#FC2779]">
+              ✨ 3D Room Studio
+            </Link>
+          </div>
+
+          {/* Nykaa Search Bar */}
+          <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto relative hidden md:block">
+            <div className="relative flex items-center">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#888888"
+                strokeWidth="2.5"
+                className="absolute left-3.5 pointer-events-none"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+              </svg>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search on Artelio: Paintings, Charcoal, Canvas, Artists, Sculptures..."
+                className="w-full rounded-md border border-[#E0E0E0] bg-[#F5F5F6] hover:bg-white focus:bg-white pl-10 pr-4 py-2 text-xs text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#FC2779] focus:outline-none focus:ring-1 focus:ring-[#FC2779] transition-all"
+              />
+            </div>
           </form>
 
-          <div className="ml-auto flex items-center gap-3 sm:gap-4">
+          {/* Right Action Icons: Nykaa Style */}
+          <div className="ml-auto flex items-center gap-4 sm:gap-6">
             {loggedIn ? (
               <>
-                <Link href="/profile" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
-                  <UserIcon />
-                  <span className="hidden sm:inline">Profile</span>
+                <Link
+                  href="/profile"
+                  className="flex flex-col items-center justify-center text-[#333333] hover:text-[#FC2779] transition group"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:scale-110 transition">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" strokeLinecap="round" />
+                  </svg>
+                  <span className="text-[10px] font-bold mt-0.5 tracking-tight">Account</span>
                 </Link>
+
+                <Link
+                  href="/orders"
+                  className="flex flex-col items-center justify-center text-[#333333] hover:text-[#FC2779] transition group"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:scale-110 transition">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 01-8 0" />
+                  </svg>
+                  <span className="text-[10px] font-bold mt-0.5 tracking-tight">Orders</span>
+                </Link>
+
                 {role === 'artist' && (
-                  <Link href="/dashboard" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-amber-400 transition">
-                    <span className="hidden sm:inline">Studio</span>
+                  <Link
+                    href="/dashboard/upload"
+                    className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#FC2779] hover:bg-[#D81B60] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
+                  >
+                    <span>+ Upload Art</span>
                   </Link>
                 )}
-                <Link href="/orders" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
-                  <BagIcon />
-                  <span className="hidden sm:inline">Orders</span>
-                </Link>
-                <Link href="/spaces" className="flex items-center gap-1.5 art-tag text-[11px] text-white/80 hover:text-brand transition">
-                  <SpacesIcon />
-                  <span className="hidden sm:inline">Spaces</span>
-                </Link>
-                <Link href="/settings" className="flex items-center gap-1 art-tag text-[11px] text-white/70 hover:text-white transition">
-                  <span>⚙️</span>
-                  <span className="hidden md:inline">Settings</span>
-                </Link>
 
                 {userEmail === 'bhosalegurudatta@gmail.com' && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-1 art-tag text-[10.5px] font-bold text-amber-300 hover:bg-amber-400/20 transition shadow-sm"
+                    className="flex items-center gap-1 rounded bg-[#FFF0F5] border border-[#FC2779]/30 px-2 py-1 text-[11px] font-bold text-[#FC2779] hover:bg-[#FC2779] hover:text-white transition"
                   >
-                    <span>👑</span>
-                    <span className="hidden sm:inline">Admin</span>
+                    <span>👑 Admin</span>
                   </Link>
                 )}
 
-                {/* Upload artwork button - ONLY visible to verified artists */}
-                {role === 'artist' && (
-                  <Link
-                    href="/dashboard/upload"
-                    className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 px-3.5 py-1.5 art-tag text-[11px] font-bold text-slate-950 shadow-md shadow-amber-500/20 hover:scale-105 transition-all active:scale-95"
-                  >
-                    <span className="text-sm font-black leading-none">+</span>
-                    <span>Upload Art</span>
-                  </Link>
-                )}
-
-                <button onClick={handleLogout} className="art-tag text-[11px] text-white/60 hover:text-clay transition ml-1">
-                  Log out
+                <button
+                  onClick={handleLogout}
+                  className="text-xs font-semibold text-gray-500 hover:text-[#FC2779] transition"
+                >
+                  Logout
                 </button>
               </>
             ) : (
-              <div className="flex items-center gap-2 sm:gap-3">
-                <Link
-                  href="/artist-signup"
-                  className="hidden sm:inline-block text-xs font-semibold text-amber-400 hover:text-amber-300 transition px-2 py-1"
-                >
-                  Sell Art
-                </Link>
+              <div className="flex items-center gap-3">
                 <Link
                   href="/login"
-                  className="rounded-full bg-white/10 hover:bg-white/20 border border-white/20 px-3.5 py-1.5 art-tag text-[11px] font-semibold text-white transition"
+                  className="rounded-md bg-[#FC2779] hover:bg-[#D81B60] px-5 py-2 text-xs font-bold text-white shadow-nykaa-pink transition active:scale-95 flex items-center gap-1.5"
                 >
-                  Sign In
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" strokeLinecap="round" />
+                  </svg>
+                  <span>Sign in</span>
                 </Link>
               </div>
             )}
           </div>
         </div>
-      </header>
 
-      {/* Category pills */}
-      <nav aria-label="Categories" className="border-b border-white/[0.08] bg-[#0B0F19]/80 backdrop-blur-md">
-        <div className="no-scrollbar mx-auto flex max-w-[1240px] items-center gap-2.5 overflow-x-auto px-5 py-2.5">
-          <Link
-            href="/browse"
-            className="flex shrink-0 items-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-4 py-2 art-tag text-[10.5px] text-white shadow-sm hover:opacity-95 transition"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
-            All Galleries
-          </Link>
-          {CATEGORIES.map((c) => (
+        {/* 3. NYKAA MEGAMENU CATEGORY STRIP */}
+        <nav aria-label="Categories" className="border-t border-[#F0F0F0] bg-white">
+          <div className="no-scrollbar mx-auto flex max-w-[1280px] items-center justify-between gap-1 overflow-x-auto px-4 py-2">
             <Link
-              key={c.slug}
-              href={`/browse?category=${c.slug}`}
-              className="shrink-0 rounded-full border border-white/10 bg-[#131B2A] hover:bg-[#1A253A] px-3.5 py-1.5 art-tag text-[10.5px] text-white/80 hover:border-brand/40 hover:text-brand hover:shadow-sm transition"
+              href="/browse"
+              className="shrink-0 px-3 py-1 text-xs font-extrabold uppercase text-[#FC2779] hover:bg-[#FFF0F5] rounded transition"
             >
-              {c.label}
+              All Artworks
             </Link>
-          ))}
-        </div>
-      </nav>
+
+            {CATEGORIES.map((c) => (
+              <Link
+                key={c.slug}
+                href={`/browse?category=${c.slug}`}
+                className="shrink-0 px-3 py-1 text-xs font-semibold uppercase text-[#333333] hover:text-[#FC2779] hover:bg-[#FFF0F5] rounded transition tracking-tight whitespace-nowrap"
+              >
+                {c.label}
+              </Link>
+            ))}
+
+            <Link
+              href="/plans"
+              className="shrink-0 px-3 py-1 text-xs font-extrabold uppercase text-[#C5A059] bg-[#FFFBF0] border border-[#C5A059]/30 rounded hover:bg-[#C5A059] hover:text-white transition tracking-wide"
+            >
+              ✦ Artelio Luxe
+            </Link>
+          </div>
+        </nav>
+      </header>
     </>
   );
 }

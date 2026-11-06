@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { requireAdmin } from '@/lib/adminAuth';
 import { TRIAL_DAYS, DAY } from '@/lib/mvp';
+import { sendApplicationApprovedEmail } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -57,6 +58,19 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (error) throw error;
+
+    // Send application approved email to the artist
+    if (updated?.email) {
+      try {
+        await sendApplicationApprovedEmail({
+          to: updated.email,
+          artistName: updated.name,
+          trialDays: TRIAL_DAYS,
+        });
+      } catch (emailErr) {
+        console.error('[Admin Approvals] Failed to send approval email to artist:', emailErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

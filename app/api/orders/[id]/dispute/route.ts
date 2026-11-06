@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
+import { sendProblemReportedEmails } from '@/lib/email';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -55,6 +56,28 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
     if (payoutErr) {
       console.error('Dispute payout pause error:', payoutErr);
+    }
+
+    // 3. Notify buyer and admin about the reported problem / dispute
+    try {
+      const { data: orderDetails } = await supabaseAdmin
+        .from('orders')
+        .select('shipping_name, artworks(title)')
+        .eq('id', orderId)
+        .maybeSingle();
+
+      const buyerEmail = user.email;
+      if (buyerEmail) {
+        sendProblemReportedEmails({
+          buyerEmail,
+          buyerName: orderDetails?.shipping_name || user.user_metadata?.name || 'Collector',
+          orderId,
+          artworkTitle: (orderDetails?.artworks as any)?.title || null,
+          reason: reason.trim(),
+        }).catch((err) => console.error('[Dispute] Problem reported email error:', err));
+      }
+    } catch (e) {
+      console.error('[Dispute] Failed preparing problem reported emails:', e);
     }
 
     return NextResponse.json({ success: true });

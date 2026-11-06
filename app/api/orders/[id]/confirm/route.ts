@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
+import { sendPayoutReleasedArtistEmail } from '@/lib/email';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -61,6 +62,41 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     if (payoutErr) {
       console.error('Release payout error:', payoutErr);
       // Payout update error is logged, order is still marked delivered
+    }
+
+    // 3. Notify artist that payout is released
+    try {
+      const { data: payout } = await supabaseAdmin
+        .from('payouts')
+        .select('payout_amount, artist_id')
+        .eq('order_id', orderId)
+        .maybeSingle();
+
+      if (payout?.artist_id) {
+        const { data: artistUser } = await supabaseAdmin
+          .from('users')
+          .select('name, email')
+          .eq('id', payout.artist_id)
+          .maybeSingle();
+
+        const { data: orderDetails } = await supabaseAdmin
+          .from('orders')
+          .select('artworks(title)')
+          .eq('id', orderId)
+          .maybeSingle();
+
+        if (artistUser?.email) {
+          sendPayoutReleasedArtistEmail({
+            to: artistUser.email,
+            artistName: artistUser.name,
+            orderId,
+            artworkTitle: (orderDetails?.artworks as any)?.title || null,
+            amount: Number(payout.payout_amount) || 0,
+          }).catch((err) => console.error('[Confirm] Payout email send error:', err));
+        }
+      }
+    } catch (e) {
+      console.error('[Confirm] Failed preparing payout notification:', e);
     }
 
     return NextResponse.json({ success: true });

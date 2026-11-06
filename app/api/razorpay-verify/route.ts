@@ -4,6 +4,7 @@ import Razorpay from 'razorpay';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { COMMISSION_RATE, DIGITAL_RELEASE_DAYS, DAY } from '@/lib/mvp';
 import { sendOrderEmails } from '@/lib/mailer';
+import { sendNewOrderArtistEmail } from '@/lib/email';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -109,6 +110,24 @@ export async function POST(req: NextRequest) {
         .select('name, email')
         .eq('id', artwork.artist_id)
         .maybeSingle();
+
+      const shippingFormatted = shipping?.address
+        ? `${shipping.address}, ${shipping.city || ''}, ${shipping.state || ''} - ${shipping.postalCode || ''}`
+        : null;
+
+      // Send new order email to artist via lib/email
+      if (artistProfile?.email) {
+        sendNewOrderArtistEmail({
+          to: artistProfile.email,
+          artistName: artistProfile.name,
+          orderId: order.id,
+          artworkTitle: artwork.title,
+          amount: price,
+          buyerName: shipping?.name || 'Art Collector',
+          shippingAddress: shippingFormatted,
+          isDigital: artwork.is_digital,
+        }).catch((emailErr) => console.error('[Razorpay Verify] Artist new order email error:', emailErr));
+      }
 
       sendOrderEmails({
         orderId: order.id,

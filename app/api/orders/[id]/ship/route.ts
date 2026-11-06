@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { PHYSICAL_RELEASE_DAYS, DAY } from '@/lib/mvp';
 import { sendDispatchEmail } from '@/lib/mailer';
+import { sendPieceShippedBuyerEmail } from '@/lib/email';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -62,9 +63,21 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     try {
       const { data: customerUser } = await supabaseAdmin
         .from('users')
-        .select('email')
+        .select('email, name')
         .eq('id', order.customer_id)
         .maybeSingle();
+
+      if (customerUser?.email) {
+        sendPieceShippedBuyerEmail({
+          to: customerUser.email,
+          buyerName: order.shipping_name || customerUser.name || 'Art Collector',
+          orderId,
+          artworkTitle: artwork.title || 'Original Artwork',
+          courierName: courierName?.trim(),
+          trackingNumber: trackingNote?.trim(),
+          trackingUrl: trackingUrl?.trim(),
+        }).catch((emailErr) => console.error('[Ship] Piece shipped email error:', emailErr));
+      }
 
       sendDispatchEmail({
         orderId,

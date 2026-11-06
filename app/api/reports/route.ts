@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
+import { sendNewListingReportAdminEmail } from '@/lib/email';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -22,6 +23,26 @@ export async function POST(req: NextRequest) {
       details: String(details ?? '').trim().slice(0, 1000) || null,
     });
     if (error) return fail('Could not send your report. Please try again.', 500);
+
+    // Notify admin about the new listing report asynchronously
+    try {
+      const { data: art } = await supabaseAdmin
+        .from('artworks')
+        .select('title')
+        .eq('id', artworkId)
+        .maybeSingle();
+
+      sendNewListingReportAdminEmail({
+        artworkId,
+        artworkTitle: art?.title || null,
+        reporterEmail: user.email,
+        reason: text,
+        details: String(details ?? '').trim() || null,
+      }).catch((emailErr) => console.error('[Reports] Admin report notification error:', emailErr));
+    } catch (e) {
+      console.error('[Reports] Failed preparing admin report notification:', e);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('Report error:', err);

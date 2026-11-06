@@ -74,7 +74,7 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
           </p>
 
           {/* Price Block (Figma "Stylish" row) */}
-          <div className="mt-2 flex items-baseline gap-2">
+          <div className="mt-2 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
             <span className="text-sm sm:text-base font-extrabold text-[#17223B]">
               ₹{artwork.price?.toLocaleString('en-IN')}
             </span>

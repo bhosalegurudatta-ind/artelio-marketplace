@@ -437,7 +437,7 @@ export default function UploadArtwork() {
                 value={tagInput}
                 maxLength={20}
                 placeholder="Add tag (e.g. landscape, oil, modern) and press Enter"
-                className={inputClass}
+                className="flex-1 min-w-0 rounded-xl border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-brand focus:ring-1 focus:ring-brand"
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ',') {
@@ -449,7 +449,7 @@ export default function UploadArtwork() {
               <button
                 type="button"
                 onClick={() => handleAddTags(tagInput)}
-                className="rounded-xl border border-ink/15 bg-paper px-4 py-2 text-xs font-bold text-ink hover:bg-ink/5 transition"
+                className="rounded-xl border border-ink/15 bg-paper px-4 py-2 text-xs font-bold text-ink hover:bg-ink/5 transition shrink-0"
               >
                 Add
               </button>

@@ -292,7 +292,7 @@ export default function ShopSettingsPage() {
 
         {/* 4. Shipping & Packaging Policy */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-start sm:items-center justify-between gap-1 mb-2">
             <label htmlFor="shippingPolicy" className="block text-xs font-bold uppercase tracking-wider text-white/70">
               Shipping &amp; Packaging Policy
             </label>
@@ -320,7 +320,7 @@ export default function ShopSettingsPage() {
 
         {/* 5. Return & Cancellation Policy */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-wrap items-start sm:items-center justify-between gap-1 mb-2">
             <label htmlFor="returnPolicy" className="block text-xs font-bold uppercase tracking-wider text-white/70">
               Return &amp; Damage Guarantee Policy
             </label>

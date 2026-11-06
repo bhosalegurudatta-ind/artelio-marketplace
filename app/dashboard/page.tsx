@@ -240,33 +240,33 @@ export default function Dashboard() {
       </div>
 
       {access && !access.approved && (
-        <div className="mb-8 rounded-xl border border-marigold/50 bg-marigold/10 p-4 text-sm text-ink flex items-center justify-between">
+        <div className="mb-8 rounded-xl border border-marigold/50 bg-marigold/10 p-4 text-sm text-ink flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span>Your artist application is waiting for approval. You can upgrade to activate instant listing access.</span>
           <button
             onClick={() => setUpgradeModalOpen(true)}
-            className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark"
+            className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark shrink-0"
           >
             Activate Instant Access
           </button>
         </div>
       )}
       {access?.approved && trialDaysLeft !== null && trialDaysLeft > 0 && !access.paidUntil && (
-        <div className="mb-8 rounded-xl bg-brand-soft p-4 text-sm text-ink flex items-center justify-between">
+        <div className="mb-8 rounded-xl bg-brand-soft p-4 text-sm text-ink flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span>Free trial: {trialDaysLeft} day{trialDaysLeft === 1 ? '' : 's'} left of {TRIAL_DAYS}. Artelio charges no subscription during the trial.</span>
           <button
             onClick={() => setUpgradeModalOpen(true)}
-            className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark"
+            className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark shrink-0"
           >
             Upgrade to Pro
           </button>
         </div>
       )}
       {access?.paidUntil && (
-        <div className="mb-8 rounded-xl border border-green-500/30 bg-green-950/40 p-4 text-sm text-green-200 flex items-center justify-between">
+        <div className="mb-8 rounded-xl border border-green-500/30 bg-green-950/40 p-4 text-sm text-green-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span>👑 <strong>Creator Pro Active:</strong> Your studio has full AI tool suite and zero platform surcharge until {new Date(access.paidUntil).toLocaleDateString()}.</span>
           <button
             onClick={() => setUpgradeModalOpen(true)}
-            className="rounded-full border border-green-500/40 bg-[#121826] px-4 py-1.5 text-xs font-semibold text-green-300 hover:bg-[#161F30]"
+            className="rounded-full border border-green-500/40 bg-[#121826] px-4 py-1.5 text-xs font-semibold text-green-300 hover:bg-[#161F30] shrink-0"
           >
             Extend Plan
           </button>
@@ -432,7 +432,7 @@ export default function Dashboard() {
                   Auto-release date: {new Date(o.release_at).toLocaleDateString('en-IN')} (or upon collector confirmation).
                 </p>
               )}
-              <div className="mt-3 flex items-center gap-2 border-t border-white/5 pt-2">
+              <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/5 pt-2">
                 <button
                   onClick={() =>
                     setCoaData({
@@ -540,32 +540,32 @@ export default function Dashboard() {
               </Link>
               <p className="mt-3 truncate text-sm font-semibold text-white">{art.title}</p>
               <div className="mt-1 flex items-center justify-between">
-                <p className="text-xs text-white/60">{money(art.price)}</p>
-                <div className="flex items-center gap-2.5">
-                  <Link
-                    href={`/dashboard/artwork/${art.id}/edit`}
-                    className="text-xs font-semibold text-[#4392F9] hover:underline"
-                    title="Edit title, description, medium, and price"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => setCritiqueModal({ open: true, artworkId: art.id, title: art.title, imageUrl: art.image_url })}
-                    className="text-xs font-semibold text-brand hover:underline"
-                    title="Open AI Critique & Palette Lab"
-                  >
-                    ✦ Critique
-                  </button>
-                  <button
-                    onClick={() => handleDelete(art)}
-                    className={`text-xs hover:underline ${
-                      art.has_orders ? 'text-white/40 cursor-not-allowed' : 'text-clay'
-                    }`}
-                    title={art.has_orders ? 'Cannot remove: this artwork has orders attached' : 'Remove listing'}
-                  >
-                    Remove
-                  </button>
-                </div>
+                <p className="text-xs font-semibold text-white/80">{money(art.price)}</p>
+              </div>
+              <div className="mt-2 pt-2 border-t border-white/10 flex flex-wrap items-center gap-2 justify-between text-xs">
+                <Link
+                  href={`/dashboard/artwork/${art.id}/edit`}
+                  className="font-semibold text-[#4392F9] hover:underline"
+                  title="Edit title, description, medium, and price"
+                >
+                  Edit
+                </Link>
+                <button
+                  onClick={() => setCritiqueModal({ open: true, artworkId: art.id, title: art.title, imageUrl: art.image_url })}
+                  className="font-semibold text-brand hover:underline"
+                  title="Open AI Critique & Palette Lab"
+                >
+                  ✦ Critique
+                </button>
+                <button
+                  onClick={() => handleDelete(art)}
+                  className={`hover:underline ${
+                    art.has_orders ? 'text-white/40 cursor-not-allowed' : 'text-clay'
+                  }`}
+                  title={art.has_orders ? 'Cannot remove: this artwork has orders attached' : 'Remove listing'}
+                >
+                  Remove
+                </button>
               </div>
             </div>
           ))}

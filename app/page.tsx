@@ -76,7 +76,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-[1240px] px-3 sm:px-6 py-2 pb-24 md:pb-12">
       {/* 1. FIGMA CATEGORY AVATARS ROW */}
-      <div className="no-scrollbar flex items-center justify-between gap-3 overflow-x-auto py-2.5 my-1">
+      <div className="no-scrollbar flex items-center justify-start md:justify-between gap-3 overflow-x-auto py-2.5 my-1 px-1">
         {STYLISH_CATEGORIES.map((cat, i) => (
           <Link
             key={i}

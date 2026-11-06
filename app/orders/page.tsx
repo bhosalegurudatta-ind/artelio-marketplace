@@ -406,52 +406,54 @@ function OrdersContent() {
                     )}
                   </div>
 
-                  {reviewed && (
-                    <div className="text-xs text-ink/70">
-                      Collector Review: <span className="text-marigold font-bold">{'★'.repeat(reviewed)}</span>
-                    </div>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {reviewed && (
+                      <div className="text-xs text-ink/70 mr-1">
+                        Collector Review: <span className="text-marigold font-bold">{'★'.repeat(reviewed)}</span>
+                      </div>
+                    )}
 
-                  <button
-                    onClick={() =>
-                      setCoaData({
-                        orderId: order.id,
-                        orderDate: order.created_at,
-                        artworkTitle: art?.title || 'Fine Art Masterpiece',
-                        artistName: 'Artelio Verified Atelier Artist',
-                        medium: art?.medium,
-                        isDigital: art?.is_digital,
-                        collectorName: order.shipping_name,
-                        imageUrl: art?.image_url,
-                      })
-                    }
-                    className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
-                  >
-                    <span>📜</span> Certificate of Authenticity
-                  </button>
+                    <button
+                      onClick={() =>
+                        setCoaData({
+                          orderId: order.id,
+                          orderDate: order.created_at,
+                          artworkTitle: art?.title || 'Fine Art Masterpiece',
+                          artistName: 'Artelio Verified Atelier Artist',
+                          medium: art?.medium,
+                          isDigital: art?.is_digital,
+                          collectorName: order.shipping_name,
+                          imageUrl: art?.image_url,
+                        })
+                      }
+                      className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
+                    >
+                      <span>📜</span> Certificate of Authenticity
+                    </button>
 
-                  <button
-                    onClick={() =>
-                      setInvoiceData({
-                        orderId: order.id,
-                        orderDate: order.created_at,
-                        artworkTitle: art?.title || 'Fine Art',
-                        artistName: 'Artelio Verified Atelier Artist',
-                        price: art?.price || 0,
-                        medium: art?.medium,
-                        isDigital: art?.is_digital,
-                        buyerName: order.shipping_name,
-                        buyerAddress: order.shipping_address,
-                        buyerCity: order.shipping_city,
-                        buyerState: order.shipping_state,
-                        buyerPostalCode: order.shipping_postal_code,
-                        buyerPhone: order.shipping_phone,
-                      })
-                    }
-                    className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
-                  >
-                    <span>🧾</span> Tax Invoice
-                  </button>
+                    <button
+                      onClick={() =>
+                        setInvoiceData({
+                          orderId: order.id,
+                          orderDate: order.created_at,
+                          artworkTitle: art?.title || 'Fine Art',
+                          artistName: 'Artelio Verified Atelier Artist',
+                          price: art?.price || 0,
+                          medium: art?.medium,
+                          isDigital: art?.is_digital,
+                          buyerName: order.shipping_name,
+                          buyerAddress: order.shipping_address,
+                          buyerCity: order.shipping_city,
+                          buyerState: order.shipping_state,
+                          buyerPostalCode: order.shipping_postal_code,
+                          buyerPhone: order.shipping_phone,
+                        })
+                      }
+                      className="flex items-center gap-1.5 rounded-full border border-ink/20 bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-ink hover:bg-white shadow-sm transition"
+                    >
+                      <span>🧾</span> Tax Invoice
+                    </button>
+                  </div>
                 </div>
 
                 {/* Dispute Form Modal/Inline */}

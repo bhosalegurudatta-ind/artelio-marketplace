@@ -205,7 +205,7 @@ function BrowseInner() {
       </div>
 
       {/* Figma Screen 10: "52,082+ Items" Header + Sort & Filter Buttons */}
-      <div className="flex items-center justify-between border-b border-[#F0F0F0] pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#F0F0F0] pb-3">
         <div>
           <h1 className="text-base md:text-lg font-black text-[#17223B] tracking-tight">
             {sorted.length > 0 ? `${sorted.length.toLocaleString()}+ Items` : 'Featured Items'}
@@ -286,7 +286,7 @@ function BrowseInner() {
       </div>
 
       {/* Horizontal Category Scroll (Figma Screen 10 / Stylish) */}
-      <div className="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto pb-1 px-0.5">
         <button
           onClick={() => updateFilter({ category: null })}
           className={`shrink-0 rounded-full px-3.5 py-1 text-xs font-bold transition ${

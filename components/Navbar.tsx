@@ -151,7 +151,7 @@ export default function Navbar() {
                     href="/admin"
                     className="flex items-center gap-1 rounded bg-[#FDF0F3] border border-[#F83758]/30 px-2 py-1 text-[11px] font-bold text-[#F83758] hover:bg-[#F83758] hover:text-white transition"
                   >
-                    <span>👑 Admin</span>
+                    <span>👑 <span className="hidden sm:inline">Admin</span></span>
                   </Link>
                 )}
 

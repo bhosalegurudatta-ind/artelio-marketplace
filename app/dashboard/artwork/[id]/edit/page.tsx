@@ -487,7 +487,7 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
                     value={tagInput}
                     maxLength={20}
                     placeholder="Add tag (e.g. landscape, oil, modern) and press Enter"
-                    className="flex-1 rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
+                    className="flex-1 min-w-0 rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ',') {
@@ -499,7 +499,7 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
                   <button
                     type="button"
                     onClick={() => handleAddTags(tagInput)}
-                    className="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition"
+                    className="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition shrink-0"
                   >
                     Add
                   </button>

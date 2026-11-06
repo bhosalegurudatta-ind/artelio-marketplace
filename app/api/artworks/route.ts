@@ -62,6 +62,32 @@ export async function POST(req: NextRequest) {
     const isDigital = form.get('isDigital') === 'true';
     const isAiAssisted = form.get('isAiAssisted') === 'true';
 
+    // Parse and validate tags: up to 13 tags, lowercase, trimmed, no duplicates, max 20 characters each
+    let rawTags: string[] = [];
+    const tagsParam = form.get('tags');
+    if (tagsParam) {
+      if (typeof tagsParam === 'string') {
+        try {
+          const parsed = JSON.parse(tagsParam);
+          if (Array.isArray(parsed)) rawTags = parsed;
+          else rawTags = tagsParam.split(',');
+        } catch {
+          rawTags = tagsParam.split(',');
+        }
+      }
+    } else {
+      const allTags = form.getAll('tags');
+      if (allTags.length > 0) rawTags = allTags.map(String);
+    }
+
+    const cleanTags = Array.from(
+      new Set(
+        rawTags
+          .map((t) => String(t).toLowerCase().trim().slice(0, 20))
+          .filter((t) => t.length > 0)
+      )
+    ).slice(0, 13);
+
     // 1. Collect files: accepts up to 6 files in "images", keeps single-image "image" working
     let files: File[] = [];
     const multiImages = form.getAll('images').filter((f): f is File => f instanceof File && f.size > 0);
@@ -195,6 +221,18 @@ export async function POST(req: NextRequest) {
 
       if (imgErr) {
         console.error('Error inserting into artwork_images:', imgErr);
+      }
+    }
+
+    // 4. Save tags in artwork_tags from server
+    if (cleanTags.length > 0) {
+      const tagRows = cleanTags.map((tag) => ({
+        artwork_id: row.id,
+        tag,
+      }));
+      const { error: tagErr } = await supabaseAdmin.from('artwork_tags').insert(tagRows);
+      if (tagErr) {
+        console.error('Error inserting into artwork_tags:', tagErr);
       }
     }
 

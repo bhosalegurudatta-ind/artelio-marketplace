@@ -15,6 +15,8 @@ export default function UploadArtwork() {
   const [editionRun, setEditionRun] = useState('25');
   const [isDigital, setIsDigital] = useState(false);
   const [isAi, setIsAi] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -94,6 +96,20 @@ export default function UploadArtwork() {
     setFile(files[0]);
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, [files]);
+
+  function handleAddTags(input: string) {
+    if (!input.trim()) return;
+    const parts = input.split(/[, ]+/);
+    const newTags = [...tags];
+    for (const part of parts) {
+      const clean = part.toLowerCase().replace(/[^a-z0-9_-]/g, '').trim().slice(0, 20);
+      if (clean && !newTags.includes(clean) && newTags.length < 13) {
+        newTags.push(clean);
+      }
+    }
+    setTags(newTags);
+    setTagInput('');
+  }
 
   async function getToken() {
     const { data } = await supabase.auth.getSession();
@@ -242,6 +258,7 @@ export default function UploadArtwork() {
     body.append('price', form.price);
     body.append('isDigital', String(isDigital));
     body.append('isAiAssisted', String(isAi));
+    body.append('tags', JSON.stringify(tags));
 
     const res = await fetch('/api/artworks', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body });
     const data = await res.json();
@@ -384,6 +401,60 @@ export default function UploadArtwork() {
           <span className={labelClass}>Description</span>
           <textarea rows={4} className={`${inputClass} resize-none`} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </label>
+
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <span className={labelClass}>Artwork Tags (Up to 13)</span>
+            <span className="text-[11px] text-ink/50">{tags.length}/13 tags</span>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {tags.map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center gap-1 rounded-full bg-[#F3F3F3] border border-[#DEDBDB] px-3 py-1 text-xs font-semibold text-[#17223B]"
+              >
+                #{t}
+                <button
+                  type="button"
+                  onClick={() => setTags(tags.filter((item) => item !== t))}
+                  className="text-[#F83758] hover:text-black font-bold ml-0.5"
+                >
+                  &times;
+                </button>
+              </span>
+            ))}
+          </div>
+
+          {tags.length < 13 && (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={tagInput}
+                maxLength={20}
+                placeholder="Add tag (e.g. landscape, oil, modern) and press Enter"
+                className={inputClass}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    handleAddTags(tagInput);
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => handleAddTags(tagInput)}
+                className="rounded-xl border border-ink/15 bg-paper px-4 py-2 text-xs font-bold text-ink hover:bg-ink/5 transition"
+              >
+                Add
+              </button>
+            </div>
+          )}
+          <span className="mt-1 block text-[11px] text-ink/50">
+            Lowercase, trimmed, no duplicates. Max 20 characters per tag. Tags help collectors find your work in search &amp; browse filters.
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <label className="block">

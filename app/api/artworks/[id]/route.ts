@@ -44,12 +44,21 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       .select('*', { count: 'exact', head: true })
       .eq('artwork_id', artworkId);
 
+    // Fetch existing tags
+    const { data: tagRows } = await supabaseAdmin
+      .from('artwork_tags')
+      .select('tag')
+      .eq('artwork_id', artworkId);
+
+    const tags = (tagRows ?? []).map((t: any) => t.tag);
+
     const hasBlockingOrder = Boolean(blockingOrders && blockingOrders.length > 0);
     const hasAnyOrder = Boolean(totalOrdersCount && totalOrdersCount > 0);
 
     return NextResponse.json({
       success: true,
       artwork,
+      tags,
       canEditPrice: !hasBlockingOrder,
       blockingOrderStatus: hasBlockingOrder ? blockingOrders![0].status : null,
       hasOrders: hasAnyOrder,
@@ -86,7 +95,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const body = await req.json().catch(() => ({}));
-    const { title, description, medium, price } = body;
+    const { title, description, medium, price, tags } = body;
 
     const updates: Record<string, any> = {};
 
@@ -146,26 +155,59 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       }
     }
 
-    if (Object.keys(updates).length === 0) {
+    // Handle tags update if provided: up to 13 tags, lowercase, trimmed, no duplicates, max 20 chars
+    let savedTags: string[] | undefined = undefined;
+    if (tags !== undefined) {
+      let rawTags: string[] = [];
+      if (Array.isArray(tags)) rawTags = tags.map(String);
+      else if (typeof tags === 'string') rawTags = tags.split(',');
+
+      const cleanTags = Array.from(
+        new Set(
+          rawTags
+            .map((t) => t.toLowerCase().trim().slice(0, 20))
+            .filter((t) => t.length > 0)
+        )
+      ).slice(0, 13);
+
+      // Save tags in artwork_tags (remove old, insert new)
+      await supabaseAdmin.from('artwork_tags').delete().eq('artwork_id', artworkId);
+
+      if (cleanTags.length > 0) {
+        const tagRows = cleanTags.map((tag) => ({
+          artwork_id: artworkId,
+          tag,
+        }));
+        const { error: tagInsertErr } = await supabaseAdmin.from('artwork_tags').insert(tagRows);
+        if (tagInsertErr) console.error('Error updating artwork_tags:', tagInsertErr);
+      }
+      savedTags = cleanTags;
+    }
+
+    if (Object.keys(updates).length === 0 && tags === undefined) {
       return NextResponse.json({ success: true, artwork, message: 'No changes submitted.' });
     }
 
-    // Perform database update
-    const { data: updated, error: updateErr } = await supabaseAdmin
-      .from('artworks')
-      .update(updates)
-      .eq('id', artworkId)
-      .select('id, title, description, medium, price')
-      .single();
+    let updated: any = artwork;
+    if (Object.keys(updates).length > 0) {
+      const { data: u, error: updateErr } = await supabaseAdmin
+        .from('artworks')
+        .update(updates)
+        .eq('id', artworkId)
+        .select('id, title, description, medium, price, artist_id')
+        .single();
 
-    if (updateErr) {
-      console.error('Error updating artwork:', updateErr);
-      return fail('Failed to update artwork in database.', 500);
+      if (updateErr) {
+        console.error('Error updating artwork:', updateErr);
+        return fail('Failed to update artwork in database.', 500);
+      }
+      updated = u;
     }
 
     return NextResponse.json({
       success: true,
       artwork: updated,
+      tags: savedTags,
     });
   } catch (err: any) {
     console.error('PATCH /api/artworks/[id] error:', err);

@@ -47,6 +47,7 @@ export default function ArtworkDetail() {
   const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -92,6 +93,14 @@ export default function ArtworkDetail() {
       ].filter(Boolean) as string[];
 
       setGalleryImages(allImgs);
+
+      // Fetch tags for this artwork
+      const { data: tagRows } = await supabase
+        .from('artwork_tags')
+        .select('tag')
+        .eq('artwork_id', detail.id);
+
+      setTags((tagRows ?? []).map((t: any) => t.tag));
 
       const { data: reviews } = await supabase
         .from('reviews')
@@ -351,6 +360,24 @@ export default function ArtworkDetail() {
               {art.description ||
                 'Exquisite museum-grade original piece created with master pigments on archival stretched canvas. Accompanied by verified provenance documentation and certificate signed by the artist.'}
             </p>
+
+            {/* Artwork Tags */}
+            {tags.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-[#F0F0F0]">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#626262]">Tags</span>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {tags.map((t) => (
+                    <Link
+                      key={t}
+                      href={`/browse?tag=${encodeURIComponent(t)}`}
+                      className="inline-flex items-center rounded-full bg-[#F3F3F3] border border-[#DEDBDB] px-3 py-1 text-xs font-semibold text-[#17223B] hover:border-[#F83758] hover:text-[#F83758] hover:bg-[#FDF0F3] transition"
+                    >
+                      #{t}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Dual Action Buttons matching Figma Screen 11: Go to Cart / Buy Now */}

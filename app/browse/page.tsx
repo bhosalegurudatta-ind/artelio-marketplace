@@ -28,6 +28,7 @@ function BrowseInner() {
   const searchParams = useSearchParams();
 
   const qParam = clean(searchParams.get('q') ?? '');
+  const tagParam = clean(searchParams.get('tag') ?? '').toLowerCase();
   const categoryParam = findCategory(searchParams.get('category'));
   const minParam = Number(searchParams.get('min')) || null;
   const maxParam = Number(searchParams.get('max')) || null;
@@ -59,13 +60,46 @@ function BrowseInner() {
         if (prof?.role === 'admin') isAdmin = true;
       }
 
+      // 1. Tag filter matching: get artwork IDs associated with ?tag=
+      let tagFilteredIds: string[] | null = null;
+      if (tagParam) {
+        const { data: tagRows } = await supabase
+          .from('artwork_tags')
+          .select('artwork_id')
+          .ilike('tag', tagParam);
+        tagFilteredIds = (tagRows ?? []).map((r: any) => r.artwork_id);
+      }
+
+      // 2. Include tags in search: get artwork IDs whose tags match ?q=
+      let searchTagIds: string[] = [];
+      if (qParam) {
+        const { data: sTagRows } = await supabase
+          .from('artwork_tags')
+          .select('artwork_id')
+          .ilike('tag', `%${qParam}%`);
+        searchTagIds = (sTagRows ?? []).map((r: any) => r.artwork_id);
+      }
+
       let query = supabase
         .from('artworks')
         .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_hidden, users(name)')
         .eq('sold', false);
 
+      // Apply explicit tag filter (?tag=)
+      if (tagFilteredIds !== null) {
+        if (tagFilteredIds.length === 0) {
+          if (!active) return;
+          setItems([]);
+          setLoading(false);
+          return;
+        }
+        query = query.in('id', tagFilteredIds);
+      }
+
+      // Search query includes title, medium, description, AND matching tags
       if (qParam) {
-        query = query.or(`title.ilike.%${qParam}%,medium.ilike.%${qParam}%,description.ilike.%${qParam}%`);
+        const tagInClause = searchTagIds.length > 0 ? `,id.in.(${searchTagIds.slice(0, 50).join(',')})` : '';
+        query = query.or(`title.ilike.%${qParam}%,medium.ilike.%${qParam}%,description.ilike.%${qParam}%${tagInClause}`);
       }
       if (categoryParam) {
         query = query.or(categoryParam.keywords.map((k) => `medium.ilike.%${k}%`).join(','));
@@ -106,7 +140,7 @@ function BrowseInner() {
     return () => {
       active = false;
     };
-  }, [qParam, categoryParam?.slug, minParam, maxParam, format]);
+  }, [qParam, tagParam, categoryParam?.slug, minParam, maxParam, format]);
 
   const sorted = useMemo(() => {
     const copy = [...items];
@@ -133,7 +167,7 @@ function BrowseInner() {
   }
 
   const hasActiveFilters = Boolean(
-    categoryParam || qParam || minParam !== null || maxParam !== null || format !== 'all'
+    categoryParam || qParam || tagParam || minParam !== null || maxParam !== null || format !== 'all'
   );
 
   return (
@@ -178,6 +212,21 @@ function BrowseInner() {
           </h1>
           {categoryParam && (
             <p className="text-[11px] font-medium text-[#F83758]">{categoryParam.label}</p>
+          )}
+          {tagParam && (
+            <div className="mt-1 flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#FDF0F3] border border-[#F83758]/30 px-2.5 py-0.5 text-[11px] font-bold text-[#F83758]">
+                <span>#{tagParam}</span>
+                <button
+                  type="button"
+                  onClick={() => updateFilter({ tag: null })}
+                  className="ml-0.5 text-[#F83758] hover:text-black font-bold text-xs leading-none"
+                  title="Remove tag filter"
+                >
+                  &times;
+                </button>
+              </span>
+            </div>
           )}
         </div>
 

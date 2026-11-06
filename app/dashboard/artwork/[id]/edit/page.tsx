@@ -34,6 +34,8 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
   const [description, setDescription] = useState('');
   const [medium, setMedium] = useState('');
   const [price, setPrice] = useState<number | string>('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [sold, setSold] = useState(false);
   const [isDigital, setIsDigital] = useState(false);
@@ -81,6 +83,7 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
         setDescription(art.description || '');
         setMedium(art.medium || '');
         setPrice(art.price ?? '');
+        setTags(Array.isArray(data.tags) ? data.tags : []);
         setImageUrl(art.image_url || null);
         setSold(Boolean(art.sold));
         setIsDigital(Boolean(art.is_digital));
@@ -97,6 +100,20 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
 
     loadArtwork();
   }, [artworkId]);
+
+  function handleAddTags(input: string) {
+    if (!input.trim()) return;
+    const parts = input.split(/[, ]+/);
+    const newTags = [...tags];
+    for (const part of parts) {
+      const clean = part.toLowerCase().replace(/[^a-z0-9_-]/g, '').trim().slice(0, 20);
+      if (clean && !newTags.includes(clean) && newTags.length < 13) {
+        newTags.push(clean);
+      }
+    }
+    setTags(newTags);
+    setTagInput('');
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -129,6 +146,7 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
         title: title.trim(),
         description: description.trim(),
         medium: medium.trim(),
+        tags,
       };
 
       if (canEditPrice) {
@@ -375,6 +393,64 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
               />
               <p className="mt-1 text-[11px] text-white/40">
                 Detailed descriptions help collectors connect with your creative process and boost conversion.
+              </p>
+            </div>
+
+            {/* Tags Field (Up to 13) */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-xs font-bold uppercase tracking-wider text-white/70">
+                  Artwork Tags (Up to 13)
+                </label>
+                <span className="text-[11px] text-white/50">{tags.length}/13 tags</span>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 mb-2.5">
+                {tags.map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-xs font-medium text-white"
+                  >
+                    <span className="text-[#F83758]">#</span>{t}
+                    <button
+                      type="button"
+                      onClick={() => setTags(tags.filter((item) => item !== t))}
+                      className="text-white/60 hover:text-[#F83758] font-bold text-sm leading-none ml-0.5 transition"
+                      aria-label={`Remove tag ${t}`}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+
+              {tags.length < 13 && (
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    maxLength={20}
+                    placeholder="Add tag (e.g. landscape, oil, modern) and press Enter"
+                    className="flex-1 rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        handleAddTags(tagInput);
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleAddTags(tagInput)}
+                    className="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-bold text-white hover:bg-white/20 transition"
+                  >
+                    Add
+                  </button>
+                </div>
+              )}
+              <p className="mt-1.5 text-[11px] text-white/40">
+                Lowercase, trimmed, no duplicates. Max 20 characters per tag. Tags power collector discovery in browse &amp; search.
               </p>
             </div>
 

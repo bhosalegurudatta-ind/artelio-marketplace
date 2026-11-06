@@ -38,15 +38,21 @@ export default function Home() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
+      // Exclude hidden artworks
+      let query = supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, users(name)')
-        .eq('sold', false)
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name)')
+        .eq('sold', false);
+
+      const { data } = await query
         .order('created_at', { ascending: false })
         .limit(40);
 
+      // Filter out hidden artworks for public visitors
+      const visible = (data ?? []).filter((a: any) => !a.is_hidden);
+
       setArtworks(
-        (data ?? []).map((a: any) => ({
+        visible.map((a: any) => ({
           id: a.id,
           title: a.title,
           price: a.price,

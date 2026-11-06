@@ -23,18 +23,26 @@ export default function ArtistPage() {
 
   useEffect(() => {
     async function load() {
+      // Check if current visitor is admin
+      let isAdmin = false;
+      const { data: userAuth } = await supabase.auth.getUser();
+      if (userAuth?.user) {
+        const { data: prof } = await supabase.from('users').select('role').eq('id', userAuth.user.id).maybeSingle();
+        if (prof?.role === 'admin') isAdmin = true;
+      }
+
       const { data: artistData } = await supabase.from('users').select('id, name, bio').eq('id', params.id).single();
       setArtist(artistData);
 
       const { data: rows } = await supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, sold, is_digital')
+        .select('id, title, price, medium, image_url, created_at, sold, is_digital, is_hidden')
         .eq('artist_id', params.id)
         .order('created_at', { ascending: false });
 
       setArtworks(
         (rows ?? [])
-          .filter((a: any) => !(a.sold && !a.is_digital))
+          .filter((a: any) => (isAdmin || !a.is_hidden) && !(a.sold && !a.is_digital))
           .map((a: any) => ({
             id: a.id,
             title: a.title,

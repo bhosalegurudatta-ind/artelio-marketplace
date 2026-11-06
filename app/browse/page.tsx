@@ -51,9 +51,17 @@ function BrowseInner() {
     async function load() {
       setLoading(true);
 
+      // Check if current user is admin
+      let isAdmin = false;
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData?.user) {
+        const { data: prof } = await supabase.from('users').select('role').eq('id', userData.user.id).maybeSingle();
+        if (prof?.role === 'admin') isAdmin = true;
+      }
+
       let query = supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, users(name)')
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_hidden, users(name)')
         .eq('sold', false);
 
       if (qParam) {
@@ -77,8 +85,10 @@ function BrowseInner() {
       const { data } = await query.order('created_at', { ascending: false }).limit(100);
       if (!active) return;
 
+      const visible = (data ?? []).filter((a: any) => isAdmin || !a.is_hidden);
+
       setItems(
-        (data ?? []).map((a: any) => ({
+        visible.map((a: any) => ({
           id: a.id,
           title: a.title,
           price: a.price,

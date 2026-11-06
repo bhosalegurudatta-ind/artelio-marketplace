@@ -49,9 +49,17 @@ export default function ArtworkDetail() {
 
   useEffect(() => {
     async function load() {
+      // Check if visitor is admin
+      let isAdmin = false;
+      const { data: userAuth } = await supabase.auth.getUser();
+      if (userAuth?.user) {
+        const { data: prof } = await supabase.from('users').select('role').eq('id', userAuth.user.id).maybeSingle();
+        if (prof?.role === 'admin') isAdmin = true;
+      }
+
       const { data } = await supabase
         .from('artworks')
-        .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, users(name)')
+        .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, is_hidden, takedown_reason, users(name)')
         .eq('id', params.id)
         .single();
 
@@ -59,6 +67,14 @@ export default function ArtworkDetail() {
         setLoading(false);
         return;
       }
+
+      // If hidden and visitor is not an admin, treat as not found
+      if ((data as any).is_hidden && !isAdmin) {
+        setLoading(false);
+        setArt(null);
+        return;
+      }
+
       const detail: Detail = { ...(data as any), artist_name: (data as any).users?.name ?? 'Studio Master' };
       setArt(detail);
 
@@ -73,10 +89,10 @@ export default function ArtworkDetail() {
         setRating({ avg: total / reviews.length, count: reviews.length + 56000 });
       }
 
-      // Load related items
+      // Load related items (excluding hidden pieces)
       const { data: others } = await supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, users(name)')
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name)')
         .eq('sold', false)
         .neq('id', detail.id)
         .order('created_at', { ascending: false })
@@ -84,6 +100,7 @@ export default function ArtworkDetail() {
 
       const mine = categoriesOf(detail.medium);
       const scored = (others ?? [])
+        .filter((o: any) => isAdmin || !o.is_hidden)
         .map((o: any) => {
           let score = 0;
           if (categoriesOf(o.medium).some((c) => mine.includes(c))) score += 2;

@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { CATEGORIES } from '@/lib/categories';
 
-type Role = 'artist' | 'customer' | null;
+type Role = 'artist' | 'customer' | 'admin' | null;
 
 export default function Navbar() {
   const router = useRouter();
@@ -136,7 +136,7 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                {userEmail === 'bhosalegurudatta@gmail.com' && (
+                {(role === 'admin' || userEmail === 'bhosalegurudatta@gmail.com') && (
                   <Link
                     href="/admin"
                     className="flex items-center gap-1 rounded bg-[#FDF0F3] border border-[#F83758]/30 px-2 py-1 text-[11px] font-bold text-[#F83758] hover:bg-[#F83758] hover:text-white transition"
@@ -267,6 +267,11 @@ export default function Navbar() {
                   <Link href="/artist-signup" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#4392F9] hover:underline">
                     🖌️ Sell Art on Artelio
                   </Link>
+                  {(role === 'admin' || userEmail === 'bhosalegurudatta@gmail.com') && (
+                    <Link href="/admin" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#F83758] hover:underline">
+                      👑 Admin Command Center
+                    </Link>
+                  )}
                 </div>
               </div>
 

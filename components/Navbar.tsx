@@ -82,9 +82,14 @@ export default function Navbar() {
 
   return (
     <>
-      {/* 1. TOP PROMO RIBBON (Matching Figma "50-40% OFF" banner note) */}
-      <div className="bg-[#F83758] text-white text-[11px] font-bold py-1 px-4 text-center tracking-wide">
-        <span>✦ Special Launch: Flat 40% OFF on Original Fine Artworks • Free Insured Delivery Across India</span>
+      {/* 1. TOP PROMO RIBBON (Matching Artelio Grand Art Utsav Banner) */}
+      <div className="bg-[#FA1E78] text-white py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-2.5 flex-wrap shadow-xs">
+        <span className="inline-flex items-center gap-1 rounded-md bg-white/20 border border-white/25 px-2.5 py-0.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-white shadow-xs tracking-wider">
+          ✦ ARTELIO GRAND ART UTSAV
+        </span>
+        <span className="text-[11px] sm:text-xs font-bold text-white drop-shadow-xs">
+          Get Up to 40% Off on Curated Originals + Free Insured White-Glove Courier Delivery Across India!
+        </span>
       </div>
 
       {/* 2. FIGMA "STYLISH" APP HEADER */}

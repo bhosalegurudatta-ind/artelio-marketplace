@@ -22,12 +22,22 @@ export default function FavoriteButton({
     async function checkRemote() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) return;
-      const { data: fav } = await supabase
-        .from('favorites')
-        .select('id')
+      let { data: fav, error: favErr } = await supabase
+        .from('favourites')
+        .select('artwork_id')
         .eq('user_id', data.user.id)
         .eq('artwork_id', artworkId)
         .maybeSingle();
+
+      if (favErr) {
+        const fallback = await supabase
+          .from('favorites')
+          .select('artwork_id')
+          .eq('user_id', data.user.id)
+          .eq('artwork_id', artworkId)
+          .maybeSingle();
+        fav = fallback.data;
+      }
 
       if (fav) {
         setFavorited(true);

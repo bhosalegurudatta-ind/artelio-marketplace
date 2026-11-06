@@ -38,11 +38,48 @@ export default function InquiryModal({
 
     setSending(true);
 
+    const targetArt = artwork;
+    if (!targetArt) return;
+
     try {
       const { data: user } = await supabase.auth.getUser();
 
-      // Log inquiry into reports/messages or notify
-      // Since Artelio supports report/inquiry logging:
+      // Persist to conversations and messages table if authenticated and tables exist
+      if (user?.user && targetArt.artist_id && targetArt.id && targetArt.id !== 'custom-commission') {
+        try {
+          let { data: conv } = await supabase
+            .from('conversations')
+            .select('id')
+            .eq('artwork_id', targetArt.id)
+            .eq('buyer_id', user.user.id)
+            .maybeSingle();
+
+          let convId = conv?.id;
+          if (!convId) {
+            const { data: newConv } = await supabase
+              .from('conversations')
+              .insert({
+                artwork_id: targetArt.id,
+                buyer_id: user.user.id,
+                artist_id: targetArt.artist_id,
+              })
+              .select('id')
+              .maybeSingle();
+            convId = newConv?.id;
+          }
+
+          if (convId) {
+            await supabase.from('messages').insert({
+              conversation_id: convId,
+              sender_id: user.user.id,
+              body: `[${topic}] ${message.trim()}`,
+            });
+          }
+        } catch (dbErr) {
+          console.warn('Could not persist to conversations table:', dbErr);
+        }
+      }
+
       await new Promise((r) => setTimeout(r, 600)); // smooth user response
 
       setSent(true);

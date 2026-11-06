@@ -15,31 +15,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing artwork ID.' }, { status: 400 });
     }
 
-    // Check if already favorited
-    const { data: existing, error: checkError } = await supabaseAdmin
-      .from('favorites')
-      .select('id')
+    // Check if already favorited in favorites or favourites
+    let tableName = 'favourites';
+    let { data: existing, error: checkError } = await supabaseAdmin
+      .from('favourites')
+      .select('artwork_id')
       .eq('user_id', user.id)
       .eq('artwork_id', artworkId)
       .maybeSingle();
 
     if (checkError) {
-      console.error('Favorites check error:', checkError);
-      return NextResponse.json({
-        error: 'Please run supabase-spaces.sql in Supabase SQL editor to enable database favorites.',
-      }, { status: 500 });
+      tableName = 'favorites';
+      const fallback = await supabaseAdmin
+        .from('favorites')
+        .select('artwork_id')
+        .eq('user_id', user.id)
+        .eq('artwork_id', artworkId)
+        .maybeSingle();
+      existing = fallback.data;
     }
 
     if (existing) {
       // Remove favorite
-      await supabaseAdmin.from('favorites').delete().eq('id', existing.id);
+      await supabaseAdmin.from(tableName).delete().match({ user_id: user.id, artwork_id: artworkId });
+      try {
+        const otherTable = tableName === 'favourites' ? 'favorites' : 'favourites';
+        await supabaseAdmin.from(otherTable).delete().match({ user_id: user.id, artwork_id: artworkId });
+      } catch {}
       return NextResponse.json({ success: true, favorited: false });
     } else {
       // Add favorite
-      await supabaseAdmin.from('favorites').insert({
+      const ins = await supabaseAdmin.from(tableName).insert({
         user_id: user.id,
         artwork_id: artworkId,
       });
+      if (ins.error && tableName === 'favourites') {
+        await supabaseAdmin.from('favorites').insert({
+          user_id: user.id,
+          artwork_id: artworkId,
+        });
+      }
       return NextResponse.json({ success: true, favorited: true });
     }
   } catch (err: any) {

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
     const { data: profile, error } = await supabaseAdmin
       .from('users')
-      .select('id, name, email, role, bio, address, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
+      .select('id, name, email, role, bio, address, shop_name, banner_url, about, shipping_policy, return_policy, verified, kyc_status, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -49,19 +49,24 @@ export async function POST(req: NextRequest) {
     if (!user) return fail('Please log in.', 401);
 
     const body = await req.json().catch(() => ({}));
-    const { name, bio, address, role } = body;
+    const { name, bio, address, role, shop_name, banner_url, about, shipping_policy, return_policy } = body;
 
     const updates: Record<string, any> = {};
     if (typeof name === 'string' && name.trim()) updates.name = name.trim();
     if (typeof bio === 'string') updates.bio = bio.trim();
     if (typeof address === 'string') updates.address = address.trim();
     if (role && ['artist', 'customer'].includes(role)) updates.role = role;
+    if (typeof shop_name === 'string') updates.shop_name = shop_name.trim();
+    if (typeof banner_url === 'string') updates.banner_url = banner_url.trim();
+    if (typeof about === 'string') updates.about = about.trim();
+    if (typeof shipping_policy === 'string') updates.shipping_policy = shipping_policy.trim();
+    if (typeof return_policy === 'string') updates.return_policy = return_policy.trim();
 
     const { data: updated, error } = await supabaseAdmin
       .from('users')
       .update(updates)
       .eq('id', user.id)
-      .select('id, name, email, role, bio, address, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
+      .select('id, name, email, role, bio, address, shop_name, banner_url, about, shipping_policy, return_policy, verified, kyc_status, paid_until, payout_method, payout_upi_id, payout_account_holder, created_at')
       .single();
 
     if (error) {

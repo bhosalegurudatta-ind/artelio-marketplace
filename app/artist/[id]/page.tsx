@@ -17,6 +17,9 @@ export default function ArtistPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [showInquiry, setShowInquiry] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
+  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -67,6 +70,28 @@ export default function ArtistPage() {
         }))
       );
 
+      // Check follows count and user's following status
+      try {
+        const { count } = await supabase
+          .from('follows')
+          .select('follower_id', { count: 'exact', head: true })
+          .eq('artist_id', params.id);
+        if (typeof count === 'number') setFollowerCount(count);
+
+        const { data: userAuth } = await supabase.auth.getUser();
+        if (userAuth?.user) {
+          const { data: followRow } = await supabase
+            .from('follows')
+            .select('follower_id')
+            .eq('follower_id', userAuth.user.id)
+            .eq('artist_id', params.id)
+            .maybeSingle();
+          if (followRow) setIsFollowing(true);
+        }
+      } catch (fErr) {
+        console.warn('Follows table query notice:', fErr);
+      }
+
       setLoading(false);
     }
     load();
@@ -86,6 +111,36 @@ export default function ArtistPage() {
   }
 
   const avg = reviews.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : null;
+
+  async function handleToggleFollow() {
+    const { data: userAuth } = await supabase.auth.getUser();
+    if (!userAuth?.user) {
+      alert('Please sign in to follow this artist.');
+      return;
+    }
+    setFollowLoading(true);
+    try {
+      if (isFollowing) {
+        await supabase
+          .from('follows')
+          .delete()
+          .match({ follower_id: userAuth.user.id, artist_id: String(params.id) });
+        setIsFollowing(false);
+        setFollowerCount((c) => Math.max(0, c - 1));
+      } else {
+        await supabase.from('follows').insert({
+          follower_id: userAuth.user.id,
+          artist_id: String(params.id),
+        });
+        setIsFollowing(true);
+        setFollowerCount((c) => c + 1);
+      }
+    } catch (err) {
+      console.error('Follow toggle error:', err);
+    } finally {
+      setFollowLoading(false);
+    }
+  }
 
   return (
     <main className="mx-auto max-w-[1240px] px-5 py-12">
@@ -114,10 +169,22 @@ export default function ArtistPage() {
             <p className="mt-4 text-sm italic text-white/40">Independent artist showcasing original creations on Artelio.</p>
           )}
 
-          <div className="mt-6 flex flex-wrap items-center gap-4 text-xs text-white/60">
+          <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-white/60">
             <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-2">
               <span className="font-bold text-white text-sm">{artworks.length}</span> Works Available
             </div>
+            <button
+              onClick={handleToggleFollow}
+              disabled={followLoading}
+              className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-sm ${
+                isFollowing
+                  ? 'bg-white/20 text-white border border-white/30 hover:bg-white/10'
+                  : 'bg-[#F83758] text-white hover:bg-[#E02244]'
+              }`}
+            >
+              <span>{isFollowing ? '✓ Following' : '+ Follow Artist'}</span>
+              {followerCount > 0 && <span className="opacity-75">({followerCount})</span>}
+            </button>
             <button
               onClick={() => setShowInquiry(true)}
               className="flex items-center gap-2 rounded-xl bg-white/10 border border-white/20 px-4 py-2 text-xs font-semibold text-white hover:bg-white/20 transition-all shadow-sm"

@@ -14,13 +14,11 @@ export default function FavoriteButton({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Check localStorage cache
     try {
       const saved = JSON.parse(localStorage.getItem('artelio_favorites') || '[]');
       if (saved.includes(artworkId)) setFavorited(true);
     } catch {}
 
-    // Check with Supabase if logged in
     async function checkRemote() {
       const { data } = await supabase.auth.getUser();
       if (!data.user) return;
@@ -52,7 +50,7 @@ export default function FavoriteButton({
     const token = sessionData.session?.access_token;
 
     if (!token) {
-      alert('Please log in to save artworks to your Favorites & Spaces.');
+      alert('Please log in to save artworks to your Wishlist.');
       return;
     }
 
@@ -60,7 +58,6 @@ export default function FavoriteButton({
     setFavorited(nextState);
     setLoading(true);
 
-    // Update localStorage cache
     try {
       const saved = JSON.parse(localStorage.getItem('artelio_favorites') || '[]');
       if (nextState) {
@@ -91,16 +88,23 @@ export default function FavoriteButton({
       <button
         onClick={handleToggle}
         disabled={loading}
-        className={`flex items-center gap-2 rounded-full border px-5 py-3 text-sm font-semibold transition shadow-sm ${
+        className={`flex items-center justify-center gap-2 rounded-lg border px-5 py-3 text-sm font-bold transition shadow-xs ${
           favorited
-            ? 'border-clay/40 bg-clay/10 text-clay hover:bg-clay/20'
-            : 'border-white/15 bg-[#121826] text-white/90 hover:border-clay hover:text-clay'
+            ? 'border-[#FC2779] bg-[#FFF0F5] text-[#FC2779]'
+            : 'border-[#E0E0E0] bg-white text-[#333333] hover:border-[#FC2779] hover:text-[#FC2779]'
         }`}
       >
-        <span className={favorited ? 'text-clay scale-110' : 'text-white/60'}>
-          {favorited ? '♥' : '♡'}
-        </span>
-        <span>{favorited ? 'Saved in My Spaces' : 'Save to Favorites'}</span>
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill={favorited ? '#FC2779' : 'none'}
+          stroke={favorited ? '#FC2779' : 'currentColor'}
+          strokeWidth="2"
+        >
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+        <span>{favorited ? 'In Wishlist' : 'Add to Wishlist'}</span>
       </button>
     );
   }
@@ -109,12 +113,19 @@ export default function FavoriteButton({
     <button
       onClick={handleToggle}
       disabled={loading}
-      title={favorited ? 'Remove from favorites' : 'Save to favorites'}
-      className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-[#121826]/90 border border-white/20 text-sm shadow backdrop-blur transition hover:scale-110 hover:bg-[#161F30]"
+      title={favorited ? 'Remove from Wishlist' : 'Add to Wishlist'}
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-gray-400 shadow-md transition hover:scale-110 active:scale-90 border border-gray-100"
     >
-      <span className={favorited ? 'text-clay font-bold' : 'text-white/60'}>
-        {favorited ? '♥' : '♡'}
-      </span>
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill={favorited ? '#FC2779' : 'none'}
+        stroke={favorited ? '#FC2779' : '#555555'}
+        strokeWidth="2.2"
+      >
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+      </svg>
     </button>
   );
 }

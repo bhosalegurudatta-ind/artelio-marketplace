@@ -15,6 +15,8 @@ export default function UploadArtwork() {
   const [editionRun, setEditionRun] = useState('25');
   const [isDigital, setIsDigital] = useState(false);
   const [isAi, setIsAi] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
@@ -80,14 +82,18 @@ export default function UploadArtwork() {
   }, [router]);
 
   useEffect(() => {
-    if (!file) {
+    if (files.length === 0) {
+      setPreviewUrls([]);
       setPreviewUrl(null);
+      setFile(null);
       return;
     }
-    const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setPreviewUrls(urls);
+    setPreviewUrl(urls[0]);
+    setFile(files[0]);
+    return () => urls.forEach((u) => URL.revokeObjectURL(u));
+  }, [files]);
 
   async function getToken() {
     const { data } = await supabase.auth.getSession();
@@ -214,8 +220,22 @@ export default function UploadArtwork() {
       fullMedium = fullMedium ? `${fullMedium} (${dimensions.trim()})` : dimensions.trim();
     }
 
+    if (files.length === 0 && !file) {
+      setErrorMsg('Please select at least one artwork photo.');
+      setStatus('error');
+      return;
+    }
+
     const body = new FormData();
-    body.append('image', file);
+    const primaryFile = files[0] || file;
+    if (primaryFile) {
+      body.append('image', primaryFile);
+    }
+    const uploadFiles = files.length > 0 ? files : (file ? [file] : []);
+    uploadFiles.forEach((f) => {
+      body.append('images', f);
+    });
+
     body.append('title', form.title);
     body.append('description', fullDescription);
     body.append('medium', fullMedium);
@@ -288,30 +308,65 @@ export default function UploadArtwork() {
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
         <label className="block">
-          <span className={labelClass}>Image <span className="text-clay">*</span></span>
+          <span className={labelClass}>Artwork Photos (Up to 6) <span className="text-clay">*</span></span>
           <input
             type="file"
+            multiple
             accept="image/jpeg,image/png,image/webp"
             className={inputClass}
             onChange={(e) => {
-              setFile(e.target.files?.[0] ?? null);
+              const selected = Array.from(e.target.files || []);
+              if (selected.length > 6) {
+                setErrorMsg('You can upload a maximum of 6 photos per artwork.');
+                return;
+              }
+              const oversized = selected.find((f) => f.size > 4 * 1024 * 1024);
+              if (oversized) {
+                setErrorMsg(`"${oversized.name}" exceeds the 4 MB limit.`);
+                return;
+              }
+              setErrorMsg('');
+              setFiles(selected);
               setAiMsg('');
               setPriceHint('');
             }}
           />
-          <span className="mt-1.5 block text-xs text-ink/50">JPG, PNG or WebP, up to 4 MB.</span>
+          <span className="mt-1.5 block text-xs text-ink/50">
+            JPG, PNG or WebP, up to 4 MB per photo. Photo #1 is your primary cover photo.
+          </span>
         </label>
 
-        {previewUrl && (
-          <div className="flex items-start gap-4 rounded-xl border border-ink/10 bg-paper p-4">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewUrl} alt="Selected artwork" className="h-28 w-24 rounded-lg object-cover" />
-            <div>
+        {previewUrls.length > 0 && (
+          <div className="rounded-xl border border-ink/10 bg-paper p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-ink/80">{files.length} Photo{files.length > 1 ? 's' : ''} Selected</span>
+              <button
+                type="button"
+                onClick={() => setFiles([])}
+                className="text-xs font-semibold text-clay hover:underline"
+              >
+                Clear all
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+              {previewUrls.map((url, idx) => (
+                <div key={idx} className="relative aspect-square overflow-hidden rounded-lg border border-ink/10 bg-white">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={url} alt={`Photo ${idx + 1}`} className="h-full w-full object-cover" />
+                  <span className="absolute bottom-0 inset-x-0 bg-black/70 text-[9px] font-extrabold text-white text-center py-0.5">
+                    {idx === 0 ? 'Cover #1' : `#${idx + 1}`}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t border-ink/10">
               <button
                 type="button"
                 onClick={handleAiSuggest}
                 disabled={aiLoading}
-                className="rounded-full bg-gradient-to-r from-purple-600 via-brand to-magenta px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
+                className="rounded-full bg-gradient-to-r from-purple-600 via-brand to-magenta px-5 py-2 text-xs font-bold text-white shadow-sm hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
               >
                 {aiLoading ? 'Looking at your artwork…' : '✨ Suggest title, description & price with Gemini AI'}
               </button>

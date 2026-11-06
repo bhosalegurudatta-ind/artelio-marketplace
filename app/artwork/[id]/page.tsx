@@ -46,6 +46,7 @@ export default function ArtworkDetail() {
   const [pincode, setPincode] = useState('');
   const [pincodeStatus, setPincodeStatus] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -77,6 +78,20 @@ export default function ArtworkDetail() {
 
       const detail: Detail = { ...(data as any), artist_name: (data as any).users?.name ?? 'Studio Master' };
       setArt(detail);
+
+      // Fetch multiple photos from artwork_images table
+      const { data: imgRows } = await supabase
+        .from('artwork_images')
+        .select('id, preview_url, position')
+        .eq('artwork_id', detail.id)
+        .order('position', { ascending: true });
+
+      const allImgs: string[] = [
+        detail.image_url,
+        ...(imgRows ?? []).map((r: any) => r.preview_url),
+      ].filter(Boolean) as string[];
+
+      setGalleryImages(allImgs);
 
       const { data: reviews } = await supabase
         .from('reviews')
@@ -162,6 +177,7 @@ export default function ArtworkDetail() {
 
   const mrp = Math.round(art.price * 1.6);
   const unavailable = art.sold && !art.is_digital;
+  const currentDisplayImage = galleryImages[activeImageIndex] || art.image_url;
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-4 md:px-6 md:py-8 text-[#17223B]">
@@ -194,14 +210,14 @@ export default function ArtworkDetail() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12 items-start">
-        {/* Left: Product Image Carousel matching Figma Screen 11 */}
+        {/* Left: Product Image & Thumbnail Gallery Strip */}
         <div className="lg:col-span-6">
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#F9F9F9] border border-[#DEDBDB] shadow-stylish-card">
             <div
-              className="h-full w-full bg-cover bg-center transition-transform duration-500 hover:scale-105"
-              style={art.image_url ? { backgroundImage: `url(${art.image_url})` } : undefined}
+              className="h-full w-full bg-cover bg-center transition-all duration-300"
+              style={currentDisplayImage ? { backgroundImage: `url(${currentDisplayImage})` } : undefined}
             >
-              {!art.image_url && <GenerativeArt seed={art.id} className="block h-full w-full" />}
+              {!currentDisplayImage && <GenerativeArt seed={art.id} className="block h-full w-full" />}
             </div>
 
             {unavailable && (
@@ -213,19 +229,38 @@ export default function ArtworkDetail() {
             )}
           </div>
 
-          {/* Carousel dots (from Figma Screen 11) */}
-          <div className="mt-3 flex items-center justify-center gap-1.5">
-            {[0, 1, 2, 3].map((dot) => (
-              <button
-                key={dot}
-                onClick={() => setActiveImageIndex(dot)}
-                className={`h-2 rounded-full transition-all ${
-                  activeImageIndex === dot ? 'w-5 bg-[#F83758]' : 'w-2 bg-[#DEDBDB]'
-                }`}
-                aria-label={`Slide ${dot + 1}`}
-              />
-            ))}
-          </div>
+          {/* Thumbnail Strip: clicking a thumbnail switches the main image */}
+          {galleryImages.length > 1 ? (
+            <div className="mt-3.5 flex items-center gap-2.5 overflow-x-auto pb-1.5 scrollbar-thin">
+              {galleryImages.map((imgUrl, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveImageIndex(idx)}
+                  className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                    activeImageIndex === idx
+                      ? 'border-[#F83758] ring-2 ring-[#F83758]/30 shadow-md scale-105'
+                      : 'border-[#DEDBDB] hover:border-[#A8A8A9] opacity-70 hover:opacity-100'
+                  }`}
+                  aria-label={`Switch to photo ${idx + 1}`}
+                >
+                  <div
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${imgUrl})` }}
+                  />
+                  {idx === 0 && (
+                    <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] font-extrabold text-white text-center py-0.5 uppercase tracking-wider">
+                      Cover
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-3 flex items-center justify-center gap-1.5">
+              <span className="h-2 w-5 rounded-full bg-[#F83758]" />
+            </div>
+          )}
 
           {/* Interactive Visualizer & Question buttons */}
           <div className="mt-4 flex gap-2">

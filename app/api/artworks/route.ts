@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
     }
 
     const form = await req.formData();
-    const file = form.get('image');
     const title = String(form.get('title') ?? '').trim();
     const description = String(form.get('description') ?? '').trim();
     const medium = String(form.get('medium') ?? '').trim();
@@ -63,67 +62,104 @@ export async function POST(req: NextRequest) {
     const isDigital = form.get('isDigital') === 'true';
     const isAiAssisted = form.get('isAiAssisted') === 'true';
 
+    // 1. Collect files: accepts up to 6 files in "images", keeps single-image "image" working
+    let files: File[] = [];
+    const multiImages = form.getAll('images').filter((f): f is File => f instanceof File && f.size > 0);
+    if (multiImages.length > 0) {
+      files = multiImages;
+    } else {
+      const singleImage = form.get('image');
+      if (singleImage instanceof File && singleImage.size > 0) {
+        files = [singleImage];
+      }
+    }
+
+    if (files.length === 0) return fail('Please choose at least one image.', 400);
+    if (files.length > 6) return fail('You can upload a maximum of 6 photos per artwork.', 400);
+
     if (!title || title.length > 120) return fail('Please give your artwork a title (up to 120 characters).', 400);
     if (!Number.isFinite(price) || price < 1 || price > 10000000) return fail('Please enter a price between ₹1 and ₹1,00,00,000.', 400);
-    if (!(file instanceof File)) return fail('Please choose an image.', 400);
-    if (!TYPES.includes(file.type)) return fail('Please use a JPG, PNG or WebP image.', 400);
-    if (file.size > MAX_BYTES) return fail('Image is too large (max 4 MB for now).', 400);
 
-    const original = Buffer.from(await file.arrayBuffer());
-
-    // 1. Duplicate check against everything already listed.
-    let hash: string;
-    try {
-      hash = await dHash(original);
-    } catch {
-      return fail('We could not read that image. Try saving it again as a JPG or PNG.', 400);
+    // Validate 4 MB limit and allowed image type for each photo
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      if (!TYPES.includes(f.type)) return fail(`Photo #${i + 1} (${f.name}): Please use a JPG, PNG or WebP image.`, 400);
+      if (f.size > MAX_BYTES) return fail(`Photo #${i + 1} (${f.name}) is too large (max 4 MB per photo).`, 400);
     }
 
-    const { data: existing } = await supabaseAdmin
-      .from('artworks')
-      .select('artist_id, image_hash')
-      .not('image_hash', 'is', null)
-      .limit(5000);
-
-    const match = (existing ?? []).find((e: any) => e.image_hash && hamming(e.image_hash, hash) <= DUPLICATE_DISTANCE);
-    if (match) {
-      return fail(
-        match.artist_id === user.id
-          ? 'You have already listed this image.'
-          : 'This image looks the same as a piece already listed by another artist, so we could not publish it. If it is your own work, please contact us.',
-        409
-      );
-    }
-
-    // 2. Public preview: smaller and watermarked. This is the only version the public ever sees.
-    const preview = await makePreview(original);
+    // Process all photos (watermarked preview, fingerprint, and original storage)
+    type ProcessedPhoto = {
+      hash: string;
+      previewUrl: string;
+      originalPath: string | null;
+    };
+    const processedPhotos: ProcessedPhoto[] = [];
     const stamp = Date.now();
-    const previewPath = `${user.id}/${stamp}.jpg`;
-    const { error: previewError } = await supabaseAdmin.storage
-      .from('artworks')
-      .upload(previewPath, preview, { contentType: 'image/jpeg' });
-    if (previewError) {
-      console.error('Preview upload failed:', previewError);
-      return fail('Could not save the image. Please try again.', 500);
-    }
-    uploaded.push({ bucket: 'artworks', path: previewPath });
 
-    // 3. Digital art only: keep the full-quality original in the private bucket for paying buyers.
-    let originalPath: string | null = null;
-    if (isDigital) {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      originalPath = `${user.id}/${stamp}-${safeName}`;
-      const { error: originalError } = await supabaseAdmin.storage
-        .from('originals')
-        .upload(originalPath, original, { contentType: file.type });
-      if (originalError) {
-        console.error('Original upload failed:', originalError);
-        throw new Error('original upload failed');
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      const original = Buffer.from(await f.arrayBuffer());
+
+      // Fingerprint / dHash
+      let hash: string;
+      try {
+        hash = await dHash(original);
+      } catch {
+        return fail(`We could not read photo #${i + 1}. Try saving it again as a JPG or PNG.`, 400);
       }
-      uploaded.push({ bucket: 'originals', path: originalPath });
+
+      // Duplicate check for the primary photo against existing artwork catalog
+      if (i === 0) {
+        const { data: existing } = await supabaseAdmin
+          .from('artworks')
+          .select('artist_id, image_hash')
+          .not('image_hash', 'is', null)
+          .limit(5000);
+
+        const match = (existing ?? []).find((e: any) => e.image_hash && hamming(e.image_hash, hash) <= DUPLICATE_DISTANCE);
+        if (match) {
+          return fail(
+            match.artist_id === user.id
+              ? 'You have already listed this image.'
+              : 'This image looks the same as a piece already listed by another artist, so we could not publish it. If it is your own work, please contact us.',
+            409
+          );
+        }
+      }
+
+      // Watermarked preview
+      const preview = await makePreview(original);
+      const previewPath = `${user.id}/${stamp}-${i}.jpg`;
+      const { error: previewError } = await supabaseAdmin.storage
+        .from('artworks')
+        .upload(previewPath, preview, { contentType: 'image/jpeg' });
+      if (previewError) {
+        console.error(`Preview upload failed for photo #${i + 1}:`, previewError);
+        return fail('Could not save the image. Please try again.', 500);
+      }
+      uploaded.push({ bucket: 'artworks', path: previewPath });
+      const previewUrl = supabaseAdmin.storage.from('artworks').getPublicUrl(previewPath).data.publicUrl;
+
+      // Digital art: store each original in the private "originals" bucket and save its path in original_path
+      let originalPath: string | null = null;
+      if (isDigital) {
+        const safeName = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        originalPath = `${user.id}/${stamp}-${i}-${safeName}`;
+        const { error: originalError } = await supabaseAdmin.storage
+          .from('originals')
+          .upload(originalPath, original, { contentType: f.type });
+        if (originalError) {
+          console.error(`Original upload failed for photo #${i + 1}:`, originalError);
+          throw new Error('original upload failed');
+        }
+        uploaded.push({ bucket: 'originals', path: originalPath });
+      }
+
+      processedPhotos.push({ hash, previewUrl, originalPath });
     }
 
-    // 4. Save the listing.
+    // 2. Store the first photo on artworks.image_url
+    const primary = processedPhotos[0];
     const { data: row, error: insertError } = await supabaseAdmin
       .from('artworks')
       .insert({
@@ -132,15 +168,35 @@ export async function POST(req: NextRequest) {
         description,
         medium,
         price,
-        image_url: supabaseAdmin.storage.from('artworks').getPublicUrl(previewPath).data.publicUrl,
-        image_hash: hash,
+        image_url: primary.previewUrl,
+        image_hash: primary.hash,
         is_digital: isDigital,
         is_ai_assisted: isAiAssisted,
-        original_path: originalPath,
+        original_path: primary.originalPath,
       })
       .select('id')
       .single();
+
     if (insertError || !row) throw insertError ?? new Error('insert failed');
+
+    // 3. Store the others in artwork_images with a position (1, 2, ...)
+    if (processedPhotos.length > 1) {
+      const secondaryImages = processedPhotos.slice(1).map((photo, idx) => ({
+        artwork_id: row.id,
+        preview_url: photo.previewUrl,
+        original_path: photo.originalPath,
+        fingerprint: photo.hash,
+        position: idx + 1,
+      }));
+
+      const { error: imgErr } = await supabaseAdmin
+        .from('artwork_images')
+        .insert(secondaryImages);
+
+      if (imgErr) {
+        console.error('Error inserting into artwork_images:', imgErr);
+      }
+    }
 
     return NextResponse.json({ id: row.id });
   } catch (err) {

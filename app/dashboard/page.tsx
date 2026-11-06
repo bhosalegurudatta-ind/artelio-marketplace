@@ -198,7 +198,13 @@ export default function Dashboard() {
     <main className="mx-auto max-w-5xl px-5 py-12">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-ink md:text-3xl">Your studio</h1>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <Link
+            href="/dashboard/shop"
+            className="flex items-center gap-1.5 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-2.5 text-xs font-semibold text-sky-300 transition hover:bg-sky-500/20 shadow-sm"
+          >
+            <span>🏪</span> Shop Profile
+          </Link>
           <button
             onClick={() => setStudioModalOpen(true)}
             className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-800 transition hover:bg-purple-100 shadow-sm"

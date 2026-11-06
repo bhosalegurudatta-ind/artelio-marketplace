@@ -13,7 +13,16 @@ import PayoutSettingsModal from '@/components/PayoutSettingsModal';
 import CertificateModal from '@/components/CertificateModal';
 import PackagingGuideModal from '@/components/PackagingGuideModal';
 
-type Artwork = { id: string; title: string; price: number; image_url: string | null; sold: boolean; is_digital: boolean; is_ai_assisted: boolean };
+type Artwork = {
+  id: string;
+  title: string;
+  price: number;
+  image_url: string | null;
+  sold: boolean;
+  is_digital: boolean;
+  is_ai_assisted: boolean;
+  has_orders?: boolean;
+};
 type Order = {
   id: string;
   status: string;
@@ -95,10 +104,15 @@ export default function Dashboard() {
 
     const { data: artworkRows } = await supabase
       .from('artworks')
-      .select('id, title, price, image_url, sold, is_digital, is_ai_assisted')
+      .select('id, title, price, image_url, sold, is_digital, is_ai_assisted, orders(id)')
       .eq('artist_id', userData.user.id)
       .order('created_at', { ascending: false });
-    setArtworks(artworkRows ?? []);
+
+    const formattedArtworks = (artworkRows ?? []).map((art: any) => ({
+      ...art,
+      has_orders: Array.isArray(art.orders) ? art.orders.length > 0 : Boolean(art.orders),
+    }));
+    setArtworks(formattedArtworks);
 
     const { data: session } = await supabase.auth.getSession();
     const res = await fetch('/api/artist/orders', { headers: { Authorization: `Bearer ${session.session?.access_token}` } });
@@ -130,10 +144,35 @@ export default function Dashboard() {
   }
 
   async function handleDelete(art: Artwork) {
+    if (art.has_orders) {
+      return setMessage(`Cannot remove "${art.title}": Artworks with order history cannot be deleted.`);
+    }
+
     if (!window.confirm(`Remove "${art.title}" from Artelio?`)) return;
-    const { error } = await supabase.from('artworks').delete().eq('id', art.id);
-    if (error) return setMessage(`"${art.title}" has orders attached, so it can't be removed.`);
-    setArtworks((list) => list.filter((a) => a.id !== art.id));
+
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const token = session.session?.access_token;
+
+      const res = await fetch(`/api/artworks/${art.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const body = await res.json();
+      if (!res.ok) {
+        return setMessage(body.error || `Cannot remove "${art.title}": Artworks with order history cannot be deleted.`);
+      }
+
+      setMessage(`"${art.title}" was removed successfully.`);
+      setArtworks((list) => list.filter((a) => a.id !== art.id));
+    } catch {
+      const { error } = await supabase.from('artworks').delete().eq('id', art.id);
+      if (error) return setMessage(`"${art.title}" has orders attached, so it can't be removed.`);
+      setArtworks((list) => list.filter((a) => a.id !== art.id));
+    }
   }
 
   if (loading) return <main className="mx-auto max-w-5xl px-5 py-16 text-ink/60">Loading your studio…</main>;
@@ -496,7 +535,14 @@ export default function Dashboard() {
               <p className="mt-3 truncate text-sm font-semibold text-white">{art.title}</p>
               <div className="mt-1 flex items-center justify-between">
                 <p className="text-xs text-white/60">{money(art.price)}</p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
+                  <Link
+                    href={`/dashboard/artwork/${art.id}/edit`}
+                    className="text-xs font-semibold text-[#4392F9] hover:underline"
+                    title="Edit title, description, medium, and price"
+                  >
+                    Edit
+                  </Link>
                   <button
                     onClick={() => setCritiqueModal({ open: true, artworkId: art.id, title: art.title, imageUrl: art.image_url })}
                     className="text-xs font-semibold text-brand hover:underline"
@@ -504,7 +550,15 @@ export default function Dashboard() {
                   >
                     ✦ Critique
                   </button>
-                  <button onClick={() => handleDelete(art)} className="text-xs text-clay hover:underline">Remove</button>
+                  <button
+                    onClick={() => handleDelete(art)}
+                    className={`text-xs hover:underline ${
+                      art.has_orders ? 'text-white/40 cursor-not-allowed' : 'text-clay'
+                    }`}
+                    title={art.has_orders ? 'Cannot remove: this artwork has orders attached' : 'Remove listing'}
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             </div>

@@ -8,32 +8,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Nykaa signature palette
-        nykaa: {
-          pink: '#FC2779',         // Iconic Nykaa Hot Pink
-          darkpink: '#D81B60',     // Deep Raspberry Pink for active/hover
-          lightpink: '#FFF0F5',    // Soft Lavender Blush
-          softpink: '#FCE4EC',     // Pastel Rose
-          gold: '#C5A059',         // Nykaa Luxe Metallic Gold
-          charcoal: '#1A1A1A',     // High-contrast primary text
-          gray: '#5C5C5C',         // Secondary body text
-          border: '#E8E8E8',       // Crisp clean borders
-          bg: '#FAFAFA',           // Soft off-white canvas
+        // "Stylish" Figma UI Kit exact color palette
+        stylish: {
+          red: '#F83758',          // Iconic primary coral-red
+          darkred: '#E02244',      // Hover/pressed dark red
+          coral: '#FA7189',        // Secondary soft coral
+          lightpink: '#FDF0F3',    // Light pink background
+          softpink: '#FCF3F6',     // Subdued pink wash
+          blue: '#4392F9',         // "Deal of the day" blue
+          darkblue: '#2B66B1',
+          charcoal: '#17223B',     // Primary black text
+          gray: '#626262',         // Secondary gray body
+          lightgray: '#F3F3F3',    // Input fields background
+          border: '#DEDBDB',       // Clean card borders
+          card: '#FFFFFF',
+          bg: '#FFFFFF',           // Crisp white canvas
         },
-        ink: '#1A1A1A',
+        ink: '#17223B',
         paper: '#FFFFFF',
-        canvas: '#FAFAFA',
-        brand: '#FC2779',
-        'brand-dark': '#D81B60',
-        'brand-soft': '#FFF0F5',
-        clay: '#E53935',
-        marigold: '#F59E0B',
+        canvas: '#FFFFFF',
+        brand: '#F83758',
+        'brand-dark': '#E02244',
+        'brand-soft': '#FDF0F3',
+        clay: '#F83758',
+        marigold: '#F9A825',
         malachite: '#10B981',
-        vermilion: '#FC2779',
+        vermilion: '#F83758',
         amethyst: '#8B5CF6',
-        magenta: '#FC2779',
-        cerulean: '#0EA5E9',
-        amber: '#F59E0B',
+        magenta: '#F83758',
+        cerulean: '#4392F9',
+        amber: '#F9A825',
       },
       fontFamily: {
         serif: ['var(--font-serif)', 'Georgia', 'serif'],
@@ -41,10 +45,10 @@ const config: Config = {
         body: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        'nykaa-sm': '0 1px 4px 0 rgba(0, 0, 0, 0.08)',
-        'nykaa-card': '0 2px 10px 0 rgba(0, 0, 0, 0.06)',
-        'nykaa-hover': '0 8px 24px 0 rgba(252, 39, 121, 0.15)',
-        'nykaa-pink': '0 4px 14px 0 rgba(252, 39, 121, 0.35)',
+        'stylish-sm': '0 2px 6px 0 rgba(0, 0, 0, 0.06)',
+        'stylish-card': '0 4px 16px 0 rgba(0, 0, 0, 0.08)',
+        'stylish-btn': '0 4px 14px 0 rgba(248, 55, 88, 0.35)',
+        'stylish-float': '0 8px 24px 0 rgba(248, 55, 88, 0.45)',
       },
     },
   },

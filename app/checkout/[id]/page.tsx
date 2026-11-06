@@ -349,60 +349,70 @@ export default function Checkout() {
             </div>
           </div>
 
-          {/* Right Column: Order Summary */}
+          {/* Right Column: Order Summary (Matching Figma Screen 13 & 14) */}
           <div className="lg:col-span-5">
-            <div className="sticky top-6 rounded-2xl border border-ink/10 bg-[#121826] p-6 text-white shadow-xl">
-              <h2 className="font-serif text-xl font-bold">Order Summary</h2>
+            <div className="sticky top-6 rounded-2xl border border-[#DEDBDB] bg-white p-6 text-[#17223B] shadow-stylish-card">
+              <h2 className="font-sans text-xl font-extrabold text-[#17223B]">Order Summary</h2>
 
-              <div className="mt-5 flex gap-4 border-b border-white/10 pb-5">
+              <div className="mt-5 flex gap-4 border-b border-[#E8E8E8] pb-5">
                 <div
-                  className="h-24 w-20 shrink-0 rounded-lg bg-paper bg-cover bg-center border border-white/10"
+                  className="h-24 w-20 shrink-0 rounded-lg bg-[#F3F3F3] bg-cover bg-center border border-[#DEDBDB]"
                   style={artwork.image_url ? { backgroundImage: `url(${artwork.image_url})` } : undefined}
                 />
                 <div className="flex flex-col justify-center">
-                  <p className="font-semibold text-white">{artwork.title}</p>
+                  <p className="font-bold text-[#17223B] text-base">{artwork.title}</p>
                   {artwork.medium && (
-                    <p className="text-xs text-white/50">{artwork.medium}</p>
+                    <p className="text-xs text-[#626262] mt-0.5">{artwork.medium}</p>
                   )}
-                  <p className="mt-1.5 text-sm font-semibold text-marigold">
+                  <p className="mt-1.5 text-base font-extrabold text-[#F83758]">
                     ₹{artwork.price.toLocaleString('en-IN')}
                   </p>
-                  <span className="mt-1 text-[11px] text-white/60">
-                    {artwork.is_digital ? '✨ Instant Master Download' : '🖼️ Original Physical Piece'}
+                  <span className="mt-1 text-[11px] font-semibold text-emerald-600">
+                    {artwork.is_digital ? '✨ Instant Master Download' : '🖼️ Free Insured Delivery'}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-5 space-y-2.5 text-sm text-white/70">
-                <div className="flex justify-between">
-                  <span>Artwork Price</span>
-                  <span className="font-medium text-white">₹{artwork.price.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Insured Packaging & Transit</span>
-                  <span className="font-medium text-malachite">Complimentary</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Platform Buyer Protection</span>
-                  <span className="font-medium text-malachite">Included</span>
+              {/* Payment Methods (from Figma Screen 14) */}
+              <div className="mt-4 pt-2 border-b border-[#E8E8E8] pb-4">
+                <p className="text-xs font-bold text-[#17223B] uppercase mb-2">Supported Payment Options</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-1 bg-[#F3F3F3] text-[11px] font-bold rounded border border-gray-200">UPI / GPay / PhonePe</span>
+                  <span className="px-2.5 py-1 bg-[#F3F3F3] text-[11px] font-bold rounded border border-gray-200">Debit / Credit Cards</span>
+                  <span className="px-2.5 py-1 bg-[#F3F3F3] text-[11px] font-bold rounded border border-gray-200">NetBanking</span>
                 </div>
               </div>
 
-              <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4 text-white">
-                <span className="font-semibold">Total to Pay</span>
-                <span className="font-serif text-2xl font-bold text-marigold">
+              <div className="mt-4 space-y-2.5 text-sm text-[#626262]">
+                <div className="flex justify-between">
+                  <span>Order Amount</span>
+                  <span className="font-bold text-[#17223B]">₹{artwork.price.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Convenience &amp; Insurance</span>
+                  <span className="font-bold text-emerald-600">Free</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Certificate of Authenticity</span>
+                  <span className="font-bold text-emerald-600">Included (₹0)</span>
+                </div>
+              </div>
+
+              <div className="mt-5 flex items-center justify-between border-t border-[#E8E8E8] pt-4 text-[#17223B]">
+                <span className="font-bold text-base">Order Total</span>
+                <span className="font-sans text-2xl font-black text-[#F83758]">
                   ₹{artwork.price.toLocaleString('en-IN')}
                 </span>
               </div>
 
               {unavailable && (
-                <div className="mt-4 rounded-xl border border-clay/30 bg-clay/10 p-3 text-xs text-clay">
-                  ⚠️ This artwork has already been sold to another collector.
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600 font-bold">
+                  ⚠️ This artwork has already been acquired by another collector.
                 </div>
               )}
 
               {errorMsg && (
-                <div className="mt-4 rounded-xl border border-vermilion/30 bg-vermilion/10 p-3 text-xs text-vermilion">
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-600 font-semibold">
                   {errorMsg}
                 </div>
               )}
@@ -410,13 +420,13 @@ export default function Checkout() {
               <button
                 onClick={handlePay}
                 disabled={paying || unavailable}
-                className="mt-6 w-full rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                className="mt-6 w-full rounded-md bg-[#F83758] hover:bg-[#E02244] py-3.5 text-sm font-bold text-white shadow-stylish-btn transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-wide"
               >
-                {paying ? 'Connecting to payment…' : `Pay ₹${artwork.price.toLocaleString('en-IN')}`}
+                {paying ? 'Connecting to payment…' : `Proceed to Payment • ₹${artwork.price.toLocaleString('en-IN')}`}
               </button>
 
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-white/40">
-                <span>Supports UPI, Cards, NetBanking & EMI</span>
+              <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-[#A8A8A9]">
+                <span>🔒 Safe &amp; Secure 256-Bit Escrow Checkout</span>
               </div>
             </div>
           </div>

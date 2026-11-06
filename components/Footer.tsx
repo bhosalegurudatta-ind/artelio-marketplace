@@ -3,70 +3,71 @@ import { CATEGORIES } from '@/lib/categories';
 
 export default function Footer() {
   const linkClass =
-    'text-xs text-gray-500 hover:text-[#FC2779] transition-colors duration-150 leading-relaxed';
+    'text-xs text-[#626262] hover:text-[#F83758] transition-colors duration-150 leading-relaxed';
 
   return (
-    <footer className="mt-20 bg-white border-t border-[#E8E8E8] text-[#1A1A1A]">
-      {/* 1. Nykaa Pink Top Accent Line */}
-      <div className="h-1 w-full bg-[#FC2779]" />
+    <footer className="mt-16 bg-white border-t border-[#E8E8E8] text-[#17223B]">
+      {/* 1. Top Red/Coral Accent Strip */}
+      <div className="h-1 w-full bg-[#F83758]" />
 
-      {/* 2. Top Trust Pillars (Nykaa style) */}
-      <div className="border-b border-[#E8E8E8] bg-[#FAFAFA] py-6">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      {/* 2. Trust Assurance Badges (Matching Figma Flow) */}
+      <div className="border-b border-[#E8E8E8] bg-[#F9F9F9] py-5">
+        <div className="mx-auto max-w-[1240px] px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <span className="text-2xl">✨</span>
-            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">100% Genuine Artworks</h4>
-            <p className="text-[11px] text-gray-500">Sourced directly from certified artists</p>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">100% Authentic Products</h4>
+            <p className="text-[11px] text-[#626262]">Original works direct from artist studios</p>
           </div>
           <div>
             <span className="text-2xl">🚚</span>
-            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Insured Courier Delivery</h4>
-            <p className="text-[11px] text-gray-500">Free delivery on original paintings across India</p>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">Free Insured Delivery</h4>
+            <p className="text-[11px] text-[#626262]">Across all states in India with live tracking</p>
           </div>
           <div>
             <span className="text-2xl">📜</span>
-            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Authenticity Guaranteed</h4>
-            <p className="text-[11px] text-gray-500">Every piece comes with a signed physical COA</p>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">Physical Signed COA</h4>
+            <p className="text-[11px] text-[#626262]">Certificate of Authenticity with every piece</p>
           </div>
           <div>
             <span className="text-2xl">🔒</span>
-            <h4 className="text-xs font-bold text-[#1A1A1A] mt-1">Secure Razorpay Escrow</h4>
-            <p className="text-[11px] text-gray-500">Safe payments with UPI, Cards &amp; NetBanking</p>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">Secure Razorpay Escrow</h4>
+            <p className="text-[11px] text-[#626262]">Funds released after safe buyer delivery</p>
           </div>
         </div>
       </div>
 
-      {/* 3. Main Footer Links */}
-      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
-        {/* Brand Column */}
+      {/* 3. Main Directory Links */}
+      <div className="mx-auto max-w-[1240px] px-4 sm:px-6 py-10 grid grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8">
         <div className="col-span-2">
-          <Link href="/" className="flex items-center gap-1.5">
-            <span className="font-extrabold text-2xl tracking-tighter text-[#1A1A1A] font-sans">
-              ARTELIO
-            </span>
-            <span className="text-[9px] font-extrabold tracking-widest text-[#FC2779] bg-[#FFF0F5] px-1.5 py-0.5 rounded uppercase border border-[#FC2779]/20">
-              LUXE
+          <Link href="/" className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-gradient-to-tr from-[#4392F9] to-[#F83758] flex items-center justify-center p-0.5">
+              <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
+                <div className="h-3 w-3 rounded-full bg-[#F83758]" />
+              </div>
+            </div>
+            <span className="font-extrabold text-2xl tracking-tight text-[#4392F9] font-sans">
+              <span className="text-[#4392F9]">Art</span>
+              <span className="text-[#F83758]">elio</span>
             </span>
           </Link>
-          <p className="mt-3 max-w-sm text-xs text-gray-500 leading-relaxed">
-            Artelio is India’s premier online curated fine art marketplace, connecting passionate art collectors with independent painters, sculptors, and digital creators across India.
+          <p className="mt-3 max-w-sm text-xs text-[#626262] leading-relaxed">
+            India’s daily fine art &amp; creative lifestyle marketplace. Discover, try in 3D, and collect original pieces directly from verified creator ateliers.
           </p>
 
-          <div className="mt-5 flex items-center gap-3">
-            <span className="text-xs font-bold text-[#1A1A1A]">Payment Partners:</span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">UPI</span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">GPay</span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">PhonePe</span>
-            <span className="text-[10px] bg-gray-100 text-gray-600 font-bold px-2 py-1 rounded">Visa/Mastercard</span>
+          <div className="mt-4 flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] font-bold text-[#17223B]">100% Safe Payments:</span>
+            <span className="text-[10px] bg-[#F3F3F3] text-[#17223B] font-bold px-2 py-0.5 rounded">UPI</span>
+            <span className="text-[10px] bg-[#F3F3F3] text-[#17223B] font-bold px-2 py-0.5 rounded">GPay</span>
+            <span className="text-[10px] bg-[#F3F3F3] text-[#17223B] font-bold px-2 py-0.5 rounded">PhonePe</span>
+            <span className="text-[10px] bg-[#F3F3F3] text-[#17223B] font-bold px-2 py-0.5 rounded">Cards</span>
           </div>
         </div>
 
-        {/* Mediums */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
-            Art Categories
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#17223B] mb-3">
+            Shop by Category
           </h4>
-          <ul className="space-y-2">
+          <ul className="space-y-1.5">
             {CATEGORIES.slice(0, 5).map((c) => (
               <li key={c.slug}>
                 <Link href={`/browse?category=${c.slug}`} className={linkClass}>
@@ -77,62 +78,40 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Collector Corner */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
-            Collector Services
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#17223B] mb-3">
+            Collector Hub
           </h4>
-          <ul className="space-y-2">
-            <li>
-              <Link href="/browse" className={linkClass}>All Galleries</Link>
-            </li>
-            <li>
-              <Link href="/spaces" className={linkClass}>3D Room Studio</Link>
-            </li>
-            <li>
-              <Link href="/track" className={linkClass}>Track Delivery</Link>
-            </li>
-            <li>
-              <Link href="/plans" className={linkClass}>VIP Patron Membership</Link>
-            </li>
-            <li>
-              <Link href="/contact" className={linkClass}>Art Concierge &amp; Advisory</Link>
-            </li>
+          <ul className="space-y-1.5">
+            <li><Link href="/browse" className={linkClass}>All Featured Products</Link></li>
+            <li><Link href="/spaces" className={linkClass}>3D Room Visualizer</Link></li>
+            <li><Link href="/track" className={linkClass}>Track My Delivery</Link></li>
+            <li><Link href="/contact" className={linkClass}>Art Concierge Help</Link></li>
           </ul>
         </div>
 
-        {/* Policies & Legal */}
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider text-[#1A1A1A] mb-3">
-            Help &amp; Legal
+          <h4 className="text-xs font-bold uppercase tracking-wider text-[#17223B] mb-3">
+            Seller &amp; Policy
           </h4>
-          <ul className="space-y-2">
+          <ul className="space-y-1.5">
             <li>
-              <Link href="/shipping-policy" className={linkClass}>Shipping &amp; Courier Policy</Link>
-            </li>
-            <li>
-              <Link href="/refund-policy" className={linkClass}>Refund &amp; Return Policy</Link>
-            </li>
-            <li>
-              <Link href="/terms" className={linkClass}>Terms of Service</Link>
-            </li>
-            <li>
-              <Link href="/privacy-policy" className={linkClass}>Privacy Policy</Link>
-            </li>
-            <li>
-              <Link href="/artist-signup" className="text-xs font-bold text-[#FC2779] hover:underline">
-                Sell Art on Artelio →
+              <Link href="/artist-signup" className="text-xs font-bold text-[#F83758] hover:underline">
+                Sell on Artelio →
               </Link>
             </li>
+            <li><Link href="/shipping-policy" className={linkClass}>Shipping &amp; Delivery</Link></li>
+            <li><Link href="/refund-policy" className={linkClass}>Refund &amp; Return Policy</Link></li>
+            <li><Link href="/terms" className={linkClass}>Terms of Service</Link></li>
           </ul>
         </div>
       </div>
 
-      {/* 4. Bottom Copyright Strip */}
-      <div className="border-t border-[#E8E8E8] py-4 bg-[#F7F7F7] text-center text-xs text-gray-500">
-        <div className="mx-auto max-w-[1280px] px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© {new Date().getFullYear()} Artelio Fine Arts India Pvt. Ltd. All rights reserved.</p>
-          <p className="text-[11px] text-gray-400">Authentic Art • Verified Artist Ateliers • Escrow Protected</p>
+      {/* 4. Bottom Strip */}
+      <div className="border-t border-[#E8E8E8] py-4 bg-[#F9F9F9] text-center text-xs text-[#626262]">
+        <div className="mx-auto max-w-[1240px] px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p>© {new Date().getFullYear()} Artelio Marketplace. Designed for daily art &amp; creative living.</p>
+          <p className="text-[11px] text-[#A8A8A9]">Certified Products • Verified Artists • Escrow Protection</p>
         </div>
       </div>
     </footer>

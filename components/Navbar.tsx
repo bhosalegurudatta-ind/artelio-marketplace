@@ -12,9 +12,10 @@ export default function Navbar() {
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [role, setRole] = useState<Role>(null);
+  const [userName, setUserName] = useState<string>('');
   const [userEmail, setUserEmail] = useState<string>('');
   const [query, setQuery] = useState('');
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -25,12 +26,14 @@ export default function Navbar() {
       if (!data.user) {
         setLoggedIn(false);
         setRole(null);
+        setUserName('');
         setUserEmail('');
         return;
       }
       setLoggedIn(true);
       setUserEmail(data.user.email || '');
-      let { data: profile } = await supabase.from('users').select('role').eq('id', data.user.id).maybeSingle();
+
+      let { data: profile } = await supabase.from('users').select('name, role').eq('id', data.user.id).maybeSingle();
       if (!profile) {
         try {
           const { data: sessionData } = await supabase.auth.getSession();
@@ -45,11 +48,12 @@ export default function Navbar() {
             const syncJson = await syncRes.json().catch(() => ({}));
             profile = syncJson?.profile || null;
           }
-        } catch {
-          // ignore
-        }
+        } catch {}
       }
-      if (active) setRole((profile?.role as Role) ?? null);
+      if (active) {
+        setRole((profile?.role as Role) ?? null);
+        setUserName(profile?.name || (data.user.email ? data.user.email.split('@')[0] : 'Member'));
+      }
     }
 
     refresh();
@@ -65,6 +69,7 @@ export default function Navbar() {
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    setMenuOpen(false);
     router.push('/');
     router.refresh();
   }
@@ -77,117 +82,50 @@ export default function Navbar() {
 
   return (
     <>
-      {/* 1. NYKAA TOP ANNOUNCEMENT BAR */}
-      <div className="bg-[#FC2779] text-white text-[11px] font-semibold tracking-wide py-1.5 px-4">
-        <div className="mx-auto max-w-[1280px] flex items-center justify-between">
-          <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap">
-            <span className="bg-white/20 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider">
-              ✦ ARTELIO GRAND ART UTSAV
-            </span>
-            <span className="hidden sm:inline">
-              Get Up to 40% Off on Curated Originals + Free Insured White-Glove Courier Delivery Across India!
-            </span>
-            <span className="sm:hidden">Grand Art Sale • Free All-India Delivery</span>
-          </div>
-
-          <div className="flex items-center gap-4 shrink-0 text-white/90">
-            <Link href="/track" className="hover:text-white transition hidden md:inline">
-              🚚 Track Order
-            </Link>
-            <span className="hidden md:inline">|</span>
-            <Link href="/contact" className="hover:text-white transition hidden sm:inline">
-              Help &amp; Concierge
-            </Link>
-            <span>|</span>
-            <Link href="/artist-signup" className="text-white font-bold hover:underline">
-              Sell on Artelio
-            </Link>
-          </div>
-        </div>
+      {/* 1. TOP PROMO RIBBON (Matching Figma "50-40% OFF" banner note) */}
+      <div className="bg-[#F83758] text-white text-[11px] font-bold py-1 px-4 text-center tracking-wide">
+        <span>✦ Special Launch: Flat 40% OFF on Original Fine Artworks • Free Insured Delivery Across India</span>
       </div>
 
-      {/* 2. NYKAA MAIN HEADER */}
-      <header className="sticky top-0 z-50 bg-white border-b border-[#E8E8E8] shadow-xs">
-        <div className="mx-auto flex max-w-[1280px] items-center gap-4 px-4 py-3 sm:px-6">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-1.5 group shrink-0">
-            <span className="font-extrabold text-2xl sm:text-3xl tracking-tighter text-[#1A1A1A] group-hover:text-[#FC2779] transition font-sans">
-              ARTELIO
-            </span>
-            <span className="text-[10px] font-extrabold tracking-widest text-[#FC2779] bg-[#FFF0F5] px-1.5 py-0.5 rounded uppercase border border-[#FC2779]/20">
-              LUXE
+      {/* 2. FIGMA "STYLISH" APP HEADER */}
+      <header className="sticky top-0 z-50 bg-white border-b border-[#E8E8E8]">
+        <div className="mx-auto max-w-[1240px] px-4 py-2.5 sm:px-6 flex items-center justify-between gap-3">
+          
+          {/* Left: Hamburger Menu Icon */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-1.5 rounded-lg text-[#17223B] hover:bg-[#F3F3F3] transition"
+            aria-label="Open navigation menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="16" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+
+          {/* Center: "Stylish" Swirl Brand Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            {/* The iconic Figma circle with blue and coral swirl */}
+            <div className="relative h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-[#4392F9] via-[#FA7189] to-[#F83758] shadow-sm p-1">
+              <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
+                <div className="h-4 w-4 rounded-full bg-[#F83758]" />
+              </div>
+            </div>
+            <span className="font-extrabold text-2xl tracking-tight text-[#4392F9] font-sans group-hover:opacity-90 transition">
+              <span className="text-[#4392F9]">Art</span>
+              <span className="text-[#F83758]">elio</span>
             </span>
           </Link>
 
-          {/* Quick Hub Links (Beauty/Fashion style) */}
-          <div className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-wider text-[#333333] ml-4">
-            <Link href="/browse" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779]">
-              Galleries
-            </Link>
-            <Link href="/browse?category=paintings" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779]">
-              Paintings
-            </Link>
-            <Link href="/spaces" className="hover:text-[#FC2779] transition pb-0.5 border-b-2 border-transparent hover:border-[#FC2779] text-[#FC2779]">
-              ✨ 3D Room Studio
-            </Link>
-          </div>
-
-          {/* Nykaa Search Bar */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-xl mx-auto relative hidden md:block">
-            <div className="relative flex items-center">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#888888"
-                strokeWidth="2.5"
-                className="absolute left-3.5 pointer-events-none"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
-              </svg>
-              <input
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search on Artelio: Paintings, Charcoal, Canvas, Artists, Sculptures..."
-                className="w-full rounded-md border border-[#E0E0E0] bg-[#F5F5F6] hover:bg-white focus:bg-white pl-10 pr-4 py-2 text-xs text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#FC2779] focus:outline-none focus:ring-1 focus:ring-[#FC2779] transition-all"
-              />
-            </div>
-          </form>
-
-          {/* Right Action Icons: Nykaa Style */}
-          <div className="ml-auto flex items-center gap-4 sm:gap-6">
+          {/* Right: User Avatar Photo Circle (Matching Figma screen) */}
+          <div className="flex items-center gap-3">
             {loggedIn ? (
-              <>
-                <Link
-                  href="/profile"
-                  className="flex flex-col items-center justify-center text-[#333333] hover:text-[#FC2779] transition group"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:scale-110 transition">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" strokeLinecap="round" />
-                  </svg>
-                  <span className="text-[10px] font-bold mt-0.5 tracking-tight">Account</span>
-                </Link>
-
-                <Link
-                  href="/orders"
-                  className="flex flex-col items-center justify-center text-[#333333] hover:text-[#FC2779] transition group"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:scale-110 transition">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 01-8 0" />
-                  </svg>
-                  <span className="text-[10px] font-bold mt-0.5 tracking-tight">Orders</span>
-                </Link>
-
+              <div className="flex items-center gap-2">
                 {role === 'artist' && (
                   <Link
                     href="/dashboard/upload"
-                    className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-[#FC2779] hover:bg-[#D81B60] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition active:scale-95"
+                    className="hidden sm:inline-flex items-center gap-1 rounded-md bg-[#F83758] hover:bg-[#E02244] px-3 py-1.5 text-xs font-bold text-white shadow-stylish-btn transition active:scale-95"
                   >
                     <span>+ Upload Art</span>
                   </Link>
@@ -196,64 +134,156 @@ export default function Navbar() {
                 {userEmail === 'bhosalegurudatta@gmail.com' && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-1 rounded bg-[#FFF0F5] border border-[#FC2779]/30 px-2 py-1 text-[11px] font-bold text-[#FC2779] hover:bg-[#FC2779] hover:text-white transition"
+                    className="flex items-center gap-1 rounded bg-[#FDF0F3] border border-[#F83758]/30 px-2 py-1 text-[11px] font-bold text-[#F83758] hover:bg-[#F83758] hover:text-white transition"
                   >
                     <span>👑 Admin</span>
                   </Link>
                 )}
 
-                <button
-                  onClick={handleLogout}
-                  className="text-xs font-semibold text-gray-500 hover:text-[#FC2779] transition"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/login"
-                  className="rounded-md bg-[#FC2779] hover:bg-[#D81B60] px-5 py-2 text-xs font-bold text-white shadow-nykaa-pink transition active:scale-95 flex items-center gap-1.5"
-                >
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21c0-4 3.5-7 8-7s8 3 8 7" strokeLinecap="round" />
-                  </svg>
-                  <span>Sign in</span>
+                <Link href="/profile" className="flex items-center gap-1.5 group" title="My Profile">
+                  <div className="h-9 w-9 rounded-full bg-[#FDF0F3] border-2 border-[#F83758] flex items-center justify-center font-bold text-[#F83758] text-sm overflow-hidden shadow-xs">
+                    {userName ? userName[0].toUpperCase() : 'U'}
+                  </div>
                 </Link>
               </div>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-full bg-[#F83758] hover:bg-[#E02244] px-5 py-2 text-xs font-bold text-white shadow-stylish-btn transition active:scale-95"
+              >
+                Sign In
+              </Link>
             )}
           </div>
         </div>
 
-        {/* 3. NYKAA MEGAMENU CATEGORY STRIP */}
-        <nav aria-label="Categories" className="border-t border-[#F0F0F0] bg-white">
-          <div className="no-scrollbar mx-auto flex max-w-[1280px] items-center justify-between gap-1 overflow-x-auto px-4 py-2">
-            <Link
-              href="/browse"
-              className="shrink-0 px-3 py-1 text-xs font-extrabold uppercase text-[#FC2779] hover:bg-[#FFF0F5] rounded transition"
+        {/* 3. FIGMA SEARCH BAR WITH MIC ICON */}
+        <div className="mx-auto max-w-[1240px] px-4 pb-3 sm:px-6">
+          <form onSubmit={handleSearch} className="relative flex items-center">
+            {/* Search Magnifying Glass Icon */}
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#A8A8A9"
+              strokeWidth="2.5"
+              className="absolute left-4 pointer-events-none"
             >
-              All Artworks
-            </Link>
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+            </svg>
 
-            {CATEGORIES.map((c) => (
+            {/* Input with exact Figma styling: rounded, #F3F3F3 background */}
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search any Product.."
+              className="w-full rounded-xl border border-transparent bg-[#F3F3F3] hover:bg-white hover:border-[#DEDBDB] focus:bg-white focus:border-[#F83758] pl-11 pr-11 py-2.5 text-sm text-[#17223B] placeholder-[#A8A8A9] focus:outline-none focus:ring-1 focus:ring-[#F83758] transition shadow-xs"
+            />
+
+            {/* Microphone Icon (from Figma design) */}
+            <button
+              type="button"
+              onClick={() => alert('Voice search ready: Try searching for "Oil Painting" or "Charcoal"')}
+              className="absolute right-3.5 p-1 text-[#A8A8A9] hover:text-[#F83758] transition"
+              title="Voice Search"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                <line x1="12" y1="19" x2="12" y2="23" />
+                <line x1="8" y1="23" x2="16" y2="23" />
+              </svg>
+            </button>
+          </form>
+
+          {/* 4. FIGMA "All Featured" Sort & Filter Row */}
+          <div className="flex items-center justify-between mt-2 pt-1">
+            <h2 className="text-sm font-extrabold text-[#17223B] tracking-tight">
+              All Featured
+            </h2>
+
+            <div className="flex items-center gap-2">
               <Link
-                key={c.slug}
-                href={`/browse?category=${c.slug}`}
-                className="shrink-0 px-3 py-1 text-xs font-semibold uppercase text-[#333333] hover:text-[#FC2779] hover:bg-[#FFF0F5] rounded transition tracking-tight whitespace-nowrap"
+                href="/browse"
+                className="flex items-center gap-1 bg-white border border-[#DEDBDB] px-3 py-1 rounded-md text-xs font-semibold text-[#17223B] hover:border-[#F83758] hover:text-[#F83758] transition shadow-xs"
               >
-                {c.label}
+                <span>Sort</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M7 15l5 5 5-5" />
+                  <path d="M7 9l5-5 5 5" />
+                </svg>
               </Link>
-            ))}
 
-            <Link
-              href="/plans"
-              className="shrink-0 px-3 py-1 text-xs font-extrabold uppercase text-[#C5A059] bg-[#FFFBF0] border border-[#C5A059]/30 rounded hover:bg-[#C5A059] hover:text-white transition tracking-wide"
-            >
-              ✦ Artelio Luxe
-            </Link>
+              <Link
+                href="/browse"
+                className="flex items-center gap-1 bg-white border border-[#DEDBDB] px-3 py-1 rounded-md text-xs font-semibold text-[#17223B] hover:border-[#F83758] hover:text-[#F83758] transition shadow-xs"
+              >
+                <span>Filter</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+              </Link>
+            </div>
           </div>
-        </nav>
+        </div>
+
+        {/* 5. Mobile Drawer Menu */}
+        {menuOpen && (
+          <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex" onClick={() => setMenuOpen(false)}>
+            <div className="w-72 bg-white h-full p-6 shadow-2xl flex flex-col justify-between" onClick={(e) => e.stopPropagation()}>
+              <div>
+                <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                  <span className="font-extrabold text-xl text-[#F83758]">Artelio Menu</span>
+                  <button onClick={() => setMenuOpen(false)} className="text-gray-400 hover:text-black">✕</button>
+                </div>
+
+                <div className="mt-4 space-y-3">
+                  <Link href="/" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    🏠 Home
+                  </Link>
+                  <Link href="/browse" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    🎨 All Artworks
+                  </Link>
+                  <Link href="/spaces" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    ✨ 3D Room Visualizer
+                  </Link>
+                  <Link href="/orders" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    📦 My Orders
+                  </Link>
+                  <Link href="/profile" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    👤 Account Profile
+                  </Link>
+                  <Link href="/track" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    🚚 Track Delivery
+                  </Link>
+                  <Link href="/artist-signup" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#4392F9] hover:underline">
+                    🖌️ Sell Art on Artelio
+                  </Link>
+                </div>
+              </div>
+
+              {loggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-2.5 rounded-lg border border-red-200 text-red-600 font-bold text-xs hover:bg-red-50 transition"
+                >
+                  Log Out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="w-full py-2.5 rounded-lg bg-[#F83758] text-white font-bold text-xs text-center block shadow-stylish-btn"
+                >
+                  Sign In / Register
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </header>
     </>
   );

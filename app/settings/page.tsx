@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import { inputClass, labelClass, primaryButton } from '@/lib/ui';
+import { inputClass, labelClass } from '@/lib/ui';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -104,9 +104,11 @@ export default function SettingsPage() {
         },
         body: JSON.stringify({ name, bio, address, phone, role }),
       });
+
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Could not update profile.');
-      setProfileMsg({ text: 'Profile changes saved successfully!' });
+      if (!res.ok) throw new Error(data.error || 'Failed to update profile.');
+
+      setProfileMsg({ text: 'Profile & delivery details saved successfully!' });
     } catch (err: any) {
       setProfileMsg({ text: err.message, error: true });
     } finally {
@@ -124,17 +126,25 @@ export default function SettingsPage() {
     if (!token) return;
 
     try {
-      const payload: Record<string, any> = {
+      const payload: any = {
         method: payoutMethod,
-        accountHolder: accountHolder.trim() || name.trim(),
+        accountHolder,
       };
 
       if (payoutMethod === 'upi') {
+        if (!upiId.trim() || !upiId.includes('@')) {
+          throw new Error('Please enter a valid UPI ID (e.g. name@okaxis, 9876543210@paytm)');
+        }
         payload.upiId = upiId.trim();
       } else {
+        if (!bankName.trim()) throw new Error('Bank name is required.');
+        if (!ifsc.trim() || ifsc.trim().length < 8) throw new Error('Valid IFSC code is required.');
+        if (!accountNumber.trim() || accountNumber.trim().length < 8) {
+          throw new Error('Valid bank account number is required.');
+        }
         payload.bankName = bankName.trim();
-        payload.accountNumber = accountNumber.trim();
         payload.ifsc = ifsc.trim().toUpperCase();
+        payload.accountNumber = accountNumber.trim();
       }
 
       const res = await fetch('/api/artist/payout-settings', {
@@ -161,35 +171,35 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <main className="mx-auto flex min-h-[50vh] max-w-lg items-center justify-center px-5 py-24 text-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-r-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#F83758] border-r-transparent" />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-4xl px-4 py-12 md:px-6">
+    <main className="mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-12 text-[#17223B]">
       {/* Header */}
-      <div className="mb-8 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center">
+      <div className="mb-6 flex flex-col justify-between gap-4 border-b border-[#F0F0F0] pb-5 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-white md:text-4xl">
-            Account & Payment Settings
+          <h1 className="text-2xl md:text-3xl font-black text-[#17223B] tracking-tight">
+            Account &amp; Payment Settings
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-xs text-[#626262]">
             Manage your personal profile, shipping details, and sales payout bank / UPI accounts.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Link
             href="/profile"
-            className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition"
+            className="rounded-md border border-[#DEDBDB] bg-white px-3.5 py-2 text-xs font-bold text-[#17223B] hover:bg-gray-50 transition shadow-2xs"
           >
             ← View Profile
           </Link>
           {role === 'artist' && (
             <Link
               href="/dashboard/upload"
-              className="rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition"
+              className="rounded-md bg-[#F83758] px-3.5 py-2 text-xs font-bold text-white shadow-stylish-btn hover:bg-[#E02244] transition"
             >
               + Upload Artwork
             </Link>
@@ -198,37 +208,37 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="mb-8 flex gap-2 border-b border-white/10 pb-1">
+      <div className="mb-6 flex gap-2 border-b border-[#F0F0F0] pb-1">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+          className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs md:text-sm font-bold transition ${
             activeTab === 'profile'
-              ? 'border-amber-500 text-amber-400'
-              : 'border-transparent text-slate-400 hover:text-white'
+              ? 'border-[#F83758] text-[#F83758]'
+              : 'border-transparent text-[#626262] hover:text-[#17223B]'
           }`}
         >
           <span>👤</span>
-          <span>Profile & Shipping</span>
+          <span>Profile &amp; Shipping</span>
         </button>
 
         {role === 'artist' && (
           <button
             onClick={() => setActiveTab('payout')}
-            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-semibold transition ${
+            className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs md:text-sm font-bold transition ${
               activeTab === 'payout'
-                ? 'border-amber-500 text-amber-400'
-                : 'border-transparent text-slate-400 hover:text-white'
+                ? 'border-[#F83758] text-[#F83758]'
+                : 'border-transparent text-[#626262] hover:text-[#17223B]'
             }`}
           >
             <span>💳</span>
-            <span>UPI & Payout Details</span>
+            <span>UPI &amp; Payout Details</span>
             {hasExistingPayout ? (
-              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-400 border border-emerald-500/30">
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] text-emerald-800 font-bold">
                 Active
               </span>
             ) : (
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-300 border border-amber-500/30">
-                Required for sellers
+              <span className="rounded-full bg-[#FDF0F3] px-2 py-0.5 text-[10px] text-[#F83758] font-bold">
+                Required
               </span>
             )}
           </button>
@@ -237,26 +247,26 @@ export default function SettingsPage() {
 
       {/* Tab 1: Profile Settings */}
       {activeTab === 'profile' && (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-6 sm:p-8 shadow-xl">
-          <h2 className="text-lg font-bold text-white mb-1">Personal Details</h2>
-          <p className="text-xs text-slate-400 mb-6">
+        <div className="rounded-2xl border border-[#DEDBDB] bg-white p-6 sm:p-8 shadow-stylish-card">
+          <h2 className="text-base font-black text-[#17223B] mb-1">Personal Details</h2>
+          <p className="text-xs text-[#626262] mb-6">
             Update your public name, bio, and delivery destination for art acquisitions.
           </p>
 
           {profileMsg && (
             <div
-              className={`mb-6 rounded-xl border p-3.5 text-xs ${
+              className={`mb-6 rounded-lg border p-3.5 text-xs font-semibold ${
                 profileMsg.error
-                  ? 'border-red-500/30 bg-red-500/10 text-red-300'
-                  : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                  ? 'border-red-200 bg-red-50 text-red-600'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-800'
               }`}
             >
               {profileMsg.text}
             </div>
           )}
 
-          <form onSubmit={handleSaveProfile} className="space-y-5">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <form onSubmit={handleSaveProfile} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="block">
                 <span className={labelClass}>Full Name</span>
                 <input
@@ -280,9 +290,9 @@ export default function SettingsPage() {
               </label>
             </div>
 
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <label className="block">
-                <span className={labelClass}>Phone Number (For Courier OTP & Delivery)</span>
+                <span className={labelClass}>Phone Number (For Courier Delivery)</span>
                 <input
                   type="tel"
                   className={inputClass}
@@ -317,7 +327,7 @@ export default function SettingsPage() {
             </label>
 
             <label className="block">
-              <span className={labelClass}>Default Shipping Address (For Artwork Deliveries)</span>
+              <span className={labelClass}>Default Shipping Address</span>
               <textarea
                 rows={3}
                 className={`${inputClass} resize-none`}
@@ -331,7 +341,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 disabled={savingProfile}
-                className={primaryButton}
+                className="rounded-md bg-[#F83758] hover:bg-[#E02244] px-6 py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-[0.98] disabled:opacity-60"
               >
                 {savingProfile ? 'Saving Changes…' : 'Save Profile Changes'}
               </button>
@@ -342,35 +352,35 @@ export default function SettingsPage() {
 
       {/* Tab 2: Payout & UPI Settings */}
       {activeTab === 'payout' && (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-6 sm:p-8 shadow-xl">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-white/10 pb-4">
+        <div className="rounded-2xl border border-[#DEDBDB] bg-white p-6 sm:p-8 shadow-stylish-card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 border-b border-[#F0F0F0] pb-4">
             <div>
-              <h2 className="text-lg font-bold text-white mb-1">Sales Payout Details (UPI / Bank)</h2>
-              <p className="text-xs text-slate-400">
-                Whenever your listed artwork is acquired, your 90% revenue is settled automatically to this account via Razorpay Escrow upon delivery.
+              <h2 className="text-base font-black text-[#17223B] mb-1">Sales Payout Details (UPI / Bank)</h2>
+              <p className="text-xs text-[#626262]">
+                Whenever your listed artwork is acquired, your 90% revenue is settled automatically to this account via Razorpay upon delivery.
               </p>
             </div>
-            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-right">
-              <span className="block text-[10px] uppercase font-bold tracking-wider text-amber-400">
+            <div className="rounded-xl border border-[#F83758]/20 bg-[#FDF0F3] px-3.5 py-2 text-right">
+              <span className="block text-[10px] uppercase font-bold tracking-wider text-[#F83758]">
                 Your Commission Rate
               </span>
-              <span className="font-serif text-lg font-bold text-white">90% Net Earnings</span>
+              <span className="text-base font-black text-[#17223B]">90% Net Earnings</span>
             </div>
           </div>
 
           {payoutMsg && (
             <div
-              className={`mb-6 rounded-xl border p-3.5 text-xs ${
+              className={`mb-6 rounded-lg border p-3.5 text-xs font-semibold ${
                 payoutMsg.error
-                  ? 'border-red-500/30 bg-red-500/10 text-red-300'
-                  : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+                  ? 'border-red-200 bg-red-50 text-red-600'
+                  : 'border-emerald-200 bg-emerald-50 text-emerald-800'
               }`}
             >
               {payoutMsg.text}
             </div>
           )}
 
-          <form onSubmit={handleSavePayout} className="space-y-6">
+          <form onSubmit={handleSavePayout} className="space-y-5">
             {/* Method Chooser */}
             <div>
               <span className={labelClass}>Choose Preferred Payout Method</span>
@@ -380,13 +390,13 @@ export default function SettingsPage() {
                   onClick={() => setPayoutMethod('upi')}
                   className={`flex flex-col items-center justify-center rounded-xl border p-4 text-center transition ${
                     payoutMethod === 'upi'
-                      ? 'border-amber-500 bg-amber-500/10 text-white shadow-md'
-                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                      ? 'border-[#F83758] bg-[#FDF0F3] text-[#F83758] shadow-xs'
+                      : 'border-[#DEDBDB] bg-[#FAFAFA] text-[#626262] hover:border-gray-400'
                   }`}
                 >
                   <span className="text-2xl mb-1">⚡</span>
-                  <span className="text-xs font-bold">UPI ID (Instant Settlement)</span>
-                  <span className="text-[10px] text-slate-400 mt-1">Google Pay, PhonePe, Paytm, BHIM</span>
+                  <span className="text-xs font-bold text-[#17223B]">UPI ID (Instant Settlement)</span>
+                  <span className="text-[10px] text-[#A8A8A9] mt-1">Google Pay, PhonePe, Paytm, BHIM</span>
                 </button>
 
                 <button
@@ -394,20 +404,20 @@ export default function SettingsPage() {
                   onClick={() => setPayoutMethod('bank')}
                   className={`flex flex-col items-center justify-center rounded-xl border p-4 text-center transition ${
                     payoutMethod === 'bank'
-                      ? 'border-amber-500 bg-amber-500/10 text-white shadow-md'
-                      : 'border-white/10 bg-white/5 text-slate-400 hover:text-white'
+                      ? 'border-[#F83758] bg-[#FDF0F3] text-[#F83758] shadow-xs'
+                      : 'border-[#DEDBDB] bg-[#FAFAFA] text-[#626262] hover:border-gray-400'
                   }`}
                 >
                   <span className="text-2xl mb-1">🏛️</span>
-                  <span className="text-xs font-bold">Direct Bank Transfer (NEFT/RTGS)</span>
-                  <span className="text-[10px] text-slate-400 mt-1">Direct to any Indian bank account</span>
+                  <span className="text-xs font-bold text-[#17223B]">Direct Bank Transfer</span>
+                  <span className="text-[10px] text-[#A8A8A9] mt-1">Direct to any Indian bank account</span>
                 </button>
               </div>
             </div>
 
             {/* Account Holder Name */}
             <label className="block">
-              <span className={labelClass}>Account Holder Full Name <span className="text-amber-400">*</span></span>
+              <span className={labelClass}>Account Holder Full Name <span className="text-[#F83758]">*</span></span>
               <input
                 type="text"
                 required
@@ -421,7 +431,7 @@ export default function SettingsPage() {
             {/* UPI Option Fields */}
             {payoutMethod === 'upi' ? (
               <label className="block">
-                <span className={labelClass}>UPI ID (VPA) <span className="text-amber-400">*</span></span>
+                <span className={labelClass}>UPI ID (VPA) <span className="text-[#F83758]">*</span></span>
                 <input
                   type="text"
                   required
@@ -430,7 +440,7 @@ export default function SettingsPage() {
                   onChange={(e) => setUpiId(e.target.value)}
                   placeholder="e.g. yourname@okaxis, 9876543210@paytm, name@okhdfcbank"
                 />
-                <span className="mt-1.5 block text-xs text-slate-400">
+                <span className="mt-1.5 block text-xs text-[#626262]">
                   You can find your UPI ID inside Google Pay, PhonePe, or Paytm under your profile.
                 </span>
               </label>
@@ -439,7 +449,7 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label className="block">
-                    <span className={labelClass}>Bank Name <span className="text-amber-400">*</span></span>
+                    <span className={labelClass}>Bank Name <span className="text-[#F83758]">*</span></span>
                     <input
                       type="text"
                       required
@@ -451,7 +461,7 @@ export default function SettingsPage() {
                   </label>
 
                   <label className="block">
-                    <span className={labelClass}>IFSC Code <span className="text-amber-400">*</span></span>
+                    <span className={labelClass}>IFSC Code <span className="text-[#F83758]">*</span></span>
                     <input
                       type="text"
                       required
@@ -464,7 +474,7 @@ export default function SettingsPage() {
                 </div>
 
                 <label className="block">
-                  <span className={labelClass}>Bank Account Number <span className="text-amber-400">*</span></span>
+                  <span className={labelClass}>Bank Account Number <span className="text-[#F83758]">*</span></span>
                   <input
                     type="password"
                     required
@@ -477,15 +487,15 @@ export default function SettingsPage() {
               </div>
             )}
 
-            <div className="rounded-xl border border-white/5 bg-white/5 p-4 text-xs text-slate-400 leading-relaxed">
-              🔒 <strong className="text-white">Security & Banking Guarantee:</strong> Your payment coordinates are stored with AES-256 encryption and only utilized to release funds after physical artwork delivery is safely confirmed by the collector.
+            <div className="rounded-xl border border-[#DEDBDB] bg-[#FAFAFA] p-4 text-xs text-[#626262] leading-relaxed">
+              🔒 <strong className="text-[#17223B]">Security &amp; Banking Guarantee:</strong> Your payout coordinates are stored with AES-256 encryption and only utilized to release funds after physical artwork delivery is safely confirmed by the collector.
             </div>
 
             <div className="pt-2">
               <button
                 type="submit"
                 disabled={savingPayout}
-                className={primaryButton}
+                className="rounded-md bg-[#F83758] hover:bg-[#E02244] px-6 py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-[0.98] disabled:opacity-60"
               >
                 {savingPayout ? 'Saving Payment Details…' : 'Save Payment & Payout Details'}
               </button>

@@ -39,6 +39,7 @@ function BrowseInner() {
   const [items, setItems] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
   const [stylistModalOpen, setStylistModalOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     setSearchInput(qParam);
@@ -126,239 +127,238 @@ function BrowseInner() {
   );
 
   return (
-    <main className="mx-auto max-w-[1240px] px-4 py-8 md:px-6">
-      {/* Top Header & AI Interior Stylist Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
+    <main className="mx-auto max-w-7xl px-4 py-4 md:px-6">
+      {/* Figma Screen 10 Top Search Bar with Mic */}
+      <div className="mb-4">
+        <form onSubmit={handleSearchSubmit} className="relative flex items-center">
+          <span className="absolute left-3.5 text-[#BBBBBB]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search any Product or Art style.."
+            className="w-full rounded-xl bg-[#F3F3F3] py-2.5 pl-10 pr-12 text-xs md:text-sm text-[#17223B] placeholder-[#BBBBBB] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#F83758] border border-transparent focus:border-[#F83758] transition"
+          />
+          <button
+            type="button"
+            onClick={() => alert('Voice search activated. Listening...')}
+            className="absolute right-3 text-[#BBBBBB] hover:text-[#F83758] transition"
+            title="Voice Search"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" y1="19" x2="12" y2="23" />
+              <line x1="8" y1="23" x2="16" y2="23" />
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      {/* Figma Screen 10: "52,082+ Items" Header + Sort & Filter Buttons */}
+      <div className="flex items-center justify-between border-b border-[#F0F0F0] pb-3">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-white md:text-4xl">
-            {categoryParam ? categoryParam.label : qParam ? `Results for "${qParam}"` : 'Curated Fine Art'}
+          <h1 className="text-base md:text-lg font-black text-[#17223B] tracking-tight">
+            {sorted.length > 0 ? `${sorted.length.toLocaleString()}+ Items` : 'Featured Items'}
           </h1>
-          <p className="mt-1 text-xs text-white/60">
-            Original paintings, digital masterworks, and drawings from independent creator ateliers.
-          </p>
+          {categoryParam && (
+            <p className="text-[11px] font-medium text-[#F83758]">{categoryParam.label}</p>
+          )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => setStylistModalOpen(true)}
-            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-amethyst via-brand to-magenta px-4 py-2.5 text-xs font-bold text-white shadow-md hover:scale-105 transition-all"
-          >
-            <span>🛋️</span> AI Room Interior Stylist
-          </button>
-
-          <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#131B2A] px-3 py-1.5 text-xs text-white">
-            <span className="text-white/60 font-semibold">Sort:</span>
+        <div className="flex items-center gap-2">
+          {/* Sort Dropdown / Pill */}
+          <div className="relative">
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
-              className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
+              className="appearance-none rounded-md border border-[#DEDBDB] bg-white py-1.5 pl-2.5 pr-7 text-xs font-bold text-[#17223B] shadow-xs focus:outline-none focus:border-[#F83758] cursor-pointer"
             >
-              <option value="new" className="bg-[#131B2A]">Newest First</option>
-              <option value="low" className="bg-[#131B2A]">Price: Low → High</option>
-              <option value="high" className="bg-[#131B2A]">Price: High → Low</option>
+              <option value="new">Sort: Newest</option>
+              <option value="low">Sort: Price Low-High</option>
+              <option value="high">Sort: Price High-Low</option>
             </select>
+            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[#17223B]">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M7 15l5 5 5-5M7 9l5-5 5 5" />
+              </svg>
+            </span>
           </div>
+
+          {/* Filter Toggle Pill */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-bold transition shadow-xs ${
+              showFilters || hasActiveFilters
+                ? 'border-[#F83758] bg-[#FDF0F3] text-[#F83758]'
+                : 'border-[#DEDBDB] bg-white text-[#17223B] hover:border-gray-400'
+            }`}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+            <span>Filter</span>
+            {hasActiveFilters && (
+              <span className="h-2 w-2 rounded-full bg-[#F83758]" />
+            )}
+          </button>
+
+          {/* AI Room Stylist Button */}
+          <button
+            onClick={() => setStylistModalOpen(true)}
+            className="hidden sm:flex items-center gap-1 rounded-md bg-[#FDF0F3] border border-[#F83758]/20 px-3 py-1.5 text-xs font-bold text-[#F83758] hover:bg-[#F83758] hover:text-white transition"
+          >
+            <span>🛋️</span> Stylist
+          </button>
         </div>
       </div>
 
-      {/* Filter Control Bar */}
-      <div className="mt-6 space-y-4 rounded-2xl border border-white/10 bg-[#121826]/70 p-4 md:p-5 backdrop-blur-md">
-        {/* Search Input Row */}
-        <form onSubmit={handleSearchSubmit} className="flex gap-2">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by title, style (e.g. oil, landscape, abstract), or artist name..."
-              className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-white placeholder:text-white/40 focus:border-brand focus:outline-none"
-            />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchInput('');
-                  updateFilter({ q: null });
-                }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/40 hover:text-white"
-              >
-                ✕
-              </button>
-            )}
-          </div>
+      {/* Horizontal Category Scroll (Figma Screen 10 / Stylish) */}
+      <div className="no-scrollbar mt-3 flex items-center gap-2 overflow-x-auto pb-1">
+        <button
+          onClick={() => updateFilter({ category: null })}
+          className={`shrink-0 rounded-full px-3.5 py-1 text-xs font-bold transition ${
+            !categoryParam
+              ? 'bg-[#F83758] text-white shadow-xs'
+              : 'border border-[#DEDBDB] bg-white text-[#626262] hover:bg-gray-50'
+          }`}
+        >
+          All
+        </button>
+        {CATEGORIES.map((c) => (
           <button
-            type="submit"
-            className="rounded-xl bg-brand px-5 py-2 text-xs font-bold text-white hover:bg-brand-dark transition"
+            key={c.slug}
+            onClick={() => updateFilter({ category: c.slug })}
+            className={`shrink-0 rounded-full px-3.5 py-1 text-xs font-bold transition ${
+              categoryParam?.slug === c.slug
+                ? 'bg-[#F83758] text-white shadow-xs'
+                : 'border border-[#DEDBDB] bg-white text-[#626262] hover:bg-gray-50'
+            }`}
           >
-            Search
+            {c.label}
           </button>
-        </form>
+        ))}
+      </div>
 
-        {/* Medium Categories Pills */}
-        <div>
-          <div className="flex items-center justify-between text-xs text-white/50 mb-2">
-            <span className="font-semibold uppercase tracking-wider text-[11px]">Artistic Medium</span>
-          </div>
-          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
-            <button
-              onClick={() => updateFilter({ category: null })}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
-                !categoryParam
-                  ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white font-bold'
-                  : 'border border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
-              }`}
-            >
-              All Mediums
-            </button>
-            {CATEGORIES.map((c) => (
-              <button
-                key={c.slug}
-                onClick={() => updateFilter({ category: c.slug })}
-                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
-                  categoryParam?.slug === c.slug
-                    ? 'bg-gradient-to-r from-brand to-magenta text-white font-bold'
-                    : 'border border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Format & Price Filter Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-white/10 pt-4">
-          {/* Format (Physical vs Digital) */}
-          <div>
-            <span className="block text-[11px] font-semibold uppercase tracking-wider text-white/50 mb-2">
-              Artwork Format
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { id: 'all', label: 'All Works' },
-                { id: 'physical', label: '🖼️ Physical Originals' },
-                { id: 'digital', label: '⚡ Digital Editions' },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => {
-                    setFormat(f.id as FormatType);
-                    updateFilter({ format: f.id });
-                  }}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-medium transition ${
-                    format === f.id
-                      ? 'border border-brand bg-brand/15 text-white font-semibold'
-                      : 'border border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Price Range */}
-          <div>
-            <span className="block text-[11px] font-semibold uppercase tracking-wider text-white/50 mb-2">
-              Price Range
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {PRICE_TIERS.map((tier) => {
-                const isActive =
-                  (tier.min === null && tier.max === null && minParam === null && maxParam === null) ||
-                  (tier.min === minParam && tier.max === maxParam);
-
-                return (
+      {/* Expandable Filter Drawer */}
+      {showFilters && (
+        <div className="mt-3 rounded-xl border border-[#DEDBDB] bg-[#FAFAFA] p-4 text-[#17223B] transition-all">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Format selection */}
+            <div>
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-[#626262] mb-2">
+                Artwork Format
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'all', label: 'All Formats' },
+                  { id: 'physical', label: '🖼️ Physical Original' },
+                  { id: 'digital', label: '⚡ Digital Master' },
+                ].map((f) => (
                   <button
-                    key={tier.label}
-                    onClick={() =>
-                      updateFilter({
-                        min: tier.min ? String(tier.min) : null,
-                        max: tier.max ? String(tier.max) : null,
-                      })
-                    }
-                    className={`rounded-xl px-3 py-1.5 text-xs font-medium transition ${
-                      isActive
-                        ? 'border border-marigold bg-marigold/15 text-marigold font-bold'
-                        : 'border border-white/10 bg-white/5 text-white/60 hover:bg-white/10'
+                    key={f.id}
+                    onClick={() => {
+                      setFormat(f.id as FormatType);
+                      updateFilter({ format: f.id });
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                      format === f.id
+                        ? 'border border-[#F83758] bg-[#FDF0F3] text-[#F83758]'
+                        : 'border border-[#DEDBDB] bg-white text-[#626262] hover:bg-gray-50'
                     }`}
                   >
-                    {tier.label}
+                    {f.label}
                   </button>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+
+            {/* Price Tier */}
+            <div>
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-[#626262] mb-2">
+                Price Range
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {PRICE_TIERS.map((tier) => {
+                  const isActive =
+                    (tier.min === null && tier.max === null && minParam === null && maxParam === null) ||
+                    (tier.min === minParam && tier.max === maxParam);
+
+                  return (
+                    <button
+                      key={tier.label}
+                      onClick={() =>
+                        updateFilter({
+                          min: tier.min ? String(tier.min) : null,
+                          max: tier.max ? String(tier.max) : null,
+                        })
+                      }
+                      className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
+                        isActive
+                          ? 'border border-[#F83758] bg-[#FDF0F3] text-[#F83758]'
+                          : 'border border-[#DEDBDB] bg-white text-[#626262] hover:bg-gray-50'
+                      }`}
+                    >
+                      {tier.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
+
+          {/* Active Chips & Reset */}
+          {hasActiveFilters && (
+            <div className="mt-3 flex items-center justify-between border-t border-[#E8E8E8] pt-3 text-xs">
+              <span className="text-[#626262] font-medium">Filters applied</span>
+              <button
+                onClick={() => router.push('/browse')}
+                className="font-bold text-[#F83758] hover:underline"
+              >
+                Reset All Filters
+              </button>
+            </div>
+          )}
         </div>
+      )}
 
-        {/* Active Filter Chips & Clear All */}
-        {hasActiveFilters && (
-          <div className="flex flex-wrap items-center gap-2 border-t border-white/10 pt-3 text-xs">
-            <span className="text-white/40">Active Filters:</span>
-            {categoryParam && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-brand/20 px-2.5 py-0.5 text-brand-soft">
-                {categoryParam.label}
-                <button onClick={() => updateFilter({ category: null })}>✕</button>
-              </span>
-            )}
-            {qParam && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-brand/20 px-2.5 py-0.5 text-brand-soft">
-                &ldquo;{qParam}&rdquo;
-                <button onClick={() => updateFilter({ q: null })}>✕</button>
-              </span>
-            )}
-            {(minParam !== null || maxParam !== null) && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-marigold/20 px-2.5 py-0.5 text-marigold">
-                Price: {minParam ? `₹${minParam.toLocaleString('en-IN')}` : '₹0'} – {maxParam ? `₹${maxParam.toLocaleString('en-IN')}` : 'Above'}
-                <button onClick={() => updateFilter({ min: null, max: null })}>✕</button>
-              </span>
-            )}
-            {format !== 'all' && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-emerald-300">
-                Format: {format}
-                <button onClick={() => updateFilter({ format: null })}>✕</button>
-              </span>
-            )}
-            <button
-              onClick={() => router.push('/browse')}
-              className="text-xs text-clay hover:underline ml-auto"
-            >
-              Reset all filters
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Results Header */}
-      <div className="mt-6 flex items-center justify-between text-xs text-white/60">
-        <p>Showing <strong className="text-white font-mono">{sorted.length}</strong> available original works</p>
-        <span className="text-malachite font-medium">✓ Escrow Protection & Transit Insurance Included</span>
-      </div>
-
-      {/* Artwork Grid */}
+      {/* Product Grid - 2 columns on mobile matching Figma Screen 10 */}
       {loading ? (
         <div className="mt-16 text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-brand border-t-transparent" />
-          <p className="mt-4 text-xs font-bold text-white/50 uppercase tracking-widest">
-            Curating gallery works…
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#F83758] border-t-transparent" />
+          <p className="mt-4 text-xs font-bold text-[#626262] tracking-wide">
+            Loading products…
           </p>
         </div>
       ) : sorted.length === 0 ? (
-        <div className="mt-12 rounded-3xl bg-[#121826] border border-white/10 p-12 text-center shadow-lg">
-          <span className="text-4xl">🎨</span>
-          <h2 className="mt-3 text-lg font-serif font-bold text-white">No artworks match your selected filters</h2>
-          <p className="mt-2 text-xs text-white/65 max-w-sm mx-auto">
-            Try adjusting your price range or exploring another artistic medium.
+        <div className="mt-12 rounded-2xl bg-white border border-[#DEDBDB] p-10 text-center shadow-stylish-card">
+          <span className="text-4xl">🛍️</span>
+          <h2 className="mt-3 text-base font-bold text-[#17223B]">No products found</h2>
+          <p className="mt-1 text-xs text-[#626262]">
+            Try adjusting your search query or removing filters.
           </p>
           <button
             onClick={() => router.push('/browse')}
-            className="mt-6 inline-block rounded-full bg-gradient-to-r from-brand to-magenta px-6 py-2.5 text-xs font-bold text-white shadow-md hover:scale-105 transition-all"
+            className="mt-4 inline-block rounded-md bg-[#F83758] px-6 py-2.5 text-xs font-bold text-white shadow-stylish-btn hover:bg-[#E02244] transition"
           >
-            Clear Filters & View All
+            View All Products
           </button>
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4">
           {sorted.map((art) => (
             <ArtworkCard key={art.id} artwork={art} />
           ))}
@@ -375,7 +375,7 @@ function BrowseInner() {
 
 export default function Browse() {
   return (
-    <Suspense fallback={<main className="mx-auto max-w-[1240px] px-5 py-8 text-ink/40 text-sm">Loading gallery…</main>}>
+    <Suspense fallback={<main className="mx-auto max-w-7xl px-4 py-8 text-xs text-[#A8A8A9]">Loading products…</main>}>
       <BrowseInner />
     </Suspense>
   );

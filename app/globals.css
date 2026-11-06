@@ -7,8 +7,8 @@ html {
 }
 
 body {
-  background-color: #FAFAFA;
-  color: #1A1A1A;
+  background-color: #FFFFFF;
+  color: #17223B;
   letter-spacing: -0.01em;
   --font-work-sans: var(--font-jakarta), system-ui, sans-serif;
   --font-fraunces: var(--font-serif), Georgia, serif;
@@ -21,53 +21,24 @@ body {
   .font-art-serif {
     font-family: var(--font-serif), Georgia, serif;
   }
-  .art-kicker {
-    font-family: var(--font-jakarta), system-ui, sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-  }
-  .art-tag {
-    font-family: var(--font-jakarta), system-ui, sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
 }
 
-/* Nykaa gradient accents */
-.nykaa-gradient-pink {
-  background: linear-gradient(135deg, #FC2779 0%, #D81B60 100%);
-}
-
-.nykaa-gradient-gold {
-  background: linear-gradient(135deg, #C5A059 0%, #E5C384 100%);
-}
-
-.nykaa-text-gradient {
-  background: linear-gradient(135deg, #FC2779 0%, #D81B60 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Card hover animation */
+/* Stylish card hover */
 .art-card-hover {
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .art-card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px -5px rgba(252, 39, 121, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 24px -6px rgba(248, 55, 88, 0.15), 0 4px 8px -2px rgba(0, 0, 0, 0.05);
 }
 
 ::selection {
-  background-color: #FCE4EC;
-  color: #D81B60;
+  background-color: #FDF0F3;
+  color: #F83758;
 }
 
 :focus-visible {
-  outline: 2px solid #FC2779;
+  outline: 2px solid #F83758;
   outline-offset: 2px;
 }
 
@@ -83,12 +54,12 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F1F1;
+  background: #F3F3F3;
 }
 ::-webkit-scrollbar-thumb {
-  background: #FC277955;
+  background: #F8375866;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FC2779;
+  background: #F83758;
 }

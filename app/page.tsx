@@ -2,31 +2,39 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import ArtworkCard, { Artwork } from '@/components/ArtworkCard';
+import ArtworkCard, { Artwork, artworkImageStyle } from '@/components/ArtworkCard';
 import HeroBanner from '@/components/HeroBanner';
 import { supabase } from '@/lib/supabaseClient';
-import { CATEGORIES } from '@/lib/categories';
 
-const NYKAA_STORIES = [
-  { label: 'Sale 40% Off', icon: '🔥', href: '/browse', border: 'border-[#FC2779]' },
-  { label: 'Paintings', icon: '🎨', href: '/browse?category=paintings', border: 'border-purple-400' },
-  { label: '3D Studio', icon: '✨', href: '/spaces', border: 'border-amber-400' },
-  { label: 'Drawings', icon: '✏️', href: '/browse?category=drawings', border: 'border-blue-400' },
-  { label: 'Sculptures', icon: '🗿', href: '/browse?category=sculpture', border: 'border-emerald-400' },
-  { label: 'Digital Art', icon: '💻', href: '/browse?category=digital', border: 'border-pink-400' },
-  { label: 'Artelio Luxe', icon: '👑', href: '/plans', border: 'border-[#C5A059]' },
-];
-
-const NYKAA_TRUST_STRIP = [
-  { icon: '✨', title: '100% Certified Originals', desc: 'Direct from vetted artist ateliers' },
-  { icon: '📜', title: 'Signed Certificate (COA)', desc: 'Physical provenance document' },
-  { icon: '🚚', title: 'Free Insured Delivery', desc: 'Custom crates & live GPS tracking' },
-  { icon: '🛡️', title: 'Razorpay Escrow Safety', desc: 'Money held until safe delivery' },
+// Circular Category Stories matching Screen 9 in Figma UI Kit
+const STYLISH_CATEGORIES = [
+  { label: 'Beauty', icon: '💄', href: '/browse', border: 'border-[#F83758]' },
+  { label: 'Fashion', icon: '👗', href: '/browse?category=paintings', border: 'border-[#FA7189]' },
+  { label: 'Kids', icon: '🧸', href: '/browse?category=drawings', border: 'border-[#4392F9]' },
+  { label: 'Mens', icon: '👔', href: '/browse?category=prints', border: 'border-[#8B5CF6]' },
+  { label: 'Womens', icon: '👠', href: '/browse?category=paintings', border: 'border-[#EC4899]' },
+  { label: 'Gifts', icon: '🎁', href: '/browse?category=sculpture', border: 'border-[#F9A825]' },
+  { label: 'Decor', icon: '🖼️', href: '/browse?category=digital', border: 'border-[#10B981]' },
 ];
 
 export default function Home() {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Live Deal of the Day Countdown Timer
+  const [timeLeft, setTimeLeft] = useState({ hours: 22, minutes: 55, seconds: 20 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        if (prev.minutes > 0) return { ...prev, minutes: 59, seconds: 59 };
+        if (prev.hours > 0) return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return { hours: 24, minutes: 0, seconds: 0 };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -43,7 +51,7 @@ export default function Home() {
           title: a.title,
           price: a.price,
           medium: a.medium ?? '',
-          artist: a.users?.name ?? 'Artelio Atelier Artist',
+          artist: a.users?.name ?? 'Artelio Artist',
           imageUrl: a.image_url || null,
           createdAt: a.created_at,
           artistId: a.artist_id,
@@ -55,97 +63,163 @@ export default function Home() {
   }, []);
 
   const heroPieces = useMemo(() => artworks.filter((a) => a.imageUrl).slice(0, 3), [artworks]);
-  const trendingPieces = useMemo(() => artworks.slice(0, 8), [artworks]);
-  const curatedLuxePieces = useMemo(() => artworks.filter((a) => Number(a.price) >= 3000).slice(0, 4), [artworks]);
+  const dealPieces = useMemo(() => artworks.slice(0, 2), [artworks]);
+  const trendingPieces = useMemo(() => artworks.slice(2, 6), [artworks]);
+  const allProducts = useMemo(() => artworks.slice(0, 12), [artworks]);
 
   return (
-    <div className="mx-auto max-w-[1280px] px-3 sm:px-6 py-2">
-      {/* 1. NYKAA APP STORY BUBBLES ROW (TOP MOBILE & DESKTOP DISCOVERY) */}
-      <div className="no-scrollbar flex items-center gap-4 sm:gap-6 overflow-x-auto py-3 px-1 my-1 border-b border-gray-100">
-        {NYKAA_STORIES.map((story, i) => (
+    <div className="mx-auto max-w-[1240px] px-3 sm:px-6 py-2 pb-24 md:pb-12">
+      {/* 1. FIGMA CATEGORY AVATARS ROW */}
+      <div className="no-scrollbar flex items-center justify-between gap-3 overflow-x-auto py-2.5 my-1">
+        {STYLISH_CATEGORIES.map((cat, i) => (
           <Link
             key={i}
-            href={story.href}
+            href={cat.href}
             className="flex flex-col items-center shrink-0 group focus:outline-none"
           >
-            <div className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 ${story.border} p-0.5 bg-white shadow-xs group-hover:scale-105 transition-transform flex items-center justify-center`}>
-              <div className="h-full w-full rounded-full bg-[#FFF0F5] flex items-center justify-center text-xl sm:text-2xl">
-                {story.icon}
+            <div className={`h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 ${cat.border} p-0.5 bg-white shadow-xs group-hover:scale-105 transition-transform flex items-center justify-center`}>
+              <div className="h-full w-full rounded-full bg-[#F3F3F3] flex items-center justify-center text-xl sm:text-2xl">
+                {cat.icon}
               </div>
             </div>
-            <span className="text-[11px] font-semibold text-gray-700 mt-1.5 group-hover:text-[#FC2779] transition text-center whitespace-nowrap">
-              {story.label}
+            <span className="text-[11px] font-medium text-[#17223B] mt-1.5 group-hover:text-[#F83758] transition text-center whitespace-nowrap">
+              {cat.label}
             </span>
           </Link>
         ))}
       </div>
 
-      {/* 2. NYKAA HERO CAROUSEL */}
+      {/* 2. FIGMA HERO PROMOTIONAL SLIDER ("50-40% OFF") */}
       <HeroBanner pieces={heroPieces} />
 
-      {/* 3. NYKAA TRUST & ASSURANCE STRIP */}
-      <div className="my-5 grid grid-cols-2 lg:grid-cols-4 gap-2 bg-white p-3 sm:p-4 rounded-xl border border-[#E8E8E8] shadow-xs">
-        {NYKAA_TRUST_STRIP.map((item, i) => (
-          <div key={i} className="flex items-center gap-2.5 p-1.5 border-r last:border-r-0 border-gray-100">
-            <span className="text-xl sm:text-2xl">{item.icon}</span>
-            <div>
-              <h4 className="text-[11px] sm:text-xs font-bold text-[#1A1A1A]">{item.title}</h4>
-              <p className="text-[9.5px] sm:text-[10px] text-gray-500 mt-0.5 leading-tight">{item.desc}</p>
+      {/* 3. FIGMA "DEAL OF THE DAY" BLUE BAR WITH COUNTDOWN */}
+      <section className="my-6 rounded-xl overflow-hidden bg-white border border-[#E8E8E8] shadow-xs">
+        {/* Deal Header in Bright Blue `#4392F9` */}
+        <div className="bg-[#4392F9] text-white p-4 flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 className="font-sans font-extrabold text-base sm:text-lg">
+              Deal of the Day
+            </h3>
+            <div className="flex items-center gap-1.5 text-xs text-white/90 mt-0.5 font-mono">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span>
+                {String(timeLeft.hours).padStart(2, '0')}h {String(timeLeft.minutes).padStart(2, '0')}m {String(timeLeft.seconds).padStart(2, '0')}s remaining
+              </span>
             </div>
           </div>
-        ))}
-      </div>
 
-      {/* 4. NYKAA PROMOTIONAL FLASH BANNER STRIP */}
-      <div className="my-6 rounded-xl bg-gradient-to-r from-[#FC2779] via-[#D81B60] to-[#E91E63] p-5 sm:p-6 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-nykaa-pink">
-        <div className="flex items-center gap-3.5">
-          <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl sm:text-3xl shrink-0">
-            🎨
+          <Link
+            href="/browse"
+            className="rounded-md bg-[#F83758] hover:bg-[#E02244] text-white text-xs font-bold px-3.5 py-1.5 transition active:scale-95 flex items-center gap-1"
+          >
+            <span>View all</span>
+            <span>→</span>
+          </Link>
+        </div>
+
+        {/* 2 Horizontal Products as in Figma Screen 9 */}
+        <div className="p-4 grid grid-cols-2 gap-3 sm:gap-6">
+          {dealPieces.map((art) => (
+            <ArtworkCard key={art.id} artwork={art} />
+          ))}
+        </div>
+      </section>
+
+      {/* 4. FIGMA "SPECIAL OFFERS" BANNER (YELLOW/AMBER) */}
+      <section className="my-6 rounded-xl bg-[#FFF6E9] border border-[#FEE2C5] p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="h-14 w-14 rounded-full bg-[#F9A825]/20 flex items-center justify-center text-3xl shrink-0">
+            ✨
           </div>
           <div>
-            <span className="bg-white text-[#FC2779] px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
-              ✦ FESTIVE CURATION
-            </span>
-            <h3 className="font-serif text-lg sm:text-2xl font-extrabold mt-1">
-              Curated Masterworks: Indian Contemporary Originals
+            <h3 className="font-sans font-extrabold text-base sm:text-lg text-[#17223B]">
+              Special Offers ✦ Flat 40% Off
             </h3>
-            <p className="text-xs text-white/90">
-              Each piece is one-of-a-kind, signed by the artist, and shipped with free custom museum packaging.
+            <p className="text-xs text-[#626262] mt-0.5">
+              We make sure you get the offer you need at best prices with signed COA.
             </p>
           </div>
         </div>
 
         <Link
           href="/browse"
-          className="rounded-md bg-white hover:bg-[#FFF0F5] text-[#FC2779] font-extrabold px-6 py-2.5 text-xs shadow-md transition active:scale-95 shrink-0 uppercase tracking-wide"
+          className="rounded-md bg-[#F9A825] hover:bg-[#E6951A] text-white text-xs font-bold px-5 py-2.5 transition active:scale-95 uppercase tracking-wide shrink-0"
         >
-          Explore All Pieces →
+          Visit Now →
         </Link>
-      </div>
+      </section>
 
-      {/* 5. TRENDING ARTWORKS GRID (2-COL ON MOBILE, 4-COL ON DESKTOP LIKE NYKAA APP) */}
-      <section className="my-8">
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#E8E8E8]">
-          <div className="flex items-center gap-2">
-            <span className="h-5 w-1.5 rounded-full bg-[#FC2779]" />
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#1A1A1A] tracking-tight">
-              Trending Original Artworks
-            </h2>
-            <span className="rounded-full bg-[#FFF0F5] text-[#FC2779] px-2 py-0.5 text-[10px] font-black border border-[#FC2779]/20 hidden sm:inline">
-              HOT PICKS
-            </span>
+      {/* 5. FIGMA "TRENDING PRODUCTS" CORAL BANNER & GRID */}
+      <section className="my-6 rounded-xl overflow-hidden bg-white border border-[#E8E8E8] shadow-xs">
+        {/* Header in Coral Red `#F83758` */}
+        <div className="bg-[#FD6E87] text-white p-4 flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 className="font-sans font-extrabold text-base sm:text-lg">
+              Trending Products
+            </h3>
+            <div className="flex items-center gap-1.5 text-xs text-white/90 mt-0.5">
+              <span>📅 Last Date 29/02/26 • Authentic Original Creations</span>
+            </div>
           </div>
 
-          <Link href="/browse" className="text-xs font-bold text-[#FC2779] hover:underline">
-            View All ({artworks.length}) →
+          <Link
+            href="/browse"
+            className="rounded-md bg-white text-[#F83758] hover:bg-[#FDF0F3] text-xs font-bold px-3.5 py-1.5 transition active:scale-95 flex items-center gap-1"
+          >
+            <span>View all</span>
+            <span>→</span>
+          </Link>
+        </div>
+
+        <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          {trendingPieces.map((art) => (
+            <ArtworkCard key={art.id} artwork={art} />
+          ))}
+        </div>
+      </section>
+
+      {/* 6. FIGMA "HOT SUMMER / FESTIVE SALE" BANNER */}
+      <section className="my-6 rounded-2xl bg-gradient-to-r from-[#F83758] to-[#FA7189] p-6 text-white flex flex-col md:flex-row items-center justify-between gap-4 shadow-stylish-btn">
+        <div>
+          <span className="bg-white text-[#F83758] text-[10px] font-black uppercase px-2 py-0.5 rounded">
+            LIMITED TIME FESTIVAL
+          </span>
+          <h2 className="font-sans text-xl sm:text-3xl font-extrabold mt-2">
+            New Arrivals &amp; Curated Ateliers
+          </h2>
+          <p className="text-xs text-white/90 mt-1 max-w-lg">
+            Summer’26 Collections • Discover hand-painted canvas originals, sketches, and modern digital art.
+          </p>
+        </div>
+
+        <Link
+          href="/browse"
+          className="rounded-md bg-white text-[#F83758] hover:bg-[#FDF0F3] text-xs font-bold px-6 py-2.5 transition uppercase tracking-wide shrink-0 shadow-md"
+        >
+          Explore All Artworks →
+        </Link>
+      </section>
+
+      {/* 7. FIGMA MAIN PRODUCT CATALOG GRID (2-COLUMN ON MOBILE) */}
+      <section className="my-8">
+        <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#E8E8E8]">
+          <h2 className="font-sans text-lg sm:text-xl font-extrabold text-[#17223B]">
+            All Featured Artworks ({artworks.length})
+          </h2>
+
+          <Link href="/browse" className="text-xs font-bold text-[#F83758] hover:underline">
+            View All →
           </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[1, 2, 3, 4].map((n) => (
               <div key={n} className="rounded-xl border border-gray-200 bg-white p-3 animate-pulse">
-                <div className="aspect-[3/4] bg-gray-200 rounded-lg" />
+                <div className="aspect-square bg-gray-200 rounded-lg" />
                 <div className="h-4 bg-gray-200 rounded mt-3 w-3/4" />
                 <div className="h-3 bg-gray-200 rounded mt-2 w-1/2" />
                 <div className="h-6 bg-gray-200 rounded mt-4" />
@@ -153,74 +227,34 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
-            {trendingPieces.map((art) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+            {allProducts.map((art) => (
               <ArtworkCard key={art.id} artwork={art} />
             ))}
           </div>
         )}
       </section>
 
-      {/* 6. NYKAA LUXE SECTION (HIGH TICKET / MASTERWORKS) */}
-      {curatedLuxePieces.length > 0 && (
-        <section className="my-10 rounded-2xl bg-gradient-to-b from-[#FFFDF9] to-white p-5 sm:p-8 border border-[#E5C384]/40 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-3 border-b border-[#E5C384]/30">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="bg-[#C5A059] text-white px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider">
-                  ✦ ARTELIO LUXE
-                </span>
-                <span className="text-xs font-bold text-[#C5A059]">INVESTMENT-GRADE ORIGINAL FINE ART</span>
-              </div>
-              <h2 className="font-serif text-2xl sm:text-3xl font-extrabold text-[#1A1A1A] mt-1">
-                The Collector’s Salon
-              </h2>
-            </div>
-            <Link
-              href="/browse"
-              className="self-start sm:self-auto rounded-md bg-[#C5A059] hover:bg-[#B38F48] text-white px-5 py-2 text-xs font-bold shadow-xs transition"
-            >
-              Discover Luxe Pieces →
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {curatedLuxePieces.map((art) => (
-              <ArtworkCard key={art.id} artwork={art} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 7. AI 3D ROOM VISUALIZER BANNER (NYKAA STYLE TRY-ON) */}
-      <section className="my-10 rounded-2xl bg-[#1A1A1A] p-6 sm:p-10 text-white flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-        <div className="max-w-xl z-10">
-          <span className="bg-[#FC2779] text-white text-[10px] font-black uppercase px-2.5 py-1 rounded">
-            ✦ VIRTUAL TRY-ON ON YOUR WALLS
+      {/* 8. AI 3D ROOM TRY-ON BANNER (Virtual Studio) */}
+      <section className="my-8 rounded-xl bg-[#17223B] p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <span className="bg-[#4392F9] text-white text-[10px] font-black uppercase px-2 py-0.5 rounded">
+            ✦ AI ROOM STUDIO
           </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-extrabold mt-3">
-            Preview Paintings in Your Room in 3D
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-300 mt-2 leading-relaxed">
-            Unsure of the painting size or colors? Use Artelio’s AI Interior Stylist to project artworks onto your living room or office walls with true real-world scaling before buying.
+          <h3 className="font-sans text-lg sm:text-2xl font-bold mt-2">
+            See Artworks on Your Own Living Room Walls
+          </h3>
+          <p className="text-xs text-gray-300 mt-1 max-w-md">
+            Preview any painting or print in true 3D spatial proportion on your wall before ordering.
           </p>
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <Link
-              href="/spaces"
-              className="rounded-md bg-[#FC2779] hover:bg-[#D81B60] text-white px-6 py-2.5 text-xs font-bold shadow-nykaa-pink transition active:scale-95"
-            >
-              Launch 3D Room Studio →
-            </Link>
-            <Link
-              href="/plans"
-              className="rounded-md border border-white/20 hover:bg-white/10 text-white px-5 py-2.5 text-xs font-bold transition"
-            >
-              Collector Benefits
-            </Link>
-          </div>
         </div>
 
-        <div className="h-44 w-44 rounded-full bg-gradient-to-tr from-[#FC2779]/40 to-[#C5A059]/30 blur-2xl pointer-events-none absolute right-10 top-10" />
+        <Link
+          href="/spaces"
+          className="rounded-md bg-[#F83758] hover:bg-[#E02244] text-white text-xs font-bold px-6 py-2.5 transition active:scale-95 shrink-0 shadow-stylish-btn"
+        >
+          Try 3D Room Visualizer →
+        </Link>
       </section>
     </div>
   );

@@ -513,3 +513,70 @@ export async function sendNewListingReportAdminEmail({
 
   return sendEmail({ to: targetAdmins, subject, html });
 }
+
+/* ==============================================================================
+ * 7. TEMPLATE: New Message Notification (between buyer & artist)
+ * ============================================================================== */
+export async function sendMessageNotificationEmail({
+  to,
+  recipientName,
+  senderName,
+  artworkTitle,
+  messagePreview,
+  conversationId,
+}: {
+  to: string;
+  recipientName?: string | null;
+  senderName?: string | null;
+  artworkTitle?: string | null;
+  messagePreview: string;
+  conversationId: string;
+}) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const displaySender = senderName || 'A member';
+  const displayTitle = artworkTitle || 'an artwork';
+  const subject = `New message from ${displaySender} regarding "${displayTitle}" on Artelio`;
+
+  const html = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FFFFFF; color: #17223B; padding: 32px 24px; border: 1px solid #E8E8E8; border-radius: 16px;">
+      <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        <span style="font-size: 20px; font-weight: 900; color: #4392F9; letter-spacing: -0.5px;">Art<span style="color: #F83758;">elio</span></span>
+        <span style="margin-left: 8px; font-size: 11px; font-weight: 700; color: #626262; background: #F3F3F3; padding: 2px 8px; border-radius: 9999px;">Studio Messaging</span>
+      </div>
+
+      <h1 style="color: #17223B; font-size: 20px; font-weight: 800; margin: 0 0 12px;">New Message Received</h1>
+      <p style="font-size: 14px; color: #626262; line-height: 1.6; margin: 0 0 20px;">
+        Hello ${recipientName || 'there'}, <strong>${displaySender}</strong> sent you a message regarding <strong>${displayTitle}</strong>:
+      </p>
+
+      <div style="background: #FAFAFA; border-left: 4px solid #F83758; border-radius: 8px; padding: 16px 20px; margin: 20px 0;">
+        <p style="font-size: 14px; color: #17223B; line-height: 1.6; margin: 0; white-space: pre-wrap;">"${messagePreview}"</p>
+      </div>
+
+      <div style="background: #FDF0F3; border: 1px solid rgba(248, 55, 88, 0.2); border-radius: 10px; padding: 14px 18px; margin: 20px 0;">
+        <p style="font-size: 12px; font-weight: 700; color: #F83758; margin: 0 0 4px;">Important Safety Reminder:</p>
+        <p style="font-size: 12px; color: #626262; margin: 0; line-height: 1.5;">
+          <strong>Keep all conversations on Artelio.</strong> To safeguard buyers and creators under Artelio Escrow and ensure dispute coverage, never exchange off-platform contact details or payments.
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="${siteUrl}/messages/${conversationId}" style="background: #F83758; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 12px 28px; border-radius: 12px; display: inline-block;">
+          Reply on Artelio &rarr;
+        </a>
+      </div>
+
+      <p style="font-size: 11px; color: #A8A8A9; text-align: center; margin: 24px 0 0;">
+        Artelio Curated Marketplace • Fine Art Direct from Certified Studios
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to,
+    subject,
+    html,
+    text: `${displaySender}: "${messagePreview}"\n\nReply at: ${siteUrl}/messages/${conversationId}\n\nKeep all conversations on Artelio.`,
+  });
+}
+

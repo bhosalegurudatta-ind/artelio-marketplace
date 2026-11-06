@@ -48,6 +48,7 @@ export default function ArtworkDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>([]);
+  const [messagingLoading, setMessagingLoading] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -158,6 +159,51 @@ export default function ArtworkDetail() {
       return;
     }
     setPincodeStatus('✓ Delivery guaranteed within 2-4 business days. Free Insured Courier.');
+  }
+
+  async function handleMessageArtist() {
+    if (!art) return;
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      const user = sessionData.session?.user;
+
+      if (!token || !user) {
+        router.push('/login');
+        return;
+      }
+
+      if (user.id === art.artist_id) {
+        alert('You are the creator of this artwork.');
+        return;
+      }
+
+      setMessagingLoading(true);
+
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          artworkId: art.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.conversationId) {
+        router.push(`/messages/${data.conversationId}`);
+      } else {
+        alert(data.error || 'Failed to open conversation.');
+      }
+    } catch (err) {
+      console.error('Error starting conversation:', err);
+      alert('Unable to open conversation right now.');
+    } finally {
+      setMessagingLoading(false);
+    }
   }
 
   if (loading) {
@@ -271,7 +317,7 @@ export default function ArtworkDetail() {
             </div>
           )}
 
-          {/* Interactive Visualizer & Question buttons */}
+          {/* Interactive Visualizer & Message Artist buttons */}
           <div className="mt-4 flex gap-2">
             <button
               onClick={() => setShowVisualizer(true)}
@@ -280,10 +326,12 @@ export default function ArtworkDetail() {
               <span>🛋️</span> View on Wall (AR)
             </button>
             <button
-              onClick={() => setShowInquiry(true)}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-[#DEDBDB] bg-white py-2 text-xs font-bold text-[#17223B] hover:bg-gray-50 transition"
+              type="button"
+              onClick={handleMessageArtist}
+              disabled={messagingLoading}
+              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-[#DEDBDB] bg-white py-2 text-xs font-bold text-[#17223B] hover:border-[#F83758] hover:text-[#F83758] transition shadow-xs disabled:opacity-50"
             >
-              <span>💬</span> Ask Artist
+              <span>💬</span> {messagingLoading ? 'Opening…' : 'Message the artist'}
             </button>
           </div>
         </div>
@@ -315,7 +363,7 @@ export default function ArtworkDetail() {
             {art.title}
           </h1>
 
-          <div className="mt-1 flex items-center gap-2">
+          <div className="mt-1 flex flex-wrap items-center gap-2">
             <span className="text-xs text-[#626262]">By</span>
             <Link
               href={`/artist/${art.artist_id}`}
@@ -328,6 +376,14 @@ export default function ArtworkDetail() {
                 {art.medium}
               </span>
             )}
+            <button
+              type="button"
+              onClick={handleMessageArtist}
+              disabled={messagingLoading}
+              className="ml-auto inline-flex items-center gap-1 text-[11px] font-bold text-[#F83758] hover:underline cursor-pointer"
+            >
+              <span>💬</span> Message the artist
+            </button>
           </div>
 
           {/* Star Rating & Review Count (Figma Screen 11: ★★★★☆ 56,890) */}

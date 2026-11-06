@@ -265,6 +265,9 @@ export default function Navbar() {
                   <Link href="/favourites" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     ❤️ My Favourites
                   </Link>
+                  <Link href="/messages" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    💬 Studio Messages
+                  </Link>
                   <Link href="/spaces" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     ✨ 3D Room Visualizer
                   </Link>

@@ -85,7 +85,36 @@ export default function ShipOrderModal({
           <button onClick={onClose} className="text-white/60 hover:text-white">✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        {/* Destination Shipping Address (Requirement 5: Show address only to artist on the ship action) */}
+        <div className="mt-4 rounded-xl border border-white/15 bg-white/5 p-4 text-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-bold text-brand uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <span>📍</span> Collector Delivery Address
+            </span>
+            <span className="text-[10px] text-white/40">Confidential Fulfillment</span>
+          </div>
+          <div className="space-y-0.5 text-white/90 font-medium">
+            {order.shipping_name && (
+              <p className="font-bold text-white text-sm">{order.shipping_name}</p>
+            )}
+            {order.shipping_address && (
+              <p className="leading-relaxed text-white/85">{order.shipping_address}</p>
+            )}
+            {(order.shipping_city || order.shipping_state || order.shipping_postal_code) && (
+              <p className="text-white/75">
+                {[order.shipping_city, order.shipping_state, order.shipping_postal_code].filter(Boolean).join(', ')}
+              </p>
+            )}
+            {order.shipping_phone && (
+              <p className="text-white/60 pt-1 text-[11px]">📞 Contact: {order.shipping_phone}</p>
+            )}
+            {!order.shipping_address && !order.shipping_name && (
+              <p className="italic text-white/40">No physical shipping address provided (Digital Edition).</p>
+            )}
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {errorMsg && (
             <div className="rounded-xl border border-vermilion/30 bg-vermilion/10 p-3 text-xs text-vermilion">
               {errorMsg}

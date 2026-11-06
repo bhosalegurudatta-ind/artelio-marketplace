@@ -14,6 +14,8 @@ type Artwork = {
   sold: boolean;
   is_digital: boolean;
   medium?: string | null;
+  shipping_fee?: number | null;
+  ships_from?: string | null;
 };
 
 type ShippingForm = {
@@ -70,13 +72,25 @@ export default function Checkout() {
         }
       }
 
-      const { data } = await supabase
+      let artData: any = null;
+      const { data: artWithShipping, error: artErr } = await supabase
         .from('artworks')
-        .select('id, title, price, image_url, sold, is_digital, medium')
+        .select('id, title, price, image_url, sold, is_digital, medium, shipping_fee, ships_from')
         .eq('id', params.id)
-        .single();
+        .maybeSingle();
 
-      setArtwork(data);
+      if (artErr || !artWithShipping) {
+        const { data: fallbackArt } = await supabase
+          .from('artworks')
+          .select('id, title, price, image_url, sold, is_digital, medium')
+          .eq('id', params.id)
+          .single();
+        artData = fallbackArt;
+      } else {
+        artData = artWithShipping;
+      }
+
+      setArtwork(artData);
       setLoading(false);
     }
     load();
@@ -202,6 +216,8 @@ export default function Checkout() {
   }
 
   const unavailable = artwork.sold && !artwork.is_digital;
+  const shippingFee = artwork.is_digital ? 0 : Number(artwork.shipping_fee || 0);
+  const totalAmount = Number(artwork.price) + shippingFee;
 
   return (
     <>
@@ -245,13 +261,18 @@ export default function Checkout() {
               </div>
             ) : (
               <div className="rounded-2xl border border-ink/10 bg-white/70 p-6 shadow-sm backdrop-blur-md">
-                <div className="flex items-center justify-between border-b border-ink/10 pb-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ink/10 pb-4">
                   <div>
                     <h2 className="text-lg font-bold text-ink">Shipping Destination</h2>
                     <p className="text-xs text-ink/60">Where should the artist dispatch this original work?</p>
+                    {artwork.ships_from && (
+                      <p className="text-xs text-[#F83758] font-semibold mt-1">
+                        📍 Ships from: <span className="text-ink font-bold">{artwork.ships_from}</span>
+                      </p>
+                    )}
                   </div>
-                  <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
-                    Insured Art Courier
+                  <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    Estimated delivery: within 7 days of payment
                   </span>
                 </div>
 
@@ -385,9 +406,25 @@ export default function Checkout() {
 
               <div className="mt-4 space-y-2.5 text-sm text-[#626262]">
                 <div className="flex justify-between">
-                  <span>Order Amount</span>
+                  <span>Artwork Price</span>
                   <span className="font-bold text-[#17223B]">₹{artwork.price.toLocaleString('en-IN')}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>Shipping Fee</span>
+                  <span className="font-bold text-[#17223B]">
+                    {artwork.is_digital
+                      ? 'N/A (Digital Edition)'
+                      : shippingFee === 0
+                      ? 'Free Insured Shipping'
+                      : `₹${shippingFee.toLocaleString('en-IN')}`}
+                  </span>
+                </div>
+                {!artwork.is_digital && (
+                  <div className="flex justify-between text-xs text-emerald-600 font-medium">
+                    <span>Estimated Delivery</span>
+                    <span>Within 7 days of payment</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span>Convenience &amp; Insurance</span>
                   <span className="font-bold text-emerald-600">Free</span>
@@ -401,7 +438,7 @@ export default function Checkout() {
               <div className="mt-5 flex items-center justify-between border-t border-[#E8E8E8] pt-4 text-[#17223B]">
                 <span className="font-bold text-base">Order Total</span>
                 <span className="font-sans text-2xl font-black text-[#F83758]">
-                  ₹{artwork.price.toLocaleString('en-IN')}
+                  ₹{totalAmount.toLocaleString('en-IN')}
                 </span>
               </div>
 
@@ -422,7 +459,7 @@ export default function Checkout() {
                 disabled={paying || unavailable}
                 className="mt-6 w-full rounded-md bg-[#F83758] hover:bg-[#E02244] py-3.5 text-sm font-bold text-white shadow-stylish-btn transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none uppercase tracking-wide"
               >
-                {paying ? 'Connecting to payment…' : `Proceed to Payment • ₹${artwork.price.toLocaleString('en-IN')}`}
+                {paying ? 'Connecting to payment…' : `Proceed to Payment • ₹${totalAmount.toLocaleString('en-IN')}`}
               </button>
 
               <div className="mt-4 flex items-center justify-center gap-2 text-[11px] text-[#A8A8A9]">

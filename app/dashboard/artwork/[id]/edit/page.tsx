@@ -34,6 +34,8 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
   const [description, setDescription] = useState('');
   const [medium, setMedium] = useState('');
   const [price, setPrice] = useState<number | string>('');
+  const [shippingFee, setShippingFee] = useState<string>('0');
+  const [shipsFrom, setShipsFrom] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -83,6 +85,8 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
         setDescription(art.description || '');
         setMedium(art.medium || '');
         setPrice(art.price ?? '');
+        setShippingFee(String(art.shipping_fee ?? 0));
+        setShipsFrom(art.ships_from || '');
         setTags(Array.isArray(data.tags) ? data.tags : []);
         setImageUrl(art.image_url || null);
         setSold(Boolean(art.sold));
@@ -148,6 +152,11 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
         medium: medium.trim(),
         tags,
       };
+
+      if (!isDigital) {
+        payload.shipping_fee = Math.max(0, Math.round(Number(shippingFee) || 0));
+        payload.ships_from = shipsFrom.trim();
+      }
 
       if (canEditPrice) {
         payload.price = Math.round(numPrice);
@@ -377,6 +386,53 @@ export default function EditArtworkPage({ params }: { params: { id: string } }) 
                 </p>
               )}
             </div>
+
+            {/* Shipping & Fulfillment (Requirement 1) */}
+            {!isDigital && (
+              <div className="rounded-xl border border-white/10 bg-black/20 p-5 space-y-4">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
+                  <span className="text-xs font-bold uppercase tracking-wider text-white/80">
+                    Shipping &amp; Courier Logistics
+                  </span>
+                  <span className="text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                    Estimated delivery within 7 days
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="shipsFrom" className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+                      Ships From (Location)
+                    </label>
+                    <input
+                      id="shipsFrom"
+                      type="text"
+                      value={shipsFrom}
+                      onChange={(e) => setShipsFrom(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
+                      placeholder="e.g. Jaipur, Rajasthan"
+                    />
+                    <p className="mt-1 text-[11px] text-white/40">Studio dispatch city &amp; state.</p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="shippingFee" className="block text-xs font-bold uppercase tracking-wider text-white/70 mb-2">
+                      Shipping Fee (INR ₹)
+                    </label>
+                    <input
+                      id="shippingFee"
+                      type="number"
+                      min="0"
+                      value={shippingFee}
+                      onChange={(e) => setShippingFee(e.target.value)}
+                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
+                      placeholder="0 for complimentary shipping"
+                    />
+                    <p className="mt-1 text-[11px] text-white/40">Enter 0 for free insured delivery.</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Description Field */}
             <div>

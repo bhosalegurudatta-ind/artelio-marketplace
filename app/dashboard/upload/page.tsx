@@ -17,6 +17,8 @@ export default function UploadArtwork() {
   const [isAi, setIsAi] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [shippingFee, setShippingFee] = useState('0');
+  const [shipsFrom, setShipsFrom] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [file, setFile] = useState<File | null>(null);
@@ -259,6 +261,8 @@ export default function UploadArtwork() {
     body.append('isDigital', String(isDigital));
     body.append('isAiAssisted', String(isAi));
     body.append('tags', JSON.stringify(tags));
+    body.append('shipping_fee', isDigital ? '0' : shippingFee);
+    body.append('ships_from', isDigital ? '' : shipsFrom);
 
     const res = await fetch('/api/artworks', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body });
     const data = await res.json();
@@ -525,6 +529,40 @@ export default function UploadArtwork() {
             <span className="font-semibold text-ink">This is a digital artwork.</span> Buyers can download your full-quality file after they pay, and it can sell more than once. Leave unticked for a physical, one-off piece that you will ship yourself.
           </span>
         </label>
+
+        {/* Shipping & Fulfillment (Requirement 1) */}
+        {!isDigital && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 rounded-xl border border-ink/10 bg-black/5 p-4">
+            <label className="block">
+              <span className={labelClass}>Ships From (Location)</span>
+              <input
+                type="text"
+                placeholder="e.g. Jaipur, Rajasthan"
+                className={inputClass}
+                value={shipsFrom}
+                onChange={(e) => setShipsFrom(e.target.value)}
+              />
+              <span className="mt-1 block text-[11px] text-ink/50">
+                City / State your studio will dispatch this original piece from.
+              </span>
+            </label>
+
+            <label className="block">
+              <span className={labelClass}>Shipping Fee (₹)</span>
+              <input
+                type="number"
+                min={0}
+                placeholder="0 for Free Shipping"
+                className={inputClass}
+                value={shippingFee}
+                onChange={(e) => setShippingFee(e.target.value)}
+              />
+              <span className="mt-1 block text-[11px] text-ink/50">
+                Courier &amp; packaging fee charged at checkout (0 = complimentary).
+              </span>
+            </label>
+          </div>
+        )}
 
         <label className="flex items-start gap-3 rounded-xl border border-ink/10 p-4">
           <input type="checkbox" checked={isAi} onChange={(e) => setIsAi(e.target.checked)} className="mt-1 h-4 w-4 accent-brand" />

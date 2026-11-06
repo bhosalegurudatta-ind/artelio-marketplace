@@ -18,27 +18,50 @@ export async function POST(req: NextRequest) {
     const { artworkId } = await req.json();
     if (!artworkId) return fail('Missing artwork.', 400);
 
-    // The price comes from our database, never from the browser.
-    const { data: artwork } = await supabaseAdmin
+    // The price and shipping fee come from our database, never from the browser.
+    let artwork: any = null;
+    const { data: artWithShipping, error: artErr } = await supabaseAdmin
       .from('artworks')
-      .select('id, price, sold, is_digital, artist_id')
+      .select('id, price, sold, is_digital, artist_id, shipping_fee')
       .eq('id', artworkId)
-      .single();
+      .maybeSingle();
+
+    if (artErr || !artWithShipping) {
+      const { data: fallbackArt } = await supabaseAdmin
+        .from('artworks')
+        .select('id, price, sold, is_digital, artist_id')
+        .eq('id', artworkId)
+        .single();
+      artwork = fallbackArt;
+    } else {
+      artwork = artWithShipping;
+    }
 
     if (!artwork) return fail('This artwork could not be found.', 404);
     if (artwork.sold && !artwork.is_digital) return fail('This piece has already been sold.', 409);
     if (artwork.artist_id === user.id) return fail('You cannot buy your own artwork.', 400);
 
+    const price = Number(artwork.price);
+    // Add shipping fee from the database (0 for digital work)
+    const shippingFee = artwork.is_digital ? 0 : Number(artwork.shipping_fee || 0);
+    const totalAmount = price + shippingFee;
+
     const order = await razorpay.orders.create({
-      amount: Math.round(Number(artwork.price) * 100), // paise
+      amount: Math.round(totalAmount * 100), // paise
       currency: 'INR',
       receipt: `art_${Date.now()}`,
-      notes: { artwork_id: String(artwork.id), customer_id: user.id },
+      notes: {
+        artwork_id: String(artwork.id),
+        customer_id: user.id,
+        shipping_fee: String(shippingFee),
+      },
     });
 
     return NextResponse.json({
       orderId: order.id,
       amount: order.amount,
+      shippingFee,
+      totalAmount,
       keyId: process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
     });
   } catch (err) {

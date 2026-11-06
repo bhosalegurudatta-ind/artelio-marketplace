@@ -15,14 +15,23 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     const artworkId = params.id;
     if (!artworkId) return fail('Artwork ID is required.', 400);
 
-    const { data: artwork, error } = await supabaseAdmin
+    let artwork: any = null;
+    const { data: artWithShipping, error: artErr } = await supabaseAdmin
       .from('artworks')
-      .select('id, title, description, medium, price, image_url, sold, is_digital, is_ai_assisted, artist_id, created_at')
+      .select('id, title, description, medium, price, image_url, sold, is_digital, is_ai_assisted, artist_id, created_at, shipping_fee, ships_from')
       .eq('id', artworkId)
-      .single();
+      .maybeSingle();
 
-    if (error || !artwork) {
-      return fail('Artwork not found.', 404);
+    if (artErr || !artWithShipping) {
+      const { data: fallbackArt, error } = await supabaseAdmin
+        .from('artworks')
+        .select('id, title, description, medium, price, image_url, sold, is_digital, is_ai_assisted, artist_id, created_at')
+        .eq('id', artworkId)
+        .single();
+      if (error || !fallbackArt) return fail('Artwork not found.', 404);
+      artwork = fallbackArt;
+    } else {
+      artwork = artWithShipping;
     }
 
     // Check ownership
@@ -95,9 +104,22 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const body = await req.json().catch(() => ({}));
-    const { title, description, medium, price, tags } = body;
+    const { title, description, medium, price, tags, shipping_fee, ships_from } = body;
 
     const updates: Record<string, any> = {};
+
+    // Validate and update shipping_fee & ships_from (Requirement 1)
+    if (shipping_fee !== undefined) {
+      const feeNum = Number(shipping_fee);
+      if (!Number.isFinite(feeNum) || feeNum < 0) {
+        return fail('Shipping fee must be a valid non-negative number.', 400);
+      }
+      updates.shipping_fee = Math.round(feeNum);
+    }
+
+    if (ships_from !== undefined) {
+      updates.ships_from = String(ships_from).trim();
+    }
 
     // Validate title if provided
     if (title !== undefined) {
@@ -190,18 +212,35 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     let updated: any = artwork;
     if (Object.keys(updates).length > 0) {
-      const { data: u, error: updateErr } = await supabaseAdmin
+      let { data: u, error: updateErr } = await supabaseAdmin
         .from('artworks')
         .update(updates)
         .eq('id', artworkId)
         .select('id, title, description, medium, price, artist_id')
         .single();
 
+      if (updateErr && (updateErr.message?.includes('shipping_fee') || updateErr.message?.includes('ships_from'))) {
+        delete updates.shipping_fee;
+        delete updates.ships_from;
+        if (Object.keys(updates).length > 0) {
+          const retry = await supabaseAdmin
+            .from('artworks')
+            .update(updates)
+            .eq('id', artworkId)
+            .select('id, title, description, medium, price, artist_id')
+            .single();
+          u = retry.data;
+          updateErr = retry.error;
+        } else {
+          updateErr = null;
+        }
+      }
+
       if (updateErr) {
         console.error('Error updating artwork:', updateErr);
         return fail('Failed to update artwork in database.', 500);
       }
-      updated = u;
+      if (u) updated = u;
     }
 
     return NextResponse.json({

@@ -62,6 +62,11 @@ export async function POST(req: NextRequest) {
     const isDigital = form.get('isDigital') === 'true';
     const isAiAssisted = form.get('isAiAssisted') === 'true';
 
+    // Parse shipping fee and ships from (Requirement 1)
+    const rawShippingFee = form.get('shipping_fee') ?? form.get('shippingFee');
+    const shippingFee = rawShippingFee !== null ? Math.max(0, Math.round(Number(rawShippingFee) || 0)) : 0;
+    const shipsFrom = String(form.get('ships_from') ?? form.get('shipsFrom') ?? '').trim();
+
     // Parse and validate tags: up to 13 tags, lowercase, trimmed, no duplicates, max 20 characters each
     let rawTags: string[] = [];
     const tagsParam = form.get('tags');
@@ -184,24 +189,36 @@ export async function POST(req: NextRequest) {
       processedPhotos.push({ hash, previewUrl, originalPath });
     }
 
-    // 2. Store the first photo on artworks.image_url
+    // 2. Store the first photo on artworks.image_url with shipping fields
     const primary = processedPhotos[0];
-    const { data: row, error: insertError } = await supabaseAdmin
+    const insertPayload: Record<string, any> = {
+      artist_id: user.id,
+      title,
+      description,
+      medium,
+      price,
+      image_url: primary.previewUrl,
+      image_hash: primary.hash,
+      is_digital: isDigital,
+      is_ai_assisted: isAiAssisted,
+      original_path: primary.originalPath,
+      shipping_fee: shippingFee,
+      ships_from: shipsFrom || null,
+    };
+
+    let { data: row, error: insertError } = await supabaseAdmin
       .from('artworks')
-      .insert({
-        artist_id: user.id,
-        title,
-        description,
-        medium,
-        price,
-        image_url: primary.previewUrl,
-        image_hash: primary.hash,
-        is_digital: isDigital,
-        is_ai_assisted: isAiAssisted,
-        original_path: primary.originalPath,
-      })
+      .insert(insertPayload)
       .select('id')
       .single();
+
+    if (insertError && (insertError.message?.includes('shipping_fee') || insertError.message?.includes('ships_from'))) {
+      delete insertPayload.shipping_fee;
+      delete insertPayload.ships_from;
+      const retry = await supabaseAdmin.from('artworks').insert(insertPayload).select('id').single();
+      row = retry.data;
+      insertError = retry.error;
+    }
 
     if (insertError || !row) throw insertError ?? new Error('insert failed');
 

@@ -41,18 +41,33 @@ export async function POST(req: NextRequest) {
     const artworkId = rzpOrder?.notes?.artwork_id;
     if (!artworkId || rzpOrder?.notes?.customer_id !== user.id) return fail('This payment does not belong to you.', 403);
 
-    const { data: artwork } = await supabaseAdmin
+    let artwork: any = null;
+    const { data: artWithShipping, error: artErr } = await supabaseAdmin
       .from('artworks')
-      .select('id, title, price, sold, is_digital, artist_id')
+      .select('id, title, price, sold, is_digital, artist_id, shipping_fee')
       .eq('id', artworkId)
-      .single();
+      .maybeSingle();
+
+    if (artErr || !artWithShipping) {
+      const { data: fallbackArt } = await supabaseAdmin
+        .from('artworks')
+        .select('id, title, price, sold, is_digital, artist_id')
+        .eq('id', artworkId)
+        .single();
+      artwork = fallbackArt;
+    } else {
+      artwork = artWithShipping;
+    }
     if (!artwork) return fail('Artwork not found.', 404);
 
-    // 4. The amount paid must match the price in our database.
+    // 4. Check that the paid amount equals price + shipping_fee from our database
     const price = Number(artwork.price);
-    if (Number(rzpOrder.amount) !== Math.round(price * 100)) {
-      console.error('Amount mismatch', { razorpay_payment_id, paid: rzpOrder.amount, price });
-      return fail('The amount paid does not match the price. Please contact support.', 409);
+    const shippingFee = artwork.is_digital ? 0 : Number(artwork.shipping_fee || 0);
+    const expectedTotal = price + shippingFee;
+
+    if (Number(rzpOrder.amount) !== Math.round(expectedTotal * 100)) {
+      console.error('Amount mismatch', { razorpay_payment_id, paid: rzpOrder.amount, expectedTotal });
+      return fail('The amount paid does not match the price and shipping fee. Please contact support.', 409);
     }
 
     // 5. Sold out in the meantime: record the payment as cancelled so it can be refunded.
@@ -63,27 +78,52 @@ export async function POST(req: NextRequest) {
       return fail('Sorry, this piece was just sold to someone else. Contact support and we will refund your payment.', 409);
     }
 
-    // 6. Record the order. Digital work is delivered at once, so its payout releases after 7 days.
-    //    Physical work waits for shipping (see /ship) before its release clock starts.
+    // 6. Record the order with shipping_address and shipping_fee. Digital work is delivered at once.
     const now = Date.now();
-    const { data: order, error: orderError } = await supabaseAdmin
+    let formattedAddress = '';
+    if (typeof shipping === 'string') {
+      formattedAddress = shipping.trim();
+    } else if (shipping && typeof shipping === 'object') {
+      const parts = [
+        shipping.name,
+        shipping.phone && `Tel: ${shipping.phone}`,
+        shipping.address,
+        shipping.city,
+        shipping.state,
+        shipping.postalCode,
+      ].filter(Boolean);
+      formattedAddress = parts.join(', ');
+    }
+
+    const orderPayload: Record<string, any> = {
+      artwork_id: artwork.id,
+      customer_id: user.id,
+      status: 'paid',
+      razorpay_payment_id,
+      delivered_at: artwork.is_digital ? new Date(now).toISOString() : null,
+      release_at: artwork.is_digital ? new Date(now + DIGITAL_RELEASE_DAYS * DAY).toISOString() : null,
+      shipping_address: artwork.is_digital ? null : (formattedAddress || (shipping?.address ? String(shipping.address).trim() : null)),
+      shipping_fee: shippingFee,
+      shipping_name: shipping?.name ? String(shipping.name).trim() : null,
+      shipping_phone: shipping?.phone ? String(shipping.phone).trim() : null,
+      shipping_city: shipping?.city ? String(shipping.city).trim() : null,
+      shipping_state: shipping?.state ? String(shipping.state).trim() : null,
+      shipping_postal_code: shipping?.postalCode ? String(shipping.postalCode).trim() : null,
+    };
+
+    let { data: order, error: orderError } = await supabaseAdmin
       .from('orders')
-      .insert({
-        artwork_id: artwork.id,
-        customer_id: user.id,
-        status: 'paid',
-        razorpay_payment_id,
-        delivered_at: artwork.is_digital ? new Date(now).toISOString() : null,
-        release_at: artwork.is_digital ? new Date(now + DIGITAL_RELEASE_DAYS * DAY).toISOString() : null,
-        shipping_name: shipping?.name ? String(shipping.name).trim() : null,
-        shipping_phone: shipping?.phone ? String(shipping.phone).trim() : null,
-        shipping_address: shipping?.address ? String(shipping.address).trim() : null,
-        shipping_city: shipping?.city ? String(shipping.city).trim() : null,
-        shipping_state: shipping?.state ? String(shipping.state).trim() : null,
-        shipping_postal_code: shipping?.postalCode ? String(shipping.postalCode).trim() : null,
-      })
+      .insert(orderPayload)
       .select()
       .single();
+
+    if (orderError && orderError.message?.includes('shipping_fee')) {
+      delete orderPayload.shipping_fee;
+      const retry = await supabaseAdmin.from('orders').insert(orderPayload).select().single();
+      order = retry.data;
+      orderError = retry.error;
+    }
+
     if (orderError || !order) {
       console.error('Order insert failed:', orderError);
       return fail('Could not record your order. Please contact support with your payment ID.', 500);

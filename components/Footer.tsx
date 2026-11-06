@@ -100,9 +100,12 @@ export default function Footer() {
                 Sell on Artelio →
               </Link>
             </li>
-            <li><Link href="/shipping-policy" className={linkClass}>Shipping &amp; Delivery</Link></li>
-            <li><Link href="/refund-policy" className={linkClass}>Refund &amp; Return Policy</Link></li>
+            <li><Link href="/fees" className={linkClass}>Pricing &amp; Fee Schedule</Link></li>
+            <li><Link href="/copyright" className={linkClass}>Report Copied Work (IP)</Link></li>
             <li><Link href="/terms" className={linkClass}>Terms of Service</Link></li>
+            <li><Link href="/privacy" className={linkClass}>Privacy Policy</Link></li>
+            <li><Link href="/refunds" className={linkClass}>Refund &amp; Return Policy</Link></li>
+            <li><Link href="/shipping-policy" className={linkClass}>Shipping &amp; Delivery</Link></li>
           </ul>
         </div>
       </div>
@@ -111,7 +114,17 @@ export default function Footer() {
       <div className="border-t border-[#E8E8E8] py-4 bg-[#F9F9F9] text-center text-xs text-[#626262]">
         <div className="mx-auto max-w-[1240px] px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p>© {new Date().getFullYear()} Artelio Marketplace. Designed for daily art &amp; creative living.</p>
-          <p className="text-[11px] text-[#A8A8A9]">Certified Products • Verified Artists • Escrow Protection</p>
+          <div className="flex items-center gap-3 text-[11px] text-[#A8A8A9] flex-wrap justify-center">
+            <Link href="/terms" className="hover:underline">Terms</Link>
+            <span>•</span>
+            <Link href="/privacy" className="hover:underline">Privacy</Link>
+            <span>•</span>
+            <Link href="/refunds" className="hover:underline">Refunds</Link>
+            <span>•</span>
+            <Link href="/copyright" className="hover:underline">Copyright</Link>
+            <span>•</span>
+            <Link href="/fees" className="hover:underline">Fees</Link>
+          </div>
         </div>
       </div>
     </footer>

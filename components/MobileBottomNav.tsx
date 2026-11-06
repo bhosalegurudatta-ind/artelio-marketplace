@@ -42,11 +42,11 @@ export default function MobileBottomNav() {
           </span>
         </Link>
 
-        {/* 2. Wishlist */}
+        {/* 2. Wishlist / Favourites */}
         <Link
-          href="/orders"
+          href="/favourites"
           className={`flex flex-col items-center justify-center relative transition-colors ${
-            pathname === '/orders' ? 'text-[#F83758]' : 'text-[#626262] hover:text-[#17223B]'
+            pathname === '/favourites' ? 'text-[#F83758]' : 'text-[#626262] hover:text-[#17223B]'
           }`}
         >
           <div className="relative">

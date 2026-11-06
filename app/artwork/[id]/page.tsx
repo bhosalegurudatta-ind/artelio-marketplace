@@ -380,13 +380,17 @@ export default function ArtworkDetail() {
             )}
           </div>
 
-          {/* Dual Action Buttons matching Figma Screen 11: Go to Cart / Buy Now */}
+          {/* Action Buttons matching Figma Screen 11: Heart / Go to Cart / Buy Now */}
           <div className="mt-6 flex items-center gap-3">
+            <FavoriteButton
+              artworkId={art.id}
+              className="h-11 w-11 shrink-0 rounded-xl border border-[#DEDBDB] shadow-xs"
+            />
             <button
               onClick={() => {
                 alert(`Added "${art.title}" (${selectedSize}) to your Bag!`);
               }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-md border border-[#F83758] bg-white py-3 text-xs md:text-sm font-bold text-[#F83758] shadow-xs hover:bg-[#FDF0F3] transition active:scale-[0.98]"
+              className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-[#F83758] bg-white py-3 text-xs md:text-sm font-bold text-[#F83758] shadow-xs hover:bg-[#FDF0F3] transition active:scale-[0.98]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />

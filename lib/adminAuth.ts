@@ -38,7 +38,23 @@ export async function requireAdmin(
       };
     }
 
-    if (!profile || profile.role !== 'admin') {
+    const adminEmails = [
+      'bhosalegurudatta@gmail.com',
+      process.env.ADMIN_EMAIL,
+    ].filter(Boolean).map((e) => e?.toLowerCase());
+
+    const isDesignatedAdmin = Boolean(
+      (user.email && adminEmails.includes(user.email.toLowerCase())) ||
+      (profile?.email && adminEmails.includes(profile.email.toLowerCase()))
+    );
+
+    if (!profile && !isDesignatedAdmin) {
+      return {
+        errorResponse: NextResponse.json({ error: 'Forbidden. Admin privileges required.' }, { status: 403 }),
+      };
+    }
+
+    if (profile?.role !== 'admin' && !isDesignatedAdmin) {
       return {
         errorResponse: NextResponse.json({ error: 'Forbidden. Admin privileges required.' }, { status: 403 }),
       };
@@ -46,10 +62,10 @@ export async function requireAdmin(
 
     return {
       user: {
-        id: profile.id,
-        email: profile.email || user.email || '',
+        id: profile?.id || user.id,
+        email: profile?.email || user.email || '',
         role: 'admin',
-        name: profile.name,
+        name: profile?.name || 'Administrator',
       },
     };
   } catch (err: any) {

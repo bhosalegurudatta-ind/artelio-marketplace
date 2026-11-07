@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import FavoriteButton from './FavoriteButton';
+import VerifiedBadge from './VerifiedBadge';
 
 export type Artwork = {
   id: string;
@@ -12,6 +13,7 @@ export type Artwork = {
   createdAt?: string | null;
   artistId?: string | null;
   isPromoted?: boolean;
+  artistVerified?: boolean;
 };
 
 export function artworkImageStyle(a: Artwork): React.CSSProperties | null {
@@ -75,9 +77,13 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
           </Link>
 
           {/* Subtitle / Artist */}
-          <p className="text-xs text-[#626262] line-clamp-1 mt-0.5">
-            {artwork.artist || 'Independent Artist'} • {artwork.medium || 'Fine Art'}
-          </p>
+          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+            <span className="text-xs text-[#626262] line-clamp-1">
+              {artwork.artist || 'Independent Artist'}
+            </span>
+            {artwork.artistVerified && <VerifiedBadge size="xs" />}
+            <span className="text-xs text-[#626262]">• {artwork.medium || 'Fine Art'}</span>
+          </div>
 
           {/* Price Block (Figma "Stylish" row) */}
           <div className="mt-2 flex flex-wrap items-baseline gap-1.5 sm:gap-2">

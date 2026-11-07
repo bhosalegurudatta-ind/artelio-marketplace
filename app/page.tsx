@@ -41,7 +41,7 @@ export default function Home() {
       // Exclude hidden artworks
       let query = supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name)')
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name, verified)')
         .eq('sold', false);
 
       const { data } = await query
@@ -90,6 +90,7 @@ export default function Home() {
           createdAt: a.created_at,
           artistId: a.artist_id,
           isPromoted: activePromoIds.has(a.id),
+          artistVerified: Boolean(a.users?.verified),
         }))
       );
       setLoading(false);

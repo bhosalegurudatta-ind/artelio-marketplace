@@ -9,6 +9,7 @@ import GenerativeArt from '@/components/GenerativeArt';
 import RoomVisualizerModal from '@/components/RoomVisualizerModal';
 import InquiryModal from '@/components/InquiryModal';
 import FavoriteButton from '@/components/FavoriteButton';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { CATEGORIES } from '@/lib/categories';
 
 type Detail = {
@@ -22,6 +23,7 @@ type Detail = {
   artist_name: string;
   sold: boolean;
   is_digital: boolean;
+  artist_verified?: boolean;
 };
 
 const SIZES = [
@@ -62,7 +64,7 @@ export default function ArtworkDetail() {
 
       const { data } = await supabase
         .from('artworks')
-        .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, is_hidden, takedown_reason, users(name)')
+        .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, is_hidden, takedown_reason, users(name, verified)')
         .eq('id', params.id)
         .single();
 
@@ -78,7 +80,11 @@ export default function ArtworkDetail() {
         return;
       }
 
-      const detail: Detail = { ...(data as any), artist_name: (data as any).users?.name ?? 'Studio Master' };
+      const detail: Detail = {
+        ...(data as any),
+        artist_name: (data as any).users?.name ?? 'Studio Master',
+        artist_verified: Boolean((data as any).users?.verified),
+      };
       setArt(detail);
 
       // Fetch multiple photos from artwork_images table
@@ -371,6 +377,7 @@ export default function ArtworkDetail() {
             >
               {art.artist_name}
             </Link>
+            {art.artist_verified && <VerifiedBadge size="sm" />}
             {art.medium && (
               <span className="rounded bg-[#F3F3F3] px-2 py-0.5 text-[10px] font-bold text-[#626262]">
                 {art.medium}

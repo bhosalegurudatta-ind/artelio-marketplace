@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import ArtworkCard, { Artwork } from '@/components/ArtworkCard';
 import InquiryModal from '@/components/InquiryModal';
+import VerifiedBadge from '@/components/VerifiedBadge';
 
 type ArtistProfile = {
   id: string;
@@ -17,6 +18,7 @@ type ArtistProfile = {
   about?: string | null;
   shipping_policy?: string | null;
   return_policy?: string | null;
+  verified?: boolean;
 };
 
 type Review = {
@@ -53,7 +55,7 @@ export default function ArtistShopPage() {
       // 1. Fetch artist shop profile
       const { data: artistData } = await supabase
         .from('users')
-        .select('id, name, bio, shop_name, banner_url, about, shipping_policy, return_policy')
+        .select('id, name, bio, shop_name, banner_url, about, shipping_policy, return_policy, verified')
         .eq('id', artistId)
         .single();
 
@@ -78,6 +80,7 @@ export default function ArtistShopPage() {
             imageUrl: a.image_url || null,
             createdAt: a.created_at,
             artistId,
+            artistVerified: Boolean(artistData?.verified),
           }))
       );
 
@@ -216,13 +219,18 @@ export default function ArtistShopPage() {
         <div className="relative -mt-28 sm:-mt-32 px-6 pb-8 sm:px-10 z-10 text-white">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/20 border border-amber-300/30 px-3.5 py-1 text-xs font-bold text-amber-300 backdrop-blur-md mb-3">
-                <span>✦</span> Verified Resident Creator Shop
-              </div>
+              {artist.verified && (
+                <div className="inline-flex items-center gap-2 rounded-full bg-sky-500/20 border border-sky-400/40 px-3.5 py-1 text-xs font-bold text-sky-300 backdrop-blur-md mb-3">
+                  <span>✦</span> Verified Artelio Resident Artist
+                </div>
+              )}
 
-              <h1 className="font-serif text-3xl font-bold md:text-5xl drop-shadow-md text-white">
-                {displayName}
-              </h1>
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="font-serif text-3xl font-bold md:text-5xl drop-shadow-md text-white">
+                  {displayName}
+                </h1>
+                {artist.verified && <VerifiedBadge size="md" />}
+              </div>
 
               {artist.shop_name && artist.name && artist.shop_name !== artist.name && (
                 <p className="mt-1 text-sm font-medium text-white/80">

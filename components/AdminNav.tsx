@@ -1,12 +1,13 @@
 import Link from 'next/link';
 
-export default function AdminNav({ active }: { active: 'overview' | 'approvals' | 'reports' | 'listings' | 'payouts' }) {
+export default function AdminNav({ active }: { active: 'overview' | 'approvals' | 'reports' | 'listings' | 'payouts' | 'verification' }) {
   const tabs = [
     { id: 'overview', label: '📊 Overview', href: '/admin' },
     { id: 'approvals', label: '🧑‍🎨 Artist Approvals', href: '/admin/approvals' },
     { id: 'reports', label: '🚨 Reports & Moderation', href: '/admin/reports' },
     { id: 'listings', label: '🖼️ Artworks & Listings', href: '/admin/listings' },
     { id: 'payouts', label: '💳 Payouts & Transfers', href: '/admin/payouts' },
+    { id: 'verification', label: '✓ Artist Verification', href: '/admin/verification' },
   ];
 
   return (

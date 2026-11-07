@@ -82,7 +82,7 @@ function BrowseInner() {
 
       let query = supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_hidden, users(name)')
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_hidden, users(name, verified)')
         .eq('sold', false);
 
       // Apply explicit tag filter (?tag=)
@@ -152,6 +152,7 @@ function BrowseInner() {
           createdAt: a.created_at,
           artistId: a.artist_id,
           isPromoted: activePromoIds.has(a.id),
+          artistVerified: Boolean(a.users?.verified),
         }))
       );
       setLoading(false);

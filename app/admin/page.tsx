@@ -228,7 +228,7 @@ export default function AdminOverviewPage() {
       {/* Quick Action Hub */}
       <div className="rounded-2xl border border-white/10 bg-[#121826] p-6 md:p-8">
         <h2 className="font-serif text-lg font-bold text-white mb-4">Governance & Curatorial Management</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/admin/approvals"
             className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all group"
@@ -241,6 +241,28 @@ export default function AdminOverviewPage() {
           </Link>
 
           <Link
+            href="/admin/verification"
+            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all group"
+          >
+            <span className="text-3xl">✓</span>
+            <div>
+              <p className="font-bold text-white text-sm group-hover:text-brand transition-colors">Artist Verification</p>
+              <p className="text-xs text-white/50">Award verified badges to creators with ≥10 completed sales & 0 disputes.</p>
+            </div>
+          </Link>
+
+          <Link
+            href="/admin/payouts"
+            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all group"
+          >
+            <span className="text-3xl">💳</span>
+            <div>
+              <p className="font-bold text-white text-sm group-hover:text-brand transition-colors">Payouts Ledger</p>
+              <p className="text-xs text-white/50">Monitor escrow releases, bank transfers and retry failed payouts.</p>
+            </div>
+          </Link>
+
+          <Link
             href="/admin/reports"
             className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all group"
           >
@@ -248,17 +270,6 @@ export default function AdminOverviewPage() {
             <div>
               <p className="font-bold text-white text-sm group-hover:text-brand transition-colors">Infringement Reports</p>
               <p className="text-xs text-white/50">Resolve or dismiss copyright and policy dispute reports.</p>
-            </div>
-          </Link>
-
-          <Link
-            href="/admin/listings"
-            className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all group"
-          >
-            <span className="text-3xl">🖼️</span>
-            <div>
-              <p className="font-bold text-white text-sm group-hover:text-brand transition-colors">Catalog Moderation</p>
-              <p className="text-xs text-white/50">Search any artwork and enforce takedowns with recorded reasons.</p>
             </div>
           </Link>
         </div>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import VerifiedBadge from '@/components/VerifiedBadge';
 
 type SavedArtwork = {
   id: string;
@@ -17,6 +18,7 @@ type SavedArtwork = {
   sold: boolean;
   is_digital: boolean;
   saved_at: string;
+  artist_verified?: boolean;
 };
 
 export default function FavouritesPage() {
@@ -69,7 +71,7 @@ export default function FavouritesPage() {
         const artworkIds = favRows.map((f: any) => f.artwork_id);
         const { data: artworks } = await supabase
           .from('artworks')
-          .select('id, title, price, medium, image_url, sold, is_digital, artist_id, users(name)')
+          .select('id, title, price, medium, image_url, sold, is_digital, artist_id, users(name, verified)')
           .in('id', artworkIds);
 
         if (!active) return;
@@ -91,6 +93,7 @@ export default function FavouritesPage() {
                 sold: Boolean(art.sold),
                 is_digital: Boolean(art.is_digital),
                 saved_at: f.created_at,
+                artist_verified: Boolean(art.users?.verified),
               });
             }
           }
@@ -241,12 +244,13 @@ export default function FavouritesPage() {
                     </h3>
                   </Link>
 
-                  <p className="mt-0.5 text-xs text-[#626262] line-clamp-1">
+                  <div className="mt-0.5 flex items-center gap-1.5 flex-wrap text-xs text-[#626262]">
                     <Link href={`/artist/${art.artist_id}`} className="hover:underline">
                       {art.artist_name}
                     </Link>
-                    {art.medium && ` • ${art.medium}`}
-                  </p>
+                    {art.artist_verified && <VerifiedBadge size="xs" />}
+                    {art.medium && <span>• {art.medium}</span>}
+                  </div>
 
                   <div className="mt-2.5 flex items-baseline justify-between">
                     <span className="text-base font-extrabold text-[#17223B]">

@@ -35,11 +35,20 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
     <div className="group relative rounded-xl border border-[#E8E8E8] bg-white overflow-hidden shadow-xs hover:shadow-stylish-card transition-all duration-200 flex flex-col justify-between">
       <Link href={`/artwork/${artwork.id}`} className="block">
         {/* Product Image Area */}
-        <div
-          className="relative aspect-square w-full overflow-hidden bg-[#F9F9F9]"
-          style={imageStyle ?? undefined}
-        >
-          {!imageStyle && (
+        <div className="relative aspect-square w-full overflow-hidden bg-[#F9F9F9]">
+          {artwork.imageUrl ? (
+            <img
+              src={artwork.imageUrl}
+              alt={artwork.title}
+              loading="lazy"
+              className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+              onError={(e) => {
+                e.currentTarget.src = '/artworks/sacred-lotus-digital-edition.jpg';
+              }}
+            />
+          ) : imageStyle ? (
+            <div className="h-full w-full" style={imageStyle} />
+          ) : (
             <div className="flex h-full w-full items-center justify-center text-4xl bg-[#FDF0F3] text-[#F83758]">
               🎨
             </div>

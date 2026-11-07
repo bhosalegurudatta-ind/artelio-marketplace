@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import CertificateModal from '@/components/CertificateModal';
+import InvoiceModal from '@/components/InvoiceModal';
 
 type Artwork = {
   id: string;
@@ -41,6 +43,19 @@ export default function Checkout() {
   const [paying, setPaying] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  // Real e-commerce confirmed order state
+  const [confirmedOrder, setConfirmedOrder] = useState<{
+    orderId: string;
+    paymentId: string;
+    totalPaid: number;
+    artwork: Artwork;
+    shipping: ShippingForm;
+    downloadUrl?: string | null;
+  } | null>(null);
+
+  const [coaData, setCoaData] = useState<any | null>(null);
+  const [invoiceData, setInvoiceData] = useState<any | null>(null);
 
   const [shipping, setShipping] = useState<ShippingForm>({
     name: '',
@@ -180,7 +195,16 @@ export default function Checkout() {
         });
 
         if (verifyRes.ok) {
-          router.push('/orders?new_order=1');
+          const verifyData = await verifyRes.json().catch(() => ({}));
+          setConfirmedOrder({
+            orderId: verifyData.orderId || orderData.orderId,
+            paymentId: response.razorpay_payment_id,
+            totalPaid: totalAmount,
+            artwork: artwork,
+            shipping: shipping,
+            downloadUrl: artwork.is_digital ? (artwork.image_url || null) : null,
+          });
+          setPaying(false);
         } else {
           const err = await verifyRes.json().catch(() => ({}));
           setErrorMsg(err.error ?? 'Payment was processed but verification failed. Please contact Artelio support.');
@@ -192,6 +216,171 @@ export default function Checkout() {
     });
 
     razorpay.open();
+  }
+
+  if (confirmedOrder) {
+    return (
+      <main className="mx-auto max-w-2xl px-4 py-10 md:py-16 text-[#17223B]">
+        {/* Real E-Commerce Order Confirmation Banner */}
+        <div className="rounded-3xl border border-emerald-200 bg-white p-6 sm:p-10 shadow-stylish-card text-center">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 border-2 border-emerald-200 shadow-sm animate-bounce">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+
+          <span className="inline-block rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-black text-emerald-800 uppercase tracking-widest mb-2">
+            ✓ Payment Verified &amp; Confirmed
+          </span>
+
+          <h1 className="text-2xl sm:text-3xl font-black text-[#17223B]">
+            Thank You for Your Order!
+          </h1>
+          <p className="mt-2 text-xs sm:text-sm text-[#626262]">
+            Your payment of <strong className="text-[#17223B]">₹{confirmedOrder.totalPaid.toLocaleString('en-IN')}</strong> was captured successfully via Razorpay.
+          </p>
+
+          {/* Transaction Metadata Card */}
+          <div className="mt-6 rounded-2xl bg-[#FAFAFA] border border-[#E8E8E8] p-4 text-left grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-[#A8A8A9] font-medium block">Order Reference</span>
+              <span className="font-mono font-bold text-[#17223B]">#{confirmedOrder.orderId.slice(0, 12).toUpperCase()}</span>
+            </div>
+            <div>
+              <span className="text-[#A8A8A9] font-medium block">Razorpay Payment ID</span>
+              <span className="font-mono font-bold text-emerald-700">{confirmedOrder.paymentId}</span>
+            </div>
+          </div>
+
+          {/* Artwork Card */}
+          <div className="mt-6 flex items-center gap-4 rounded-2xl border border-[#DEDBDB] bg-white p-4 text-left shadow-2xs">
+            {confirmedOrder.artwork.image_url ? (
+              <img
+                src={confirmedOrder.artwork.image_url}
+                alt={confirmedOrder.artwork.title}
+                className="h-20 w-20 rounded-xl object-cover border border-[#DEDBDB] shrink-0"
+              />
+            ) : (
+              <div className="h-20 w-20 rounded-xl bg-[#FDF0F3] flex items-center justify-center text-2xl shrink-0">
+                🎨
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <span className="rounded bg-[#FDF0F3] px-2 py-0.5 text-[10px] font-bold text-[#F83758] uppercase">
+                {confirmedOrder.artwork.is_digital ? '⚡ Instant Digital Edition' : '📦 Original Physical Piece'}
+              </span>
+              <h2 className="text-base font-black text-[#17223B] truncate mt-1">
+                {confirmedOrder.artwork.title}
+              </h2>
+              <p className="text-xs text-[#626262]">
+                {confirmedOrder.artwork.medium || 'Fine Art Original'}
+              </p>
+              <p className="text-sm font-black text-[#F83758] mt-1">
+                ₹{confirmedOrder.totalPaid.toLocaleString('en-IN')} Paid
+              </p>
+            </div>
+          </div>
+
+          {/* DIGITAL ARTWORK SPECIAL DELIVERY SECTION */}
+          {confirmedOrder.artwork.is_digital && (
+            <div className="mt-6 rounded-2xl border-2 border-emerald-300 bg-emerald-50/60 p-6 text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xl">📥</span>
+                <h3 className="text-sm font-black text-emerald-900 uppercase tracking-wide">
+                  Your Digital Masterpiece is Ready
+                </h3>
+              </div>
+              <p className="text-xs text-emerald-800 leading-relaxed mb-4">
+                Congratulations! You now own the verified high-resolution master file of this collectible. Download your file below or access it anytime in your collection profile.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-3">
+                <a
+                  href={confirmedOrder.downloadUrl || confirmedOrder.artwork.image_url || '#'}
+                  download={confirmedOrder.artwork.title}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 px-5 py-3 text-xs md:text-sm font-black text-white shadow-md inline-flex items-center gap-2 transition active:scale-95"
+                >
+                  <span>⬇️ Download High-Res Artwork</span>
+                </a>
+
+                <button
+                  onClick={() =>
+                    setCoaData({
+                      orderId: confirmedOrder.orderId,
+                      orderDate: new Date().toISOString(),
+                      artworkTitle: confirmedOrder.artwork.title,
+                      artistName: 'Artelio Verified Studio',
+                      medium: confirmedOrder.artwork.medium,
+                      isDigital: true,
+                      collectorName: userEmail || 'Verified Patron',
+                      imageUrl: confirmedOrder.artwork.image_url,
+                    })
+                  }
+                  className="rounded-xl border border-emerald-600/40 bg-white hover:bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 transition shadow-xs inline-flex items-center gap-1.5"
+                >
+                  <span>📜 Certificate of Authenticity</span>
+                </button>
+
+                <button
+                  onClick={() =>
+                    setInvoiceData({
+                      orderId: confirmedOrder.orderId,
+                      artworkTitle: confirmedOrder.artwork.title,
+                      buyerName: userEmail || 'Verified Collector',
+                      buyerAddress: 'Digital Delivery / Registered Account',
+                      amount: confirmedOrder.totalPaid,
+                      date: new Date().toLocaleDateString('en-IN'),
+                    })
+                  }
+                  className="rounded-xl border border-emerald-600/40 bg-white hover:bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 transition shadow-xs inline-flex items-center gap-1.5"
+                >
+                  <span>🧾 Tax Invoice</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* PHYSICAL ARTWORK DELIVERY SECTION */}
+          {!confirmedOrder.artwork.is_digital && (
+            <div className="mt-6 rounded-2xl border border-[#DEDBDB] bg-[#FAFAFA] p-5 text-left text-xs">
+              <div className="flex items-center gap-2 mb-2 font-bold text-[#17223B]">
+                <span className="text-base text-[#F83758]">📍</span>
+                <span>Delivery Destination</span>
+              </div>
+              <p className="font-bold text-[#17223B]">{confirmedOrder.shipping.name}</p>
+              <p className="text-[#626262] mt-0.5">
+                {confirmedOrder.shipping.address}, {confirmedOrder.shipping.city}, {confirmedOrder.shipping.state} - {confirmedOrder.shipping.postalCode}
+              </p>
+              <p className="text-[#626262] mt-0.5">Contact: {confirmedOrder.shipping.phone}</p>
+              <div className="mt-3 rounded-lg bg-white border border-[#E8E8E8] p-3 text-[11px] text-[#626262]">
+                🚚 <strong>Estimated Dispatch:</strong> Atelier artist will carefully package and dispatch this piece within 24-48 business hours with live courier GPS tracking.
+              </div>
+            </div>
+          )}
+
+          {/* Next Steps Buttons */}
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link
+              href="/profile"
+              className="w-full sm:w-auto rounded-xl bg-[#F83758] hover:bg-[#E02244] px-6 py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-95"
+            >
+              🛍️ View in My Purchases
+            </Link>
+            <Link
+              href="/browse"
+              className="w-full sm:w-auto rounded-xl border border-[#DEDBDB] bg-white hover:bg-[#F3F3F3] px-6 py-3 text-xs md:text-sm font-bold text-[#17223B] transition"
+            >
+              🎨 Continue Shopping Gallery
+            </Link>
+          </div>
+        </div>
+
+        {coaData && <CertificateModal data={coaData} onClose={() => setCoaData(null)} />}
+        {invoiceData && <InvoiceModal data={invoiceData} onClose={() => setInvoiceData(null)} />}
+      </main>
+    );
   }
 
   if (loading) {

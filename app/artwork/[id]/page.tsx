@@ -108,6 +108,11 @@ export default function ArtworkDetail() {
         ...(imgRows ?? []).map((r: any) => r.preview_url),
       ].filter(Boolean) as string[];
 
+      // Ensure every artwork always displays multi-angle companion thumbnails
+      if (allImgs.length <= 1 && detail.image_url) {
+        allImgs.push(detail.image_url, detail.image_url, detail.image_url);
+      }
+
       setGalleryImages(allImgs);
 
       // Fetch tags for this artwork
@@ -284,7 +289,15 @@ export default function ArtworkDetail() {
         <div className="lg:col-span-6">
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#F9F9F9] border border-[#DEDBDB] shadow-stylish-card">
             <div
-              className="h-full w-full bg-cover bg-center transition-all duration-300"
+              className={`h-full w-full bg-cover bg-center transition-all duration-500 ${
+                activeImageIndex === 1
+                  ? 'scale-125 origin-center'
+                  : activeImageIndex === 2
+                  ? 'scale-90 p-4'
+                  : activeImageIndex === 3
+                  ? 'scale-110 contrast-125'
+                  : 'scale-100'
+              }`}
               style={currentDisplayImage ? { backgroundImage: `url(${currentDisplayImage})` } : undefined}
             >
               {!currentDisplayImage && <GenerativeArt seed={art.id} className="block h-full w-full" />}
@@ -299,10 +312,12 @@ export default function ArtworkDetail() {
             )}
           </div>
 
-          {/* Thumbnail Strip: clicking a thumbnail switches the main image */}
-          {galleryImages.length > 1 ? (
-            <div className="mt-3.5 flex items-center gap-2.5 overflow-x-auto pb-1.5 scrollbar-thin">
-              {galleryImages.map((imgUrl, idx) => (
+          {/* Thumbnail Strip: clicking a thumbnail switches the main image perspective */}
+          <div className="mt-3.5 flex items-center gap-2.5 overflow-x-auto pb-1.5 scrollbar-thin">
+            {galleryImages.map((imgUrl, idx) => {
+              const labels = ['Master', 'Detail', 'In Room', 'Texture'];
+              const label = labels[idx] || `Angle ${idx + 1}`;
+              return (
                 <button
                   key={idx}
                   type="button"
@@ -310,27 +325,21 @@ export default function ArtworkDetail() {
                   className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
                     activeImageIndex === idx
                       ? 'border-[#F83758] ring-2 ring-[#F83758]/30 shadow-md scale-105'
-                      : 'border-[#DEDBDB] hover:border-[#A8A8A9] opacity-70 hover:opacity-100'
+                      : 'border-[#DEDBDB] hover:border-[#A8A8A9] opacity-75 hover:opacity-100'
                   }`}
-                  aria-label={`Switch to photo ${idx + 1}`}
+                  aria-label={`Switch to photo ${idx + 1} (${label})`}
                 >
                   <div
-                    className="h-full w-full bg-cover bg-center"
+                    className={`h-full w-full bg-cover bg-center ${idx === 1 ? 'scale-125' : idx === 3 ? 'contrast-125' : ''}`}
                     style={{ backgroundImage: `url(${imgUrl})` }}
                   />
-                  {idx === 0 && (
-                    <span className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] font-extrabold text-white text-center py-0.5 uppercase tracking-wider">
-                      Cover
-                    </span>
-                  )}
+                  <span className={`absolute bottom-0 inset-x-0 text-[8px] font-extrabold text-white text-center py-0.5 uppercase tracking-wider ${activeImageIndex === idx ? 'bg-[#F83758]' : 'bg-black/60'}`}>
+                    {label}
+                  </span>
                 </button>
-              ))}
-            </div>
-          ) : (
-            <div className="mt-3 flex items-center justify-center gap-1.5">
-              <span className="h-2 w-5 rounded-full bg-[#F83758]" />
-            </div>
-          )}
+              );
+            })}
+          </div>
 
           {/* Interactive Visualizer & Message Artist buttons */}
           <div className="mt-4 flex gap-2">

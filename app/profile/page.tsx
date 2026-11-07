@@ -140,7 +140,7 @@ function ProfileContent() {
               id, title, price, image_url, is_digital, medium, artist_id
             )
           `)
-          .eq('user_id', user.id)
+          .eq('customer_id', user.id)
           .order('created_at', { ascending: false });
 
         if (mounted && ordersData) {

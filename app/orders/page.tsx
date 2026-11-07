@@ -107,7 +107,15 @@ function OrdersContent() {
     setMessage('');
     const r = await authed(`/api/download/${orderId}`);
     if (!r.ok) return setMessage(r.body.error ?? 'Could not prepare your download.');
-    window.location.href = r.body.url;
+    if (r.body.url) {
+      const a = document.createElement('a');
+      a.href = r.body.url;
+      a.download = 'artelio-masterpiece';
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
   }
 
   async function confirmReceipt(orderId: string) {

@@ -21,14 +21,15 @@ function LoginForm() {
   const [resending, setResending] = useState(false);
 
   async function handlePostLoginRedirect(user: any, session: any) {
-    if (redirectTarget) {
-      router.push(redirectTarget);
+    const userEmail = (user?.email || '').toLowerCase().trim();
+    if (userEmail === 'bhosalegurudatta@gmail.com') {
+      router.push(redirectTarget && redirectTarget.startsWith('/admin') ? redirectTarget : '/admin');
       router.refresh();
       return;
     }
 
-    if (user.email === 'bhosalegurudatta@gmail.com') {
-      router.push('/admin');
+    if (redirectTarget) {
+      router.push(redirectTarget);
       router.refresh();
       return;
     }

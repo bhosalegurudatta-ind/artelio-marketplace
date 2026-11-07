@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 export default function AuthCallback() {
   const router = useRouter();
-  const [status, setStatus] = useState('Completing authentication…');
+  const [status, setStatus] = useState('Verifying authentication…');
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
@@ -14,48 +14,64 @@ export default function AuthCallback() {
 
     async function handleAuth() {
       try {
-        // 1. Get the current active session
-        const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+        const url = new URL(window.location.href);
 
-        if (sessionErr) {
-          throw sessionErr;
+        // 1. Check for any OAuth errors returned from the provider
+        const errParam = url.searchParams.get('error_description') || url.searchParams.get('error');
+        if (errParam) {
+          throw new Error(decodeURIComponent(errParam));
         }
 
-        let user = sessionData.session?.user;
+        // 2. PKCE authorization code exchange (standard for modern Supabase OAuth)
+        const code = url.searchParams.get('code');
+        if (code) {
+          setStatus('Exchanging authentication token…');
+          const { data: codeData, error: codeErr } = await supabase.auth.exchangeCodeForSession(code);
+          if (codeErr) {
+            console.error('[Auth Callback] exchangeCodeForSession failed:', codeErr);
+            throw codeErr;
+          }
+          if (codeData?.session) {
+            await syncAndRedirect(codeData.session.access_token, codeData.session.user);
+            return;
+          }
+        }
 
-        // If session is not immediately available, listen for auth change
-        if (!user) {
-          const { data: authListener } = supabase.auth.onAuthStateChange(
-            async (event, newSession) => {
-              if (newSession?.user && mounted) {
-                authListener.subscription.unsubscribe();
-                await syncAndRedirect(newSession.access_token);
-              }
-            }
-          );
+        // 3. Fallback: check if session is already stored or passed via hash
+        const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+        if (sessionErr) throw sessionErr;
 
-          // Timeout fallback if session doesn't arrive within 4 seconds
-          setTimeout(async () => {
-            if (mounted && !user) {
-              const { data: retryData } = await supabase.auth.getUser();
-              if (retryData?.user) {
-                const { data: retrySession } = await supabase.auth.getSession();
-                if (retrySession.session) {
-                  await syncAndRedirect(retrySession.session.access_token);
-                } else {
-                  router.push('/');
-                }
-              } else {
-                setErrorMsg('Could not establish authentication session. Please try logging in again.');
-              }
-            }
-          }, 4000);
+        if (sessionData.session) {
+          await syncAndRedirect(sessionData.session.access_token, sessionData.session.user);
           return;
         }
 
-        if (sessionData.session) {
-          await syncAndRedirect(sessionData.session.access_token);
-        }
+        // 4. If session not ready yet, listen for auth state change
+        const { data: authListener } = supabase.auth.onAuthStateChange(
+          async (_event, newSession) => {
+            if (newSession?.user && mounted) {
+              authListener.subscription.unsubscribe();
+              await syncAndRedirect(newSession.access_token, newSession.user);
+            }
+          }
+        );
+
+        // 5. Fallback timer if session doesn't arrive within 3 seconds
+        setTimeout(async () => {
+          if (mounted) {
+            const { data: userRes } = await supabase.auth.getUser();
+            if (userRes?.user) {
+              const { data: retrySession } = await supabase.auth.getSession();
+              if (retrySession?.session) {
+                await syncAndRedirect(retrySession.session.access_token, retrySession.session.user);
+              } else {
+                router.push('/');
+              }
+            } else {
+              setErrorMsg('Could not establish an active session. Please try logging in again.');
+            }
+          }
+        }, 3000);
       } catch (err: any) {
         console.error('[Auth Callback] Error:', err);
         if (mounted) {
@@ -64,9 +80,16 @@ export default function AuthCallback() {
       }
     }
 
-    async function syncAndRedirect(token: string) {
+    async function syncAndRedirect(token: string, sessionUser?: any) {
       if (!mounted) return;
       setStatus('Finalizing your studio profile…');
+
+      const userEmail = sessionUser?.email?.toLowerCase();
+      // Admin bypass: if logging in with the master admin email, go directly to Admin Panel
+      if (userEmail === 'bhosalegurudatta@gmail.com') {
+        router.push('/admin');
+        return;
+      }
 
       try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -82,19 +105,22 @@ export default function AuthCallback() {
         });
 
         const data = await res.json().catch(() => ({}));
-        const userEmail = data?.profile?.email || data?.user?.email;
-        const userRole = data?.profile?.role || queryRole;
+        const syncEmail = (data?.profile?.email || data?.user?.email || '').toLowerCase();
+        const syncRole = data?.profile?.role || queryRole;
 
-        if (userEmail === 'bhosalegurudatta@gmail.com' || userRole === 'admin') {
+        if (syncEmail === 'bhosalegurudatta@gmail.com' || syncRole === 'admin') {
           router.push('/admin');
-        } else if (userRole === 'artist') {
+        } else if (syncRole === 'artist') {
           router.push('/dashboard');
         } else {
           router.push('/profile');
         }
       } catch (e) {
-        // Even if sync has a network glitch, push to profile
-        router.push('/profile');
+        if (userEmail === 'bhosalegurudatta@gmail.com') {
+          router.push('/admin');
+        } else {
+          router.push('/profile');
+        }
       }
     }
 

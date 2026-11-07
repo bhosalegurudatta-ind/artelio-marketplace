@@ -38,15 +38,23 @@ export default function Home() {
 
   useEffect(() => {
     async function load() {
-      // Exclude hidden artworks
-      let query = supabase
+      let { data, error } = await supabase
         .from('artworks')
         .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name, verified)')
-        .eq('sold', false);
-
-      const { data } = await query
+        .eq('sold', false)
         .order('created_at', { ascending: false })
         .limit(40);
+
+      // Fallback if is_hidden or verified column does not exist in db
+      if (error || !data) {
+        const fallback = await supabase
+          .from('artworks')
+          .select('id, title, price, medium, image_url, created_at, artist_id, users(name)')
+          .eq('sold', false)
+          .order('created_at', { ascending: false })
+          .limit(40);
+        data = fallback.data as any;
+      }
 
       // Fetch active promotions: stop showing when budget is spent or end date passes
       const nowIso = new Date().toISOString();

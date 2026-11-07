@@ -116,7 +116,19 @@ function BrowseInner() {
         query = query.eq('is_digital', true);
       }
 
-      const { data } = await query.order('created_at', { ascending: false }).limit(100);
+      let { data, error } = await query.order('created_at', { ascending: false }).limit(100);
+      if (error || !data) {
+        let fallbackQuery = supabase
+          .from('artworks')
+          .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, users(name)')
+          .eq('sold', false);
+        if (minParam !== null) fallbackQuery = fallbackQuery.gte('price', minParam);
+        if (maxParam !== null) fallbackQuery = fallbackQuery.lte('price', maxParam);
+        if (format === 'physical') fallbackQuery = fallbackQuery.eq('is_digital', false);
+        else if (format === 'digital') fallbackQuery = fallbackQuery.eq('is_digital', true);
+        const fbRes = await fallbackQuery.order('created_at', { ascending: false }).limit(100);
+        data = fbRes.data as any;
+      }
       if (!active) return;
 
       // Fetch active promotions: stop showing when budget is spent or end date passes

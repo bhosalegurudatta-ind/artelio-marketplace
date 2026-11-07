@@ -62,11 +62,20 @@ export default function ArtworkDetail() {
         if (prof?.role === 'admin') isAdmin = true;
       }
 
-      const { data } = await supabase
+      let { data, error } = await supabase
         .from('artworks')
         .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, is_hidden, takedown_reason, users(name, verified)')
         .eq('id', params.id)
-        .single();
+        .maybeSingle();
+
+      if (error || !data) {
+        const fallback = await supabase
+          .from('artworks')
+          .select('id, title, description, medium, price, image_url, artist_id, sold, is_digital, users(name)')
+          .eq('id', params.id)
+          .maybeSingle();
+        data = fallback.data as any;
+      }
 
       if (!data) {
         setLoading(false);

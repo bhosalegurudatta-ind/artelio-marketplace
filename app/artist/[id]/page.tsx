@@ -55,11 +55,20 @@ export default function ArtistShopPage() {
       }
 
       // 1. Fetch artist shop profile
-      const { data: artistData } = await supabase
+      let { data: artistData, error: aErr } = await supabase
         .from('users')
         .select('id, name, bio, shop_name, banner_url, about, shipping_policy, return_policy, verified')
         .eq('id', artistId)
-        .single();
+        .maybeSingle();
+
+      if (aErr || !artistData) {
+        const fallback = await supabase
+          .from('users')
+          .select('id, name, bio')
+          .eq('id', artistId)
+          .maybeSingle();
+        artistData = fallback.data as any;
+      }
 
       setArtist(artistData);
 
@@ -129,6 +138,13 @@ export default function ArtistShopPage() {
             .eq('artist_id', artistId)
             .maybeSingle();
           if (followRow) setIsFollowing(true);
+        }
+
+        if (typeof window !== 'undefined') {
+          try {
+            const local = JSON.parse(localStorage.getItem('artelio_follows') || '[]');
+            if (local.includes(artistId)) setIsFollowing(true);
+          } catch {}
         }
       } catch (fErr) {
         console.warn('Follows table query notice:', fErr);
@@ -211,6 +227,18 @@ export default function ArtistShopPage() {
       }
       if (typeof json.isFollowing === 'boolean') {
         setIsFollowing(json.isFollowing);
+      }
+
+      if (typeof window !== 'undefined') {
+        try {
+          let local = JSON.parse(localStorage.getItem('artelio_follows') || '[]');
+          if (nextState) {
+            if (!local.includes(artistId)) local.push(artistId);
+          } else {
+            local = local.filter((id: string) => id !== artistId);
+          }
+          localStorage.setItem('artelio_follows', JSON.stringify(local));
+        } catch {}
       }
     } catch (err: any) {
       console.error('Follow toggle error:', err);

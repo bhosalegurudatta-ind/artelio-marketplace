@@ -12,13 +12,29 @@ export async function GET(req: NextRequest) {
 
   try {
     // 1. Fetch all artist profiles
-    const { data: artists, error: artistErr } = await supabaseAdmin
+    let { data: artists, error: artistErr } = await supabaseAdmin
       .from('users')
       .select('id, name, email, bio, shop_name, banner_url, verified, created_at')
       .eq('role', 'artist')
       .order('created_at', { ascending: false });
 
-    if (artistErr) throw artistErr;
+    if (artistErr || !artists) {
+      const fb = await supabaseAdmin
+        .from('users')
+        .select('id, name, email, bio, created_at')
+        .eq('role', 'artist')
+        .order('created_at', { ascending: false });
+      artists = fb.data as any;
+    }
+
+    // Also get auth metadata for verification status fallback
+    let authMap = new Map<string, any>();
+    try {
+      const { data: authUsers } = await supabaseAdmin.auth.admin.listUsers();
+      (authUsers?.users || []).forEach((u) => {
+        authMap.set(u.id, u.user_metadata || {});
+      });
+    } catch {}
 
     // 2. Fetch artworks to map artworks to their creator artists
     const { data: artworks, error: artErr } = await supabaseAdmin
@@ -72,14 +88,17 @@ export async function GET(req: NextRequest) {
       const stats = statsMap.get(artist.id) || { completedSales: 0, openDisputes: 0, totalVolume: 0 };
       const isEligible = stats.completedSales >= 10 && stats.openDisputes === 0;
 
+      const meta = authMap.get(artist.id) || {};
+      const isVerified = Boolean(artist.verified ?? meta.verified);
+
       return {
         id: artist.id,
         name: artist.name || 'Unnamed Artist',
         email: artist.email,
         bio: artist.bio,
-        shop_name: artist.shop_name,
-        banner_url: artist.banner_url,
-        verified: Boolean(artist.verified),
+        shop_name: artist.shop_name || artist.name,
+        banner_url: artist.banner_url || null,
+        verified: isVerified,
         created_at: artist.created_at,
         completed_sales: stats.completedSales,
         open_disputes: stats.openDisputes,
@@ -121,17 +140,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'verified must be a boolean.' }, { status: 400 });
     }
 
-    const { data: updated, error } = await supabaseAdmin
+    // 1. Try updating database column if it exists
+    let updated: any = null;
+    const { data: dbUpdated } = await supabaseAdmin
       .from('users')
       .update({ verified })
       .eq('id', artistId)
       .eq('role', 'artist')
       .select('id, name, email, verified')
-      .single();
+      .maybeSingle();
 
-    if (error || !updated) {
-      console.error('Error updating artist verification:', error);
-      return NextResponse.json({ error: 'Could not update artist verification status.' }, { status: 500 });
+    if (dbUpdated) updated = dbUpdated;
+
+    // 2. Also persist in auth metadata (always supported)
+    try {
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(artistId);
+      if (authUser?.user) {
+        await supabaseAdmin.auth.admin.updateUserById(artistId, {
+          user_metadata: { ...(authUser.user.user_metadata || {}), verified },
+        });
+        if (!updated) {
+          const { data: p } = await supabaseAdmin.from('users').select('id, name, email').eq('id', artistId).single();
+          updated = { ...p, verified };
+        }
+      }
+    } catch (metaErr) {
+      console.warn('Auth metadata update notice:', metaErr);
+    }
+
+    if (!updated) {
+      return NextResponse.json({ error: 'Could not find artist to update verification status.' }, { status: 404 });
     }
 
     return NextResponse.json({

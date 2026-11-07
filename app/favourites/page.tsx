@@ -69,10 +69,18 @@ export default function FavouritesPage() {
         }
 
         const artworkIds = favRows.map((f: any) => f.artwork_id);
-        const { data: artworks } = await supabase
+        let { data: artworks, error: artErr } = await supabase
           .from('artworks')
           .select('id, title, price, medium, image_url, sold, is_digital, artist_id, users(name, verified)')
           .in('id', artworkIds);
+
+        if (artErr || !artworks) {
+          const fb = await supabase
+            .from('artworks')
+            .select('id, title, price, medium, image_url, sold, is_digital, artist_id, users(name)')
+            .in('id', artworkIds);
+          artworks = fb.data as any;
+        }
 
         if (!active) return;
 

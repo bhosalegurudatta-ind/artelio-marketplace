@@ -205,6 +205,12 @@ export default function Dashboard() {
           >
             <span>🏪</span> Shop Profile
           </Link>
+          <Link
+            href="/dashboard/billing"
+            className="flex items-center gap-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-2.5 text-xs font-semibold text-pink-300 transition hover:bg-pink-500/20 shadow-sm"
+          >
+            <span>💎</span> Billing &amp; Plan
+          </Link>
           <button
             onClick={() => setStudioModalOpen(true)}
             className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-800 transition hover:bg-purple-100 shadow-sm"
@@ -253,23 +259,39 @@ export default function Dashboard() {
       {access?.approved && trialDaysLeft !== null && trialDaysLeft > 0 && !access.paidUntil && (
         <div className="mb-8 rounded-xl bg-brand-soft p-4 text-sm text-ink flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span>Free trial: {trialDaysLeft} day{trialDaysLeft === 1 ? '' : 's'} left of {TRIAL_DAYS}. Artelio charges no subscription during the trial.</span>
-          <button
-            onClick={() => setUpgradeModalOpen(true)}
-            className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark shrink-0"
-          >
-            Upgrade to Pro
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/dashboard/billing"
+              className="rounded-full border border-brand/30 bg-white px-3.5 py-1.5 text-xs font-semibold text-brand hover:bg-brand/5"
+            >
+              Subscription Details
+            </Link>
+            <button
+              onClick={() => setUpgradeModalOpen(true)}
+              className="rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark"
+            >
+              Subscribe / Upgrade
+            </button>
+          </div>
         </div>
       )}
       {access?.paidUntil && (
         <div className="mb-8 rounded-xl border border-green-500/30 bg-green-950/40 p-4 text-sm text-green-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span>👑 <strong>Creator Pro Active:</strong> Your studio has full AI tool suite and zero platform surcharge until {new Date(access.paidUntil).toLocaleDateString()}.</span>
-          <button
-            onClick={() => setUpgradeModalOpen(true)}
-            className="rounded-full border border-green-500/40 bg-[#121826] px-4 py-1.5 text-xs font-semibold text-green-300 hover:bg-[#161F30] shrink-0"
-          >
-            Extend Plan
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/dashboard/billing"
+              className="rounded-full border border-green-500/40 bg-[#121826] px-3.5 py-1.5 text-xs font-semibold text-green-300 hover:bg-[#161F30]"
+            >
+              Manage Billing
+            </Link>
+            <button
+              onClick={() => setUpgradeModalOpen(true)}
+              className="rounded-full border border-green-500/40 bg-green-500/20 px-3.5 py-1.5 text-xs font-semibold text-green-200 hover:bg-green-500/30"
+            >
+              Extend Plan
+            </button>
+          </div>
         </div>
       )}
       {access?.approved && payoutConfigured === false && (

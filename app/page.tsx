@@ -48,8 +48,36 @@ export default function Home() {
         .order('created_at', { ascending: false })
         .limit(40);
 
+      // Fetch active promotions: stop showing when budget is spent or end date passes
+      const nowIso = new Date().toISOString();
+      const activePromoIds = new Set<string>();
+      try {
+        const { data: promoRows } = await supabase
+          .from('promotions')
+          .select('artwork_id, budget, spent, ends_at')
+          .eq('status', 'active')
+          .gt('ends_at', nowIso);
+
+        (promoRows || []).forEach((p: any) => {
+          if (!(p.budget > 0 && p.spent >= p.budget)) {
+            activePromoIds.add(p.artwork_id);
+          }
+        });
+      } catch {
+        // Fallback gracefully if promotions table is not yet migrated
+      }
+
       // Filter out hidden artworks for public visitors
       const visible = (data ?? []).filter((a: any) => !a.is_hidden);
+
+      // Sort active promoted pieces first
+      visible.sort((a: any, b: any) => {
+        const aPromoted = activePromoIds.has(a.id);
+        const bPromoted = activePromoIds.has(b.id);
+        if (aPromoted && !bPromoted) return -1;
+        if (!aPromoted && bPromoted) return 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
 
       setArtworks(
         visible.map((a: any) => ({
@@ -61,6 +89,7 @@ export default function Home() {
           imageUrl: a.image_url || null,
           createdAt: a.created_at,
           artistId: a.artist_id,
+          isPromoted: activePromoIds.has(a.id),
         }))
       );
       setLoading(false);

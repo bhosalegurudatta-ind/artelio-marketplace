@@ -12,6 +12,7 @@ import ShipOrderModal from '@/components/ShipOrderModal';
 import PayoutSettingsModal from '@/components/PayoutSettingsModal';
 import CertificateModal from '@/components/CertificateModal';
 import PackagingGuideModal from '@/components/PackagingGuideModal';
+import PromoteArtworkModal from '@/components/PromoteArtworkModal';
 
 type Artwork = {
   id: string;
@@ -22,6 +23,25 @@ type Artwork = {
   is_digital: boolean;
   is_ai_assisted: boolean;
   has_orders?: boolean;
+};
+
+type Promotion = {
+  id: string;
+  artwork_id: string;
+  budget: number;
+  spent: number;
+  starts_at: string;
+  ends_at: string;
+  status: string;
+  days?: number | null;
+  created_at: string;
+  artworks?: {
+    id: string;
+    title: string;
+    price: number;
+    image_url?: string | null;
+    medium?: string | null;
+  } | null;
 };
 type Order = {
   id: string;
@@ -74,6 +94,8 @@ export default function Dashboard() {
   const [coaData, setCoaData] = useState<any | null>(null);
   const [packagingGuideOpen, setPackagingGuideOpen] = useState(false);
   const [creatingLabelId, setCreatingLabelId] = useState<string | null>(null);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [promoteModalArtwork, setPromoteModalArtwork] = useState<Artwork | null>(null);
 
   const load = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -123,8 +145,43 @@ export default function Dashboard() {
     const res = await fetch('/api/artist/orders', { headers: { Authorization: `Bearer ${session.session?.access_token}` } });
     const body = await res.json();
     setOrders(body.orders ?? []);
+
+    try {
+      const promoRes = await fetch('/api/promotions/mine', {
+        headers: { Authorization: `Bearer ${session.session?.access_token}` },
+      });
+      if (promoRes.ok) {
+        const promoBody = await promoRes.json();
+        setPromotions(promoBody.promotions ?? []);
+      }
+    } catch {
+      // Fallback
+    }
     setLoading(false);
   }, []);
+
+  function isArtPromoted(artworkId: string): boolean {
+    const now = Date.now();
+    return promotions.some(
+      (p) =>
+        p.artwork_id === artworkId &&
+        p.status === 'active' &&
+        new Date(p.ends_at).getTime() > now &&
+        !(p.budget > 0 && p.spent >= p.budget)
+    );
+  }
+
+  function getPromoDaysLeft(artworkId: string): string {
+    const promo = promotions.find(
+      (p) =>
+        p.artwork_id === artworkId &&
+        p.status === 'active' &&
+        new Date(p.ends_at).getTime() > Date.now()
+    );
+    if (!promo) return '';
+    const diffDays = Math.max(0, Math.ceil((new Date(promo.ends_at).getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+    return `${diffDays}d left`;
+  }
 
   useEffect(() => { load(); }, [load]);
 
@@ -610,6 +667,87 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Promoted Listings Section (Requirement 5: Show the artist's promotions on the dashboard) */}
+      <div className="mb-10">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <span className="text-amber-400">⭐</span> Promoted Listings
+            </h2>
+            <p className="text-xs text-white/60">
+              Active &amp; past promotions • Fixed fee only • No per-click deductions
+            </p>
+          </div>
+          {promotions.length > 0 && (
+            <span className="rounded-full bg-amber-400/10 border border-amber-400/30 px-3 py-1 text-xs font-semibold text-amber-300">
+              {promotions.filter((p) => p.status === 'active' && new Date(p.ends_at) > new Date()).length} Active
+            </span>
+          )}
+        </div>
+
+        {promotions.length === 0 ? (
+          <div className="rounded-xl border border-white/10 bg-[#121826] p-6 text-center text-xs text-white/60">
+            <p>No promoted listings yet.</p>
+            <p className="mt-1 text-white/40">
+              Click &quot;Promote&quot; on any of your artworks below to feature it at the top of Browse and the Home Page.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#121826]">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-white/10 bg-white/5 uppercase tracking-wider text-white/50">
+                <tr>
+                  <th className="px-4 py-3">Promoted Artwork</th>
+                  <th className="px-4 py-3">Fixed Fee Budget</th>
+                  <th className="px-4 py-3">Duration</th>
+                  <th className="px-4 py-3">Timeline</th>
+                  <th className="px-4 py-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 text-white">
+                {promotions.map((p) => {
+                  const isLive = p.status === 'active' && new Date(p.ends_at) > new Date();
+                  const daysLeft = Math.max(0, Math.ceil((new Date(p.ends_at).getTime() - Date.now()) / (24 * 60 * 60 * 1000)));
+
+                  return (
+                    <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3.5 flex items-center gap-3">
+                        <div
+                          className="h-10 w-10 shrink-0 rounded-lg bg-paper bg-cover bg-center border border-white/10"
+                          style={p.artworks?.image_url ? { backgroundImage: `url(${p.artworks.image_url})` } : undefined}
+                        />
+                        <div>
+                          <p className="font-semibold text-white">{p.artworks?.title || 'Fine Art'}</p>
+                          <p className="text-[11px] text-white/40">₹{p.artworks?.price ? Number(p.artworks.price).toLocaleString('en-IN') : '0'}</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5 font-mono font-bold text-amber-300">
+                        ₹{Number(p.budget).toLocaleString('en-IN')}
+                      </td>
+                      <td className="px-4 py-3.5 text-white/80">
+                        {p.days || Math.round((new Date(p.ends_at).getTime() - new Date(p.starts_at).getTime()) / (24 * 60 * 60 * 1000))} Days
+                      </td>
+                      <td className="px-4 py-3.5 text-white/60">
+                        {new Date(p.starts_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} → {new Date(p.ends_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 font-semibold text-[11px] ${
+                          isLive
+                            ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40'
+                            : 'bg-white/10 text-white/50'
+                        }`}>
+                          {isLive ? `★ Active (${daysLeft}d left)` : 'Ended'}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       <h2 className="mb-5 text-xl font-bold text-white">Your listings</h2>
       {artworks.length === 0 ? (
         <p className="text-white/60">Nothing listed yet. <Link href="/dashboard/upload" className="font-semibold text-brand hover:underline">Upload your first piece</Link>.</p>
@@ -653,6 +791,24 @@ export default function Dashboard() {
                 >
                   Remove
                 </button>
+              </div>
+              <div className="mt-2.5 pt-2 border-t border-white/5">
+                {isArtPromoted(art.id) ? (
+                  <button
+                    onClick={() => setPromoteModalArtwork(art)}
+                    className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-amber-400/40 bg-amber-400/15 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-400/25 transition shadow-xs"
+                    title="Active Promotion: click to extend duration"
+                  >
+                    <span>★</span> Promoted ({getPromoDaysLeft(art.id)})
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setPromoteModalArtwork(art)}
+                    className="w-full flex items-center justify-center gap-1.5 rounded-lg border border-amber-400/30 bg-amber-400/10 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-400/20 transition shadow-xs"
+                  >
+                    <span>⭐</span> Promote
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -708,6 +864,15 @@ export default function Dashboard() {
 
       <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
       {packagingGuideOpen && <PackagingGuideModal onClose={() => setPackagingGuideOpen(false)} />}
+      <PromoteArtworkModal
+        artwork={promoteModalArtwork}
+        isOpen={Boolean(promoteModalArtwork)}
+        onClose={() => setPromoteModalArtwork(null)}
+        onSuccess={() => {
+          load();
+          setMessage('Promotion activated! Your artwork is now featured at the top of Browse & Home.');
+        }}
+      />
     </main>
   );
 }

@@ -11,6 +11,7 @@ export type Artwork = {
   imageUrl?: string | null;
   createdAt?: string | null;
   artistId?: string | null;
+  isPromoted?: boolean;
 };
 
 export function artworkImageStyle(a: Artwork): React.CSSProperties | null {
@@ -42,8 +43,13 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
             </div>
           )}
 
-          {/* Top-Left Discount / Deal Pill */}
-          <div className="absolute top-2 left-2 z-10">
+          {/* Top-Left Discount / Deal Pill & Promoted Badge */}
+          <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start">
+            {artwork.isPromoted && (
+              <span className="rounded bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs tracking-wider flex items-center gap-1 border border-amber-300/40">
+                <span className="text-[9px]">★</span> Promoted
+              </span>
+            )}
             <span className="rounded bg-[#F83758] px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs">
               40% OFF
             </span>

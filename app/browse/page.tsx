@@ -119,6 +119,26 @@ function BrowseInner() {
       const { data } = await query.order('created_at', { ascending: false }).limit(100);
       if (!active) return;
 
+      // Fetch active promotions: stop showing when budget is spent or end date passes
+      const nowIso = new Date().toISOString();
+      const activePromoIds = new Set<string>();
+      try {
+        const { data: promoRows } = await supabase
+          .from('promotions')
+          .select('artwork_id, budget, spent, ends_at')
+          .eq('status', 'active')
+          .gt('ends_at', nowIso);
+
+        (promoRows || []).forEach((p: any) => {
+          // Stop showing if budget is spent (spent >= budget > 0)
+          if (!(p.budget > 0 && p.spent >= p.budget)) {
+            activePromoIds.add(p.artwork_id);
+          }
+        });
+      } catch {
+        // Fallback gracefully if promotions table is not yet migrated
+      }
+
       const visible = (data ?? []).filter((a: any) => isAdmin || !a.is_hidden);
 
       setItems(
@@ -131,6 +151,7 @@ function BrowseInner() {
           imageUrl: a.image_url || null,
           createdAt: a.created_at,
           artistId: a.artist_id,
+          isPromoted: activePromoIds.has(a.id),
         }))
       );
       setLoading(false);
@@ -144,8 +165,15 @@ function BrowseInner() {
 
   const sorted = useMemo(() => {
     const copy = [...items];
-    if (sort === 'low') copy.sort((a, b) => a.price - b.price);
-    if (sort === 'high') copy.sort((a, b) => b.price - a.price);
+    copy.sort((a, b) => {
+      // Show active promoted pieces first
+      if (a.isPromoted && !b.isPromoted) return -1;
+      if (!a.isPromoted && b.isPromoted) return 1;
+
+      if (sort === 'low') return a.price - b.price;
+      if (sort === 'high') return b.price - a.price;
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    });
     return copy;
   }, [items, sort]);
 

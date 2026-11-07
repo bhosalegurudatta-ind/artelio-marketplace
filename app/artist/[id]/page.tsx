@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import ArtworkCard, { Artwork } from '@/components/ArtworkCard';
 import InquiryModal from '@/components/InquiryModal';
@@ -31,6 +31,7 @@ type Review = {
 
 export default function ArtistShopPage() {
   const params = useParams();
+  const router = useRouter();
   const artistId = String(params.id);
 
   const [artist, setArtist] = useState<ArtistProfile | null>(null);
@@ -41,6 +42,7 @@ export default function ArtistShopPage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
   const [followLoading, setFollowLoading] = useState(false);
+  const [isSelf, setIsSelf] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -117,6 +119,9 @@ export default function ArtistShopPage() {
         if (typeof count === 'number') setFollowerCount(count);
 
         if (userAuth?.user) {
+          if (userAuth.user.id === artistId) {
+            setIsSelf(true);
+          }
           const { data: followRow } = await supabase
             .from('follows')
             .select('follower_id')
@@ -165,28 +170,54 @@ export default function ArtistShopPage() {
   async function handleToggleFollow() {
     const { data: userAuth } = await supabase.auth.getUser();
     if (!userAuth?.user) {
-      alert('Please sign in to follow this artist.');
+      router.push(`/login?redirect=${encodeURIComponent(`/artist/${artistId}`)}`);
       return;
     }
+
+    if (userAuth.user.id === artistId) {
+      alert('You cannot follow your own studio profile.');
+      return;
+    }
+
     setFollowLoading(true);
+    const nextState = !isFollowing;
+    // Optimistic UI update
+    setIsFollowing(nextState);
+    setFollowerCount((c) => Math.max(0, c + (nextState ? 1 : -1)));
+
     try {
-      if (isFollowing) {
-        await supabase
-          .from('follows')
-          .delete()
-          .match({ follower_id: userAuth.user.id, artist_id: artistId });
-        setIsFollowing(false);
-        setFollowerCount((c) => Math.max(0, c - 1));
-      } else {
-        await supabase.from('follows').insert({
-          follower_id: userAuth.user.id,
-          artist_id: artistId,
-        });
-        setIsFollowing(true);
-        setFollowerCount((c) => c + 1);
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+
+      const res = await fetch('/api/follows', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          artistId,
+          action: nextState ? 'follow' : 'unfollow',
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to update follow status');
       }
-    } catch (err) {
+
+      if (typeof json.followerCount === 'number') {
+        setFollowerCount(json.followerCount);
+      }
+      if (typeof json.isFollowing === 'boolean') {
+        setIsFollowing(json.isFollowing);
+      }
+    } catch (err: any) {
       console.error('Follow toggle error:', err);
+      // Revert optimistic update
+      setIsFollowing(!nextState);
+      setFollowerCount((c) => Math.max(0, c + (!nextState ? 1 : -1)));
+      alert(err.message || 'Could not update follow status.');
     } finally {
       setFollowLoading(false);
     }
@@ -251,18 +282,27 @@ export default function ArtistShopPage() {
 
             {/* Follow & Action Buttons */}
             <div className="flex flex-wrap items-center gap-3">
-              <button
-                onClick={handleToggleFollow}
-                disabled={followLoading}
-                className={`flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold transition-all shadow-md ${
-                  isFollowing
-                    ? 'bg-white/20 text-white border border-white/30 hover:bg-white/10'
-                    : 'bg-[#F83758] text-white hover:bg-[#E02244]'
-                }`}
-              >
-                <span>{isFollowing ? '✓ Following Shop' : '+ Follow Shop'}</span>
-                {followerCount > 0 && <span className="opacity-75">({followerCount})</span>}
-              </button>
+              {isSelf ? (
+                <Link
+                  href="/dashboard/shop"
+                  className="flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold transition-all shadow-md bg-white/10 text-white/90 hover:bg-white/20 border border-white/20"
+                >
+                  <span>⚙️ Your Studio Shop</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={handleToggleFollow}
+                  disabled={followLoading}
+                  className={`flex items-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold transition-all shadow-md active:scale-95 ${
+                    isFollowing
+                      ? 'bg-white/20 text-white border border-white/30 hover:bg-white/10'
+                      : 'bg-[#F83758] text-white hover:bg-[#E02244]'
+                  }`}
+                >
+                  <span>{isFollowing ? '✓ Following' : '+ Follow'}</span>
+                  {followerCount > 0 && <span className="opacity-75">({followerCount})</span>}
+                </button>
+              )}
 
               <button
                 onClick={() => setShowInquiry(true)}

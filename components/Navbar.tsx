@@ -126,6 +126,14 @@ export default function Navbar() {
           {/* Right: User Avatar Photo Circle (Matching Figma screen) */}
           <div className="flex items-center gap-2.5">
             <Link
+              href="/following"
+              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F3F3] text-[#17223B] hover:text-[#F83758] hover:bg-[#FDF0F3] transition"
+              title="Following Feed"
+            >
+              <span className="text-sm">✨</span>
+            </Link>
+
+            <Link
               href="/favourites"
               className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F3F3] text-[#17223B] hover:text-[#F83758] hover:bg-[#FDF0F3] transition"
               title="My Favourites"
@@ -261,6 +269,9 @@ export default function Navbar() {
                   </Link>
                   <Link href="/browse" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     🎨 All Artworks
+                  </Link>
+                  <Link href="/following" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    ✨ Following Feed
                   </Link>
                   <Link href="/favourites" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     ❤️ My Favourites

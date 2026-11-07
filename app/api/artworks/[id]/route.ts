@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
+import { notifyFollowersNewArtwork } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -91,7 +92,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     // 1. Fetch artwork and check ownership
     const { data: artwork, error: artErr } = await supabaseAdmin
       .from('artworks')
-      .select('id, title, description, medium, price, artist_id')
+      .select('id, title, description, medium, price, artist_id, is_hidden, image_url, followers_notified')
       .eq('id', artworkId)
       .single();
 
@@ -104,9 +105,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     }
 
     const body = await req.json().catch(() => ({}));
-    const { title, description, medium, price, tags, shipping_fee, ships_from } = body;
+    const { title, description, medium, price, tags, shipping_fee, ships_from, is_hidden } = body;
 
     const updates: Record<string, any> = {};
+
+    if (is_hidden !== undefined) {
+      updates.is_hidden = Boolean(is_hidden);
+    }
 
     // Validate and update shipping_fee & ships_from (Requirement 1)
     if (shipping_fee !== undefined) {
@@ -241,6 +246,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         return fail('Failed to update artwork in database.', 500);
       }
       if (u) updated = u;
+    }
+
+    // Notify followers if publishing newly or previously hidden draft (once per artwork)
+    const isNowVisible = updates.is_hidden === false || (!artwork.is_hidden && updates.is_hidden === undefined);
+    if (isNowVisible && !artwork.followers_notified) {
+      notifyFollowersNewArtwork({
+        artworkId,
+        artistId: user.id,
+        title: updates.title || artwork.title,
+        price: updates.price !== undefined ? updates.price : artwork.price,
+        imageUrl: artwork.image_url,
+        medium: updates.medium || artwork.medium,
+      }).catch((notifErr) => {
+        console.error('[Artelio] Non-blocking follower notification error on edit:', notifErr);
+      });
     }
 
     return NextResponse.json({

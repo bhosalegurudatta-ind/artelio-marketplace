@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { dHash, hamming, makePreview } from '@/lib/imageTools';
 import { hasListingAccess } from '@/lib/mvp';
+import { notifyFollowersNewArtwork } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -252,6 +253,19 @@ export async function POST(req: NextRequest) {
         console.error('Error inserting into artwork_tags:', tagErr);
       }
     }
+
+    // 5. Requirement 3: When an artist publishes new work, email their followers using lib/email.ts, once per artwork.
+    // Skip sending if email is not configured (checked inside notifyFollowersNewArtwork).
+    notifyFollowersNewArtwork({
+      artworkId: row.id,
+      artistId: user.id,
+      title,
+      price,
+      imageUrl: primary.previewUrl,
+      medium,
+    }).catch((notifErr) => {
+      console.error('[Artelio] Non-blocking follower notification error:', notifErr);
+    });
 
     return NextResponse.json({ id: row.id });
   } catch (err) {

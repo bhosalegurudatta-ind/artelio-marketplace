@@ -580,3 +580,194 @@ export async function sendMessageNotificationEmail({
   });
 }
 
+/**
+ * Checks whether outbound email service credentials (Resend) are configured.
+ */
+export function isEmailConfigured(): boolean {
+  return Boolean(process.env.RESEND_API_KEY && (process.env.EMAIL_FROM || process.env.RESEND_FROM_EMAIL));
+}
+
+/* ==============================================================================
+ * 8. TEMPLATE: New Artwork Published (to artist's followers)
+ * Sent once per artwork when published by an artist. Skips if email not configured.
+ * ============================================================================== */
+export async function notifyFollowersNewArtwork({
+  artworkId,
+  artistId,
+  title,
+  price,
+  imageUrl,
+  medium,
+}: {
+  artworkId: string;
+  artistId: string;
+  title: string;
+  price: number;
+  imageUrl?: string | null;
+  medium?: string | null;
+}): Promise<{
+  success: boolean;
+  skipped?: boolean;
+  reason?: string;
+  sentCount?: number;
+}> {
+  // Requirement 3: Skip sending if email is not configured
+  if (!isEmailConfigured()) {
+    console.log('[Artelio Email] Outbound email not configured (RESEND_API_KEY/EMAIL_FROM missing). Skipping follower notifications.');
+    return { success: true, skipped: true, reason: 'Email not configured' };
+  }
+
+  try {
+    // Check if artwork was already notified or is still hidden (draft)
+    const { data: art, error: artErr } = await supabaseAdmin
+      .from('artworks')
+      .select('id, followers_notified, is_hidden')
+      .eq('id', artworkId)
+      .maybeSingle();
+
+    if (artErr) {
+      console.warn('[Artelio Email] Notice reading artwork notification status:', artErr.message);
+    }
+
+    if (art) {
+      if (art.followers_notified) {
+        console.log(`[Artelio Email] Artwork ${artworkId} already notified followers. Skipping.`);
+        return { success: true, skipped: true, reason: 'Already notified' };
+      }
+      if (art.is_hidden) {
+        console.log(`[Artelio Email] Artwork ${artworkId} is hidden/draft. Skipping follower notification.`);
+        return { success: true, skipped: true, reason: 'Artwork is draft/hidden' };
+      }
+    }
+
+    // Set followers_notified to true immediately to guarantee once-per-artwork dispatch
+    await supabaseAdmin
+      .from('artworks')
+      .update({ followers_notified: true })
+      .eq('id', artworkId);
+
+    // Fetch artist profile
+    const { data: artist } = await supabaseAdmin
+      .from('users')
+      .select('id, name, shop_name')
+      .eq('id', artistId)
+      .single();
+
+    const artistName = artist?.shop_name || artist?.name || 'An artist you follow';
+
+    // Fetch all followers of this artist
+    const { data: followRows, error: followErr } = await supabaseAdmin
+      .from('follows')
+      .select('follower_id')
+      .eq('artist_id', artistId);
+
+    if (followErr) {
+      console.error('[Artelio Email] Error fetching followers for artist:', followErr);
+      return { success: false, reason: followErr.message };
+    }
+
+    if (!followRows || followRows.length === 0) {
+      console.log(`[Artelio Email] Artist ${artistId} has 0 followers. No emails to send.`);
+      return { success: true, sentCount: 0 };
+    }
+
+    const followerIds = followRows.map((f: any) => f.follower_id).filter(Boolean);
+    const { data: followers, error: userErr } = await supabaseAdmin
+      .from('users')
+      .select('id, email, name')
+      .in('id', followerIds);
+
+    if (userErr || !followers || followers.length === 0) {
+      console.log(`[Artelio Email] No follower email addresses found for artist ${artistId}.`);
+      return { success: true, sentCount: 0 };
+    }
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const artworkUrl = `${siteUrl}/artwork/${artworkId}`;
+    const artistUrl = `${siteUrl}/artist/${artistId}`;
+    const formattedPrice = `₹${price.toLocaleString('en-IN')}`;
+    const subject = `New artwork from ${artistName}: "${title}" on Artelio`;
+
+    let sentCount = 0;
+
+    for (const follower of followers) {
+      if (!follower.email || !follower.email.includes('@')) continue;
+
+      const recipientName = follower.name || 'Art Collector';
+
+      const html = `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FFFFFF; color: #17223B; padding: 32px 24px; border: 1px solid #E8E8E8; border-radius: 16px;">
+          <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <span style="font-size: 20px; font-weight: 900; color: #4392F9; letter-spacing: -0.5px;">Art<span style="color: #F83758;">elio</span></span>
+            <span style="margin-left: 8px; font-size: 11px; font-weight: 700; color: #F83758; background: #FDF0F3; padding: 2px 8px; border-radius: 9999px;">New Studio Release</span>
+          </div>
+
+          <h1 style="color: #17223B; font-size: 22px; font-weight: 800; margin: 0 0 12px; line-height: 1.3;">
+            ${artistName} Just Published a New Artwork
+          </h1>
+
+          <p style="font-size: 14px; color: #626262; line-height: 1.6; margin: 0 0 20px;">
+            Hello ${recipientName}, good news! <strong>${artistName}</strong>, an artist you follow on Artelio, just published a new piece in their collection:
+          </p>
+
+          <div style="background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 12px; overflow: hidden; margin: 24px 0;">
+            ${
+              imageUrl
+                ? `<div style="text-align: center; background: #0B0E17; max-height: 320px; overflow: hidden;">
+                    <img src="${imageUrl}" alt="${title}" style="max-width: 100%; max-height: 320px; object-fit: contain; display: block; margin: 0 auto;" />
+                  </div>`
+                : ''
+            }
+            <div style="padding: 20px;">
+              <h2 style="font-size: 18px; font-weight: 800; color: #17223B; margin: 0 0 6px;">
+                ${title}
+              </h2>
+              <p style="font-size: 13px; color: #626262; margin: 0 0 12px;">
+                ${medium ? `Medium: <strong>${medium}</strong> • ` : ''}Original Artwork
+              </p>
+              <div style="display: flex; align-items: baseline; gap: 8px;">
+                <span style="font-size: 20px; font-weight: 900; color: #17223B;">${formattedPrice}</span>
+                <span style="font-size: 11px; font-weight: 700; color: #10B981; background: #ECFDF5; padding: 2px 6px; border-radius: 4px;">Available Now</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin: 28px 0;">
+            <a href="${artworkUrl}" style="background: #F83758; color: #FFFFFF; text-decoration: none; font-weight: bold; font-size: 14px; padding: 12px 32px; border-radius: 12px; display: inline-block; box-shadow: 0 4px 12px rgba(248, 55, 88, 0.25);">
+              View Artwork on Artelio &rarr;
+            </a>
+          </div>
+
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="${artistUrl}" style="font-size: 12px; color: #4392F9; text-decoration: none; font-weight: 600;">
+              Visit ${artistName}'s Studio Shop &rarr;
+            </a>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid #E8E8E8; margin: 28px 0;" />
+
+          <p style="font-size: 11px; color: #A8A8A9; text-align: center; margin: 0; line-height: 1.5;">
+            You received this email because you follow <strong>${artistName}</strong> on Artelio.<br />
+            To manage your followed studios, visit your <a href="${siteUrl}/following" style="color: #626262; text-decoration: underline;">Following Feed</a>.
+          </p>
+        </div>
+      `;
+
+      await sendEmail({
+        to: follower.email,
+        subject,
+        html,
+        text: `${artistName} just published "${title}" (${formattedPrice}) on Artelio.\n\nView it here: ${artworkUrl}\nVisit shop: ${artistUrl}`,
+      });
+
+      sentCount++;
+    }
+
+    console.log(`[Artelio Email] Notified ${sentCount} followers of ${artistName} about artwork ${artworkId}.`);
+    return { success: true, sentCount };
+  } catch (err: any) {
+    console.error('[Artelio Email] notifyFollowersNewArtwork error:', err);
+    return { success: false, reason: err?.message || 'Unknown error' };
+  }
+}
+

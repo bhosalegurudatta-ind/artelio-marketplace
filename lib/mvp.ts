@@ -4,6 +4,7 @@ export const COMMISSION_RATE = 0.10;      // Artelio keeps 10% of every sale
 export const TRIAL_DAYS = 30;             // free trial for approved artists
 export const DIGITAL_RELEASE_DAYS = 7;    // digital sale: payout released 7 days after download, if no dispute
 export const PHYSICAL_RELEASE_DAYS = 10;  // physical sale: payout released 10 days after shipping, if no dispute
+export const FUSION_MONTHLY_CAP = 5;       // monthly limit for AI style-fusion generator
 export const DAY = 24 * 60 * 60 * 1000;
 
 // Lets an artist list work only while the trial or a paid plan is active.

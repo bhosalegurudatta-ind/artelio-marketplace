@@ -308,6 +308,12 @@ export default function Dashboard() {
           >
             <span>💎</span> Billing &amp; Plan
           </Link>
+          <Link
+            href="/create/fusion"
+            className="flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-xs font-semibold text-amber-300 transition hover:bg-amber-400/20 shadow-sm"
+          >
+            <span>✨</span> AI Style Fusion
+          </Link>
           <button
             onClick={() => setStudioModalOpen(true)}
             className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-50 px-4 py-2.5 text-sm font-semibold text-purple-800 transition hover:bg-purple-100 shadow-sm"

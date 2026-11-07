@@ -87,13 +87,14 @@ export default function AuthCallback() {
       const userEmail = sessionUser?.email?.toLowerCase();
       // Admin bypass: if logging in with the master admin email, go directly to Admin Panel
       if (userEmail === 'bhosalegurudatta@gmail.com') {
-        router.push('/admin');
+        window.location.href = '/admin';
         return;
       }
 
       try {
         const urlParams = new URLSearchParams(window.location.search);
-        const queryRole = urlParams.get('role');
+        const storedRole = typeof window !== 'undefined' ? localStorage.getItem('artelio_auth_role') : null;
+        const queryRole = urlParams.get('role') || storedRole || 'customer';
 
         const res = await fetch('/api/auth/sync', {
           method: 'POST',
@@ -109,17 +110,17 @@ export default function AuthCallback() {
         const syncRole = data?.profile?.role || queryRole;
 
         if (syncEmail === 'bhosalegurudatta@gmail.com' || syncRole === 'admin') {
-          router.push('/admin');
+          window.location.href = '/admin';
         } else if (syncRole === 'artist') {
-          router.push('/dashboard');
+          window.location.href = '/dashboard';
         } else {
-          router.push('/profile');
+          window.location.href = '/profile';
         }
       } catch (e) {
         if (userEmail === 'bhosalegurudatta@gmail.com') {
-          router.push('/admin');
+          window.location.href = '/admin';
         } else {
-          router.push('/profile');
+          window.location.href = '/profile';
         }
       }
     }

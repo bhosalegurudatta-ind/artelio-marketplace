@@ -29,6 +29,18 @@ export default function AdminNav({ active }: { active: 'overview' | 'sales' | 'a
           </Link>
         );
       })}
+      <button
+        type="button"
+        onClick={async () => {
+          const { supabase } = await import('@/lib/supabaseClient');
+          await supabase.auth.signOut();
+          window.location.href = '/login';
+        }}
+        className="ml-auto rounded-xl border border-red-200 bg-red-50 hover:bg-red-600 hover:text-white px-3.5 py-2 text-xs font-bold text-red-600 transition shadow-xs"
+        title="Exit Admin Panel & Log Out"
+      >
+        🚪 Log Out
+      </button>
     </div>
   );
 }

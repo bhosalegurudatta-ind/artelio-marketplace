@@ -20,14 +20,14 @@ export default function GoogleAuthButton({
     setErrorMsg('');
 
     try {
-      const redirectUrl = `${window.location.origin}/auth/callback?role=${encodeURIComponent(role)}`;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('artelio_auth_role', role);
+      }
+      const redirectUrl = `${window.location.origin}/auth/callback`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: redirectUrl,
-          queryParams: {
-            prompt: 'select_account',
-          },
         },
       });
 

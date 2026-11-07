@@ -314,6 +314,18 @@ function ProfileContent() {
             >
               ⚙️ Settings
             </Link>
+
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.href = '/login';
+              }}
+              className="rounded-md border border-red-200 bg-red-50 hover:bg-red-600 hover:text-white px-3.5 py-2 text-xs font-bold text-red-600 transition shadow-2xs"
+              title="Log out of Artelio"
+            >
+              🚪 Log Out
+            </button>
           </div>
         </div>
 

@@ -11,17 +11,17 @@ export default function AdminNav({ active }: { active: 'overview' | 'approvals' 
   ];
 
   return (
-    <div className="flex flex-wrap items-center gap-2 border-b border-white/10 pb-4 mb-8">
+    <div className="flex flex-wrap items-center gap-2 border-b border-[#E8E8E8] pb-4 mb-8">
       {tabs.map((tab) => {
         const isActive = active === tab.id;
         return (
           <Link
             key={tab.id}
             href={tab.href}
-            className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`rounded-xl px-4 py-2 text-xs font-bold transition-all shadow-xs ${
               isActive
                 ? 'bg-gradient-to-r from-vermilion via-magenta to-brand text-white shadow-md'
-                : 'bg-white/5 border border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+                : 'bg-white border border-[#DEDBDB] text-[#626262] hover:text-[#17223B] hover:border-[#17223B] hover:bg-[#F3F3F3]'
             }`}
           >
             {tab.label}
@@ -31,3 +31,4 @@ export default function AdminNav({ active }: { active: 'overview' | 'approvals' 
     </div>
   );
 }
+

@@ -159,22 +159,22 @@ export default function AdminPayoutsPage() {
   });
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-12 text-white">
+    <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 md:py-12 text-[#17223B]">
       {/* Top Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-[#F83758]">Admin Command Center</span>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-white mt-1">
+          <h1 className="font-serif text-3xl font-extrabold tracking-tight text-[#17223B] mt-1">
             Payouts &amp; Bank Transfers
           </h1>
-          <p className="mt-1 text-xs text-white/50">
+          <p className="mt-1 text-sm text-[#626262]">
             Review Razorpay Route automatic transfers, monitor escrow releases, and resolve failed artist payouts.
           </p>
         </div>
 
         <button
           onClick={loadPayouts}
-          className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 hover:bg-white/10 hover:text-white transition"
+          className="rounded-xl border border-[#DEDBDB] bg-white px-4 py-2 text-xs font-bold text-[#17223B] hover:bg-[#F3F3F3] shadow-xs transition"
         >
           🔄 Refresh Ledger
         </button>
@@ -185,40 +185,40 @@ export default function AdminPayoutsPage() {
 
       {/* Alerts */}
       {errorMsg && (
-        <div className="mb-6 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-semibold text-rose-300">
+        <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-700">
           ⚠️ {errorMsg}
         </div>
       )}
       {successMsg && (
-        <div className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs font-bold text-emerald-300">
+        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs font-bold text-emerald-700">
           {successMsg}
         </div>
       )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-white/40">Total Payouts</span>
-          <p className="font-serif text-2xl font-bold text-white mt-1">{stats.total ?? 0}</p>
-          <span className="text-[11px] text-white/40">Registered orders</span>
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-4 shadow-sm">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#626262]">Total Payouts</span>
+          <p className="font-serif text-2xl font-extrabold text-[#17223B] mt-1">{stats.total ?? 0}</p>
+          <span className="text-[11px] text-[#8E8E8E]">Registered orders</span>
         </div>
 
-        <div className="rounded-2xl border border-emerald-500/20 bg-[#121826] p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400">Transferred / Succeeded</span>
-          <p className="font-serif text-2xl font-bold text-emerald-400 mt-1">{stats.processed ?? 0}</p>
-          <span className="text-[11px] text-white/40">Dispatched to bank</span>
+        <div className="rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">Transferred / Succeeded</span>
+          <p className="font-serif text-2xl font-extrabold text-emerald-600 mt-1">{stats.processed ?? 0}</p>
+          <span className="text-[11px] text-[#8E8E8E]">Dispatched to bank</span>
         </div>
 
-        <div className="rounded-2xl border border-amber-500/20 bg-[#121826] p-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">Held in Escrow</span>
-          <p className="font-serif text-2xl font-bold text-amber-400 mt-1">{stats.held ?? 0}</p>
-          <span className="text-[11px] text-white/40">Pending delivery confirmation</span>
+        <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">Held in Escrow</span>
+          <p className="font-serif text-2xl font-extrabold text-amber-600 mt-1">{stats.held ?? 0}</p>
+          <span className="text-[11px] text-[#8E8E8E]">Pending delivery confirmation</span>
         </div>
 
-        <div className={`rounded-2xl border p-4 ${stats.failed > 0 ? 'border-rose-500/50 bg-rose-950/20' : 'border-white/10 bg-[#121826]'}`}>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-400">Failed Transfers</span>
-          <p className="font-serif text-2xl font-bold text-rose-400 mt-1">{stats.failed ?? 0}</p>
-          <span className="text-[11px] text-white/40">Requires review / retry</span>
+        <div className={`rounded-2xl border p-4 shadow-sm ${stats.failed > 0 ? 'border-rose-300 bg-rose-50/50' : 'border-[#E8E8E8] bg-white'}`}>
+          <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">Failed Transfers</span>
+          <p className="font-serif text-2xl font-extrabold text-rose-600 mt-1">{stats.failed ?? 0}</p>
+          <span className="text-[11px] text-[#8E8E8E]">Requires review / retry</span>
         </div>
       </div>
 
@@ -226,8 +226,8 @@ export default function AdminPayoutsPage() {
       <div className="flex flex-wrap items-center gap-2 mb-6">
         <button
           onClick={() => setFilter('all')}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
-            filter === 'all' ? 'bg-[#F83758] text-white' : 'bg-white/5 text-white/70 hover:bg-white/10'
+          className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+            filter === 'all' ? 'bg-[#F83758] text-white' : 'bg-white border border-[#DEDBDB] text-[#626262] hover:bg-[#F3F3F3] hover:text-[#17223B]'
           }`}
         >
           All Payouts ({payouts.length})
@@ -235,8 +235,8 @@ export default function AdminPayoutsPage() {
 
         <button
           onClick={() => setFilter('failed')}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
-            filter === 'failed' ? 'bg-rose-600 text-white shadow-md' : 'bg-rose-500/10 text-rose-300 hover:bg-rose-500/20 border border-rose-500/30'
+          className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+            filter === 'failed' ? 'bg-rose-600 text-white shadow-md' : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
           }`}
         >
           🚨 Failed Transfers ({stats.failed ?? 0})
@@ -244,8 +244,8 @@ export default function AdminPayoutsPage() {
 
         <button
           onClick={() => setFilter('released')}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
-            filter === 'released' ? 'bg-emerald-600 text-white' : 'bg-white/5 text-white/70 hover:bg-white/10'
+          className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+            filter === 'released' ? 'bg-emerald-600 text-white' : 'bg-white border border-[#DEDBDB] text-[#626262] hover:bg-[#F3F3F3] hover:text-[#17223B]'
           }`}
         >
           Released ({stats.released ?? 0})
@@ -253,8 +253,8 @@ export default function AdminPayoutsPage() {
 
         <button
           onClick={() => setFilter('held')}
-          className={`rounded-xl px-4 py-2 text-xs font-bold transition ${
-            filter === 'held' ? 'bg-amber-600 text-white' : 'bg-white/5 text-white/70 hover:bg-white/10'
+          className={`rounded-xl px-4 py-2 text-xs font-bold transition shadow-xs ${
+            filter === 'held' ? 'bg-amber-600 text-white' : 'bg-white border border-[#DEDBDB] text-[#626262] hover:bg-[#F3F3F3] hover:text-[#17223B]'
           }`}
         >
           Held in Escrow ({stats.held ?? 0})
@@ -263,14 +263,14 @@ export default function AdminPayoutsPage() {
 
       {/* Ledger Table */}
       {loading ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-12 text-center text-white/50">
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-12 text-center text-[#626262] shadow-sm">
           <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-[#F83758] border-r-transparent mb-2" />
           <p className="text-xs">Loading payouts ledger...</p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-12 text-center text-white/50">
-          <p className="text-sm font-semibold text-white">No payouts match this filter.</p>
-          <p className="text-xs text-white/40 mt-1">When artwork orders are confirmed and released, payouts will appear here.</p>
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-12 text-center text-[#626262] shadow-sm">
+          <p className="text-sm font-bold text-[#17223B]">No payouts match this filter.</p>
+          <p className="text-xs text-[#8E8E8E] mt-1">When artwork orders are confirmed and released, payouts will appear here.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -281,19 +281,19 @@ export default function AdminPayoutsPage() {
             return (
               <div
                 key={payout.id}
-                className={`rounded-2xl border p-5 transition-all ${
+                className={`rounded-2xl border p-5 transition-all shadow-sm ${
                   hasError
-                    ? 'border-rose-500/50 bg-[#1c0f17] shadow-lg'
-                    : 'border-white/10 bg-[#121826]'
+                    ? 'border-rose-300 bg-rose-50/40'
+                    : 'border-[#E8E8E8] bg-white'
                 }`}
               >
                 {/* Header Row */}
-                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-4">
+                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#E8E8E8] pb-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs text-white/50">Order #{payout.order_id?.slice(0, 8)}</span>
-                      <span className="text-white/30">•</span>
-                      <span className="text-xs text-white/50">
+                      <span className="font-mono text-xs text-[#8E8E8E]">Order #{payout.order_id?.slice(0, 8)}</span>
+                      <span className="text-[#8E8E8E]">•</span>
+                      <span className="text-xs text-[#8E8E8E]">
                         {new Date(payout.created_at).toLocaleDateString('en-IN', {
                           day: 'numeric',
                           month: 'short',
@@ -301,10 +301,10 @@ export default function AdminPayoutsPage() {
                         })}
                       </span>
                     </div>
-                    <h3 className="font-serif text-base font-bold text-white mt-1">
+                    <h3 className="font-serif text-base font-bold text-[#17223B] mt-1">
                       {payout.orders?.artworks?.title || 'Fine Art Original'}
                     </h3>
-                    <p className="text-xs text-white/60">
+                    <p className="text-xs text-[#626262]">
                       Sale: ₹{Number(payout.sale_amount).toLocaleString('en-IN')} · Fee: ₹{Number(payout.commission_amount).toLocaleString('en-IN')} (10%)
                     </p>
                   </div>
@@ -315,8 +315,8 @@ export default function AdminPayoutsPage() {
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
                         payout.status === 'released'
-                          ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                          : 'bg-amber-500/10 text-amber-300 border border-amber-500/20'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
                       }`}
                     >
                       Escrow: {payout.status}
@@ -326,10 +326,10 @@ export default function AdminPayoutsPage() {
                     <span
                       className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase ${
                         isProcessed
-                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200'
                           : hasError
-                          ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                          : 'bg-white/10 text-white/70'
+                          ? 'bg-rose-100 text-rose-700 border border-rose-200'
+                          : 'bg-slate-100 text-slate-700 border border-slate-200'
                       }`}
                     >
                       Transfer: {payout.transfer_status || (payout.transferred_at ? 'processed' : 'untransferred')}
@@ -344,13 +344,13 @@ export default function AdminPayoutsPage() {
 
                 {/* Transfer Failure Alert Banner */}
                 {hasError && (
-                  <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300">
+                  <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700">
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <div>
-                        <p className="font-bold flex items-center gap-1.5 text-rose-200">
+                        <p className="font-bold flex items-center gap-1.5 text-rose-800">
                           <span>🚨</span> Transfer Error: {payout.transfer_error || 'Transfer failed via Razorpay Route'}
                         </p>
-                        <p className="mt-1 text-[11px] text-rose-300/80">
+                        <p className="mt-1 text-[11px] text-rose-700/90">
                           The payout remains safely marked as released. Verify the artist's linked account and retry the automatic transfer below.
                         </p>
                       </div>
@@ -365,7 +365,7 @@ export default function AdminPayoutsPage() {
                         </button>
                         <button
                           onClick={() => handleManualSettle(payout.id, payout.order_id)}
-                          className="rounded-lg border border-white/20 bg-white/5 hover:bg-white/10 text-white px-3 py-1.5 text-xs font-medium transition"
+                          className="rounded-lg border border-[#DEDBDB] bg-white hover:bg-[#F3F3F3] text-[#17223B] px-3 py-1.5 text-xs font-semibold transition shadow-xs"
                         >
                           Manual Settle
                         </button>
@@ -375,36 +375,36 @@ export default function AdminPayoutsPage() {
                 )}
 
                 {/* Artist & Banking Metadata */}
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-white/5 rounded-xl p-3 border border-white/5">
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-[#FAFAFA] rounded-xl p-3 border border-[#E8E8E8]">
                   <div>
-                    <span className="text-white/40 block text-[10px] uppercase font-bold">Artist / Studio</span>
-                    <span className="font-semibold text-white mt-0.5 block">{payout.users?.name || 'Studio Artist'}</span>
-                    <span className="text-white/60 block text-[11px]">{payout.users?.email}</span>
+                    <span className="text-[#8E8E8E] block text-[10px] uppercase font-bold">Artist / Studio</span>
+                    <span className="font-semibold text-[#17223B] mt-0.5 block">{payout.users?.name || 'Studio Artist'}</span>
+                    <span className="text-[#626262] block text-[11px]">{payout.users?.email}</span>
                   </div>
 
                   <div>
-                    <span className="text-white/40 block text-[10px] uppercase font-bold">Razorpay Route Account</span>
+                    <span className="text-[#8E8E8E] block text-[10px] uppercase font-bold">Razorpay Route Account</span>
                     {payout.users?.linked_account_id ? (
-                      <span className="font-mono text-emerald-400 font-semibold mt-0.5 block">
+                      <span className="font-mono text-emerald-700 font-semibold mt-0.5 block">
                         ✓ {payout.users.linked_account_id}
                       </span>
                     ) : (
-                      <span className="text-amber-400 font-semibold mt-0.5 block">
+                      <span className="text-amber-700 font-semibold mt-0.5 block">
                         ⚠️ No linked account on file
                       </span>
                     )}
-                    <span className="text-white/40 block text-[11px]">
+                    <span className="text-[#8E8E8E] block text-[11px]">
                       KYC: {payout.users?.kyc_status || 'not_linked'}
                     </span>
                   </div>
 
                   <div>
-                    <span className="text-white/40 block text-[10px] uppercase font-bold">Transfer Reference</span>
-                    <span className="font-mono text-white/90 mt-0.5 block truncate">
+                    <span className="text-[#8E8E8E] block text-[10px] uppercase font-bold">Transfer Reference</span>
+                    <span className="font-mono text-[#17223B] font-semibold mt-0.5 block truncate">
                       {payout.transfer_id || payout.transfer_reference || 'Pending release'}
                     </span>
                     {payout.transferred_at && (
-                      <span className="text-[11px] text-white/40 block">
+                      <span className="text-[11px] text-[#8E8E8E] block">
                         Sent on {new Date(payout.transferred_at).toLocaleDateString('en-IN')}
                       </span>
                     )}

@@ -114,13 +114,13 @@ export default function AdminReportsPage() {
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-0.5 text-xs font-bold text-rose-300 mb-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-700 mb-2">
             <span>🚨</span> Listing Integrity & Dispute Resolution
           </div>
-          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h1 className="font-serif text-3xl md:text-4xl font-extrabold text-[#17223B] tracking-tight">
             Artwork Reports
           </h1>
-          <p className="mt-1 text-xs text-white/60">
+          <p className="mt-1 text-sm text-[#626262]">
             Review user-submitted copyright, plagiarism, or inappropriate content reports.
           </p>
         </div>
@@ -128,7 +128,7 @@ export default function AdminReportsPage() {
         <button
           onClick={loadReports}
           disabled={loading}
-          className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+          className="rounded-full border border-[#DEDBDB] bg-white px-4 py-2 text-xs font-bold text-[#17223B] hover:bg-[#F3F3F3] shadow-xs transition-colors"
         >
           {loading ? 'Refreshing…' : '↻ Refresh Reports'}
         </button>
@@ -138,15 +138,15 @@ export default function AdminReportsPage() {
 
       {/* Filter Tabs */}
       <div className="mb-6 flex items-center gap-2">
-        <span className="text-xs font-semibold text-white/50 mr-2">Status:</span>
+        <span className="text-xs font-bold text-[#626262] mr-2">Status:</span>
         {(['open', 'resolved', 'dismissed', 'all'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setStatusFilter(tab)}
-            className={`rounded-full px-3.5 py-1 text-xs font-bold capitalize transition-all ${
+            className={`rounded-full px-3.5 py-1 text-xs font-bold capitalize transition-all shadow-xs ${
               statusFilter === tab
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'border border-white/10 bg-white/5 text-white/70 hover:bg-white/10'
+                ? 'bg-[#17223B] text-white'
+                : 'border border-[#DEDBDB] bg-white text-[#626262] hover:bg-[#F3F3F3]'
             }`}
           >
             {tab} ({tab === 'all' ? reports.length : reports.filter((r) => r.status === tab).length})
@@ -156,25 +156,25 @@ export default function AdminReportsPage() {
 
       {/* Notifications */}
       {errorMsg && (
-        <div className="mb-6 rounded-xl border border-vermilion/30 bg-vermilion/10 p-4 text-xs text-vermilion font-medium">
+        <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700 font-medium">
           {errorMsg}
         </div>
       )}
       {successMsg && (
-        <div className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-400 font-medium">
+        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-700 font-medium">
           ✓ {successMsg}
         </div>
       )}
 
       {loading ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-16 text-center text-white/50 text-xs">
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-16 text-center text-[#626262] text-xs shadow-sm">
           Loading reports…
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-16 text-center">
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-16 text-center shadow-sm">
           <span className="text-4xl block mb-2">🛡️</span>
-          <p className="font-serif text-lg font-bold text-white">No Reports Found</p>
-          <p className="mt-1 text-xs text-white/50">There are no reports under the &quot;{statusFilter}&quot; status filter.</p>
+          <p className="font-serif text-lg font-bold text-[#17223B]">No Reports Found</p>
+          <p className="mt-1 text-xs text-[#626262]">There are no reports under the &quot;{statusFilter}&quot; status filter.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -183,13 +183,13 @@ export default function AdminReportsPage() {
             return (
               <div
                 key={report.id}
-                className="rounded-2xl border border-white/10 bg-[#121826] p-6 shadow-md transition-all hover:border-white/20"
+                className="rounded-2xl border border-[#E8E8E8] bg-white p-6 shadow-sm transition-all hover:border-[#DEDBDB]"
               >
                 <div className="flex flex-wrap items-start justify-between gap-6">
                   {/* Left: Artwork & Report Content */}
                   <div className="flex gap-4 max-w-2xl">
                     <div
-                      className="h-24 w-20 shrink-0 rounded-xl bg-paper bg-cover bg-center border border-white/10 shadow-sm"
+                      className="h-24 w-20 shrink-0 rounded-xl bg-paper bg-cover bg-center border border-[#E8E8E8] shadow-sm"
                       style={art?.image_url ? { backgroundImage: `url(${art.image_url})` } : undefined}
                     />
                     <div className="space-y-1">
@@ -197,34 +197,34 @@ export default function AdminReportsPage() {
                         <span
                           className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                             report.status === 'open'
-                              ? 'bg-rose-500/20 text-rose-300'
+                              ? 'bg-rose-100 text-rose-800 border border-rose-200'
                               : report.status === 'resolved'
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : 'bg-white/10 text-white/50'
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200'
                           }`}
                         >
                           {report.status}
                         </span>
-                        <span className="text-[11px] text-white/40">
+                        <span className="text-[11px] text-[#8E8E8E]">
                           {new Date(report.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </span>
                       </div>
 
-                      <h2 className="font-serif text-lg font-bold text-white">
+                      <h2 className="font-serif text-lg font-bold text-[#17223B]">
                         {art?.title || 'Unknown Artwork'}
                       </h2>
                       {art?.users?.name && (
-                        <p className="text-xs text-white/60">
-                          Artist: <strong className="text-white">{art.users.name}</strong> ({art.users.email})
+                        <p className="text-xs text-[#626262]">
+                          Artist: <strong className="text-[#17223B]">{art.users.name}</strong> ({art.users.email})
                         </p>
                       )}
 
                       <div className="pt-2">
-                        <span className="text-[11px] uppercase font-bold text-rose-400 block tracking-wider">
+                        <span className="text-[11px] uppercase font-bold text-rose-700 block tracking-wider">
                           Reason: {report.reason}
                         </span>
                         {report.details && (
-                          <p className="text-xs text-white/80 italic mt-0.5 leading-relaxed bg-white/5 p-2 rounded-lg border border-white/5">
+                          <p className="text-xs text-[#17223B] italic mt-1 leading-relaxed bg-[#FAFAFA] p-2.5 rounded-lg border border-[#E8E8E8]">
                             &ldquo;{report.details}&rdquo;
                           </p>
                         )}
@@ -238,7 +238,7 @@ export default function AdminReportsPage() {
                       <Link
                         href={`/artwork/${art.id}`}
                         target="_blank"
-                        className="rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/80 hover:bg-white/10 text-center transition-colors"
+                        className="rounded-full border border-[#DEDBDB] bg-[#FAFAFA] px-4 py-1.5 text-xs font-semibold text-[#17223B] hover:bg-[#F3F3F3] text-center transition-colors"
                       >
                         Inspect Artwork ↗
                       </Link>
@@ -248,14 +248,14 @@ export default function AdminReportsPage() {
                       <button
                         onClick={() => handleSetStatus(report.id, 'resolved')}
                         disabled={actionLoading === report.id || report.status === 'resolved'}
-                        className="rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 transition-colors disabled:opacity-40"
+                        className="rounded-full bg-emerald-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition-colors disabled:opacity-40 shadow-xs"
                       >
                         ✓ Mark Resolved
                       </button>
                       <button
                         onClick={() => handleSetStatus(report.id, 'dismissed')}
                         disabled={actionLoading === report.id || report.status === 'dismissed'}
-                        className="rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold text-white/70 hover:bg-white/10 transition-colors disabled:opacity-40"
+                        className="rounded-full border border-[#DEDBDB] bg-white px-4 py-1.5 text-xs font-semibold text-[#626262] hover:bg-[#F3F3F3] hover:text-[#17223B] transition-colors disabled:opacity-40"
                       >
                         ✕ Dismiss
                       </button>

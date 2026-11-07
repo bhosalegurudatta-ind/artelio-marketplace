@@ -101,13 +101,13 @@ export default function AdminApprovalsPage() {
       {/* Header */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-0.5 text-xs font-bold text-amber-300 mb-2">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-700 mb-2">
             <span>🧑‍🎨</span> Artist Curation & Vetting
           </div>
-          <h1 className="font-serif text-3xl md:text-4xl font-bold text-white tracking-tight">
+          <h1 className="font-serif text-3xl md:text-4xl font-extrabold text-[#17223B] tracking-tight">
             Artist Approvals
           </h1>
-          <p className="mt-1 text-xs text-white/60">
+          <p className="mt-1 text-sm text-[#626262]">
             Review pending creator atelier applications and grant 30-day listing access.
           </p>
         </div>
@@ -115,7 +115,7 @@ export default function AdminApprovalsPage() {
         <button
           onClick={loadPendingArtists}
           disabled={loading}
-          className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 transition-colors"
+          className="rounded-full border border-[#DEDBDB] bg-white px-4 py-2 text-xs font-bold text-[#17223B] hover:bg-[#F3F3F3] shadow-xs transition-colors"
         >
           {loading ? 'Refreshing…' : '↻ Refresh Queue'}
         </button>
@@ -125,59 +125,59 @@ export default function AdminApprovalsPage() {
 
       {/* Notifications */}
       {errorMsg && (
-        <div className="mb-6 rounded-xl border border-vermilion/30 bg-vermilion/10 p-4 text-xs text-vermilion font-medium">
+        <div className="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700 font-medium">
           {errorMsg}
         </div>
       )}
       {successMsg && (
-        <div className="mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-400 font-medium">
+        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-emerald-700 font-medium">
           ✓ {successMsg}
         </div>
       )}
 
       {loading ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-16 text-center text-white/50 text-xs">
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-16 text-center text-[#626262] text-xs shadow-sm">
           Loading pending artists queue…
         </div>
       ) : artists.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-[#121826] p-16 text-center">
+        <div className="rounded-2xl border border-[#E8E8E8] bg-white p-16 text-center shadow-sm">
           <span className="text-4xl block mb-2">🎉</span>
-          <p className="font-serif text-lg font-bold text-white">Approvals Queue is Clear</p>
-          <p className="mt-1 text-xs text-white/50">All registered artist accounts are currently vetted and approved.</p>
+          <p className="font-serif text-lg font-bold text-[#17223B]">Approvals Queue is Clear</p>
+          <p className="mt-1 text-xs text-[#626262]">All registered artist accounts are currently vetted and approved.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className="text-xs font-semibold uppercase tracking-wider text-white/50 mb-2">
+          <div className="text-xs font-bold uppercase tracking-wider text-[#626262] mb-2">
             Pending Applications ({artists.length})
           </div>
 
           {artists.map((artist) => (
             <div
               key={artist.id}
-              className="rounded-2xl border border-white/10 bg-[#121826] p-6 shadow-md transition-all hover:border-white/20"
+              className="rounded-2xl border border-[#E8E8E8] bg-white p-6 shadow-sm transition-all hover:border-[#DEDBDB]"
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="space-y-1 max-w-xl">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-serif text-xl font-bold text-white">{artist.name}</h2>
-                    <span className="rounded bg-amber-400/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                    <h2 className="font-serif text-xl font-bold text-[#17223B]">{artist.name}</h2>
+                    <span className="rounded bg-amber-100 border border-amber-300 px-2 py-0.5 text-[10px] font-bold text-amber-800">
                       Pending Vetting
                     </span>
                   </div>
-                  <p className="text-xs font-mono text-white/60">{artist.email}</p>
+                  <p className="text-xs font-mono text-[#626262]">{artist.email}</p>
                   {artist.shop_name && (
-                    <p className="text-xs text-purple-300 font-medium">
+                    <p className="text-xs text-brand font-semibold">
                       Atelier: {artist.shop_name}
                     </p>
                   )}
                   {artist.bio ? (
-                    <p className="text-xs text-white/80 leading-relaxed pt-2 italic">
+                    <p className="text-xs text-[#17223B]/80 leading-relaxed pt-2 italic">
                       &ldquo;{artist.bio}&rdquo;
                     </p>
                   ) : (
-                    <p className="text-xs text-white/40 pt-2 italic">No artist statement provided.</p>
+                    <p className="text-xs text-[#8E8E8E] pt-2 italic">No artist statement provided.</p>
                   )}
-                  <p className="text-[11px] text-white/40 pt-1">
+                  <p className="text-[11px] text-[#8E8E8E] pt-1">
                     Applied on: {new Date(artist.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
                 </div>
@@ -186,7 +186,7 @@ export default function AdminApprovalsPage() {
                   <Link
                     href={`/artist/${artist.id}`}
                     target="_blank"
-                    className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 hover:bg-white/10 hover:text-white transition-colors"
+                    className="rounded-full border border-[#DEDBDB] bg-[#FAFAFA] px-4 py-2 text-xs font-semibold text-[#17223B] hover:bg-[#F3F3F3] transition-colors"
                   >
                     View Studio Profile ↗
                   </Link>

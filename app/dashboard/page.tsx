@@ -229,8 +229,8 @@ export default function Dashboard() {
           >
             <span>👑</span> Upgrade Plan
           </button>
-          <button
-            onClick={() => setPayoutModalOpen(true)}
+          <Link
+            href="/dashboard/payouts"
             className={`flex items-center gap-1.5 rounded-full border px-4 py-2.5 text-xs font-semibold transition shadow-sm ${
               payoutConfigured
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20'
@@ -238,7 +238,7 @@ export default function Dashboard() {
             }`}
           >
             <span>💳</span> {payoutConfigured ? 'Payout Settings' : 'Setup Payouts'}
-          </button>
+          </Link>
           <Link href="/dashboard/upload" className="rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-5 py-2.5 text-xs font-bold text-white shadow-md hover:shadow-art-glow hover:scale-105 transition-all">
             + Upload New Piece
           </Link>
@@ -335,12 +335,12 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-          <button
-            onClick={() => setPayoutModalOpen(true)}
+          <Link
+            href="/dashboard/payouts"
             className="font-medium text-brand hover:underline"
           >
             {payoutInfo ? 'Update Account Details →' : 'Set Up Payout Destination →'}
-          </button>
+          </Link>
         </div>
       </div>
 

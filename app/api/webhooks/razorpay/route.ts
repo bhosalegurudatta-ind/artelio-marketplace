@@ -73,7 +73,92 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 3. Process subscription events
+    // 3. Process Razorpay Route Transfer Webhook Events
+    if (event.startsWith('transfer.')) {
+      const transferEntity = body?.payload?.transfer?.entity;
+      const transferId = transferEntity?.id;
+      const newTransferStatus = transferEntity?.status || (event === 'transfer.processed' ? 'processed' : event === 'transfer.failed' ? 'failed' : 'settled');
+      const transferError = transferEntity?.error?.description || transferEntity?.error_description || null;
+
+      if (!transferId) {
+        return NextResponse.json({ status: 'ignored', message: 'Missing transfer ID in webhook payload.' });
+      }
+
+      const updates: any = {
+        transfer_status: newTransferStatus,
+      };
+      if (event === 'transfer.failed' || transferError) {
+        updates.transfer_error = transferError || 'Transfer failed via Razorpay Route';
+      } else if (newTransferStatus === 'processed' || newTransferStatus === 'settled') {
+        updates.transfer_error = null;
+        updates.transferred_at = new Date().toISOString();
+      }
+
+      // Locate payout record by transfer_id or notes.payout_id
+      let { data: payoutRow } = await supabaseAdmin
+        .from('payouts')
+        .select('id, transfer_status')
+        .eq('transfer_id', transferId)
+        .maybeSingle();
+
+      if (!payoutRow && transferEntity?.notes?.payout_id) {
+        const { data: pByNote } = await supabaseAdmin
+          .from('payouts')
+          .select('id, transfer_status')
+          .eq('id', transferEntity.notes.payout_id)
+          .maybeSingle();
+        payoutRow = pByNote;
+      }
+
+      if (payoutRow) {
+        try {
+          const { error: pUpdateErr } = await supabaseAdmin
+            .from('payouts')
+            .update(updates)
+            .eq('id', payoutRow.id);
+
+          if (pUpdateErr && pUpdateErr.code === '42703') {
+            console.warn('[Webhook] transfer_status column missing on payouts table. Run supabase-route-payouts.sql.');
+          }
+        } catch (dbErr) {
+          console.error('[Webhook] Failed updating payout transfer_status:', dbErr);
+        }
+
+        console.log(`[Razorpay Webhook] Payout ${payoutRow.id} transfer_status updated to "${newTransferStatus}".`);
+      } else {
+        console.warn(`[Razorpay Webhook] Transfer event for ${transferId} acknowledged, but no matching payout found in database.`);
+      }
+
+      return NextResponse.json({
+        status: 'ok',
+        event,
+        transferId,
+        transfer_status: newTransferStatus,
+      });
+    }
+
+    // 4. Process Razorpay Route Linked Account Webhook Events
+    if (event.startsWith('account.')) {
+      const accountEntity = body?.payload?.account?.entity;
+      const accountId = accountEntity?.id;
+      const kycStatus = accountEntity?.status || event.replace('account.', '');
+
+      if (accountId) {
+        try {
+          await supabaseAdmin
+            .from('users')
+            .update({ kyc_status: kycStatus })
+            .eq('linked_account_id', accountId);
+        } catch (dbErr) {
+          console.error('[Webhook] Error updating linked account KYC status:', dbErr);
+        }
+        console.log(`[Razorpay Webhook] Linked account ${accountId} KYC status updated to "${kycStatus}".`);
+      }
+
+      return NextResponse.json({ status: 'ok', event, accountId, kycStatus });
+    }
+
+    // 5. Process subscription events
     const isCharged = event === 'subscription.charged' || event === 'invoice.paid';
     const isCancelled = event === 'subscription.cancelled' || event === 'subscription.halted' || event === 'subscription.paused';
 

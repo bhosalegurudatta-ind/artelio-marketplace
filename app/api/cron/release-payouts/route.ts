@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { executePayoutTransfer } from '@/lib/payoutTransfer';
 
 // Releases held payouts whose release date has passed with no dispute.
 // Call it once a day with the header:  Authorization: Bearer <CRON_SECRET>
@@ -24,7 +25,25 @@ export async function GET(req: NextRequest) {
 
   const payoutIds = rows.map((r) => r.id);
   const orderIds = rows.map((r) => r.order_id);
+
+  // 1. Release step (kept strictly separate): mark as released
   await supabaseAdmin.from('payouts').update({ status: 'released', released_at: nowIso }).in('id', payoutIds);
   await supabaseAdmin.from('orders').update({ status: 'delivered', delivered_at: nowIso, release_at: null }).in('id', orderIds);
-  return NextResponse.json({ released: payoutIds.length });
+
+  // 2. Transfer step: create a transfer of payout_amount in paise to the artist's linked account
+  const transfers: any[] = [];
+  for (const pid of payoutIds) {
+    try {
+      const trfRes = await executePayoutTransfer(pid);
+      transfers.push({ payoutId: pid, ...trfRes });
+    } catch (trfErr: any) {
+      console.error(`Cron payout transfer execution error for ${pid}:`, trfErr);
+      transfers.push({ payoutId: pid, success: false, error: trfErr?.message });
+    }
+  }
+
+  return NextResponse.json({
+    released: payoutIds.length,
+    transfers,
+  });
 }

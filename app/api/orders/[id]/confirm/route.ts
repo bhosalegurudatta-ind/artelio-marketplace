@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
 import { sendPayoutReleasedArtistEmail } from '@/lib/email';
+import { executePayoutTransfer } from '@/lib/payoutTransfer';
 
 const fail = (message: string, status: number) => NextResponse.json({ error: message }, { status });
 
@@ -50,18 +51,30 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       return fail('Could not update order status.', 500);
     }
 
-    // 2. Immediately release held payout to the artist
-    const { error: payoutErr } = await supabaseAdmin
+    // 2. Release step: Immediately release held payout to the artist
+    const { data: releasedPayout, error: payoutErr } = await supabaseAdmin
       .from('payouts')
       .update({
         status: 'released',
         released_at: nowIso,
       })
-      .eq('order_id', orderId);
+      .eq('order_id', orderId)
+      .select('id')
+      .maybeSingle();
 
     if (payoutErr) {
       console.error('Release payout error:', payoutErr);
       // Payout update error is logged, order is still marked delivered
+    }
+
+    // 3. Transfer step (kept strictly separate from release):
+    // Create a transfer of payout_amount in paise to the artist's linked account
+    if (releasedPayout?.id) {
+      try {
+        await executePayoutTransfer(releasedPayout.id);
+      } catch (trfErr) {
+        console.error('Payout transfer execution error:', trfErr);
+      }
     }
 
     // 3. Notify artist that payout is released

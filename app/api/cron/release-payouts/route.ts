@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     .select('id, order_id, orders!inner(status, release_at)')
     .eq('status', 'held')
     .lte('orders.release_at', nowIso)
-    .in('orders.status', ['paid', 'shipped']);
+    .in('orders.status', ['paid', 'shipped', 'delivered']);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const rows: any[] = due ?? [];

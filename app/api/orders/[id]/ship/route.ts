@@ -42,17 +42,30 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const now = Date.now();
     const releaseAt = new Date(now + PHYSICAL_RELEASE_DAYS * DAY).toISOString();
 
-    const { error: updateErr } = await supabaseAdmin
+    const shipPayload: Record<string, any> = {
+      status: 'shipped',
+      shipped_at: new Date(now).toISOString(),
+      tracking_note: trackingNote?.trim() || null,
+      courier_name: courierName?.trim() || null,
+      tracking_url: trackingUrl?.trim() || null,
+      release_at: releaseAt,
+      awb_number: trackingNote?.trim() || null,
+      courier: courierName?.trim() || null,
+      tracking_status: 'in_transit',
+    };
+
+    let { error: updateErr } = await supabaseAdmin
       .from('orders')
-      .update({
-        status: 'shipped',
-        shipped_at: new Date(now).toISOString(),
-        tracking_note: trackingNote?.trim() || null,
-        courier_name: courierName?.trim() || null,
-        tracking_url: trackingUrl?.trim() || null,
-        release_at: releaseAt,
-      })
+      .update(shipPayload)
       .eq('id', orderId);
+
+    if (updateErr && (updateErr.code === '42703' || updateErr.message?.includes('does not exist'))) {
+      delete shipPayload.awb_number;
+      delete shipPayload.courier;
+      delete shipPayload.tracking_status;
+      const fb = await supabaseAdmin.from('orders').update(shipPayload).eq('id', orderId);
+      updateErr = fb.error;
+    }
 
     if (updateErr) {
       console.error('Ship order error:', updateErr);

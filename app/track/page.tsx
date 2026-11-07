@@ -13,6 +13,10 @@ type TrackedOrder = {
   shipped_at?: string | null;
   delivered_at?: string | null;
   courier_name?: string | null;
+  courier?: string | null;
+  awb_number?: string | null;
+  label_url?: string | null;
+  tracking_status?: string | null;
   tracking_note?: string | null;
   tracking_url?: string | null;
   shipping_name?: string | null;
@@ -257,15 +261,22 @@ function TrackContent() {
               </div>
 
               {/* Courier Tracking Details */}
-              {isShipped && (
+              {(isShipped || isDelivered || order.awb_number) && (
                 <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand/30 bg-brand/10 p-4 text-xs">
                   <div>
-                    <span className="text-white/60">Courier Partner: </span>
-                    <strong className="text-white">{order.courier_name || 'Insured Partner'}</strong>
-                    {order.tracking_note && (
-                      <div className="mt-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-white/60">Courier Partner: </span>
+                      <strong className="text-white">{order.courier || order.courier_name || 'Insured Partner'}</strong>
+                      {order.tracking_status && (
+                        <span className="rounded-full bg-brand/20 px-2.5 py-0.5 text-[10px] font-bold uppercase text-brand-soft">
+                          {order.tracking_status.replace(/_/g, ' ')}
+                        </span>
+                      )}
+                    </div>
+                    {(order.awb_number || order.tracking_note) && (
+                      <div className="mt-1.5">
                         <span className="text-white/60">AWB / Tracking Number: </span>
-                        <span className="font-mono font-bold text-marigold">{order.tracking_note}</span>
+                        <span className="font-mono font-bold text-marigold">{order.awb_number || order.tracking_note}</span>
                       </div>
                     )}
                   </div>

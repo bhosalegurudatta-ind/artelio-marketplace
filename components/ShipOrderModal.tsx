@@ -26,9 +26,40 @@ export default function ShipOrderModal({
   const [trackingNumber, setTrackingNumber] = useState('');
   const [trackingUrl, setTrackingUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [generatingLabel, setGeneratingLabel] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen || !order) return null;
+
+  async function handleAutoGenerateLabel() {
+    setGeneratingLabel(true);
+    setErrorMsg('');
+    try {
+      const { supabase } = await import('@/lib/supabaseClient');
+      const { data: session } = await supabase.auth.getSession();
+      const token = session.session?.access_token;
+
+      const res = await fetch(`/api/orders/${order.id}/label`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Failed to auto-generate shipping label.');
+      } else {
+        setCourierName(data.courier || 'Delhivery Express');
+        setTrackingNumber(data.awb_number || '');
+        if (data.tracking_url) setTrackingUrl(data.tracking_url);
+      }
+    } catch {
+      setErrorMsg('Error contacting courier API.');
+    } finally {
+      setGeneratingLabel(false);
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -149,9 +180,19 @@ export default function ShipOrderModal({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-white/80">
-              Tracking Number / AWB *
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold text-white/80">
+                Tracking Number / AWB *
+              </label>
+              <button
+                type="button"
+                onClick={handleAutoGenerateLabel}
+                disabled={generatingLabel}
+                className="text-[11px] font-semibold text-brand-soft hover:underline flex items-center gap-1 disabled:opacity-50"
+              >
+                <span>⚡</span> {generatingLabel ? 'Generating...' : 'Auto-generate AWB & Label'}
+              </button>
+            </div>
             <input
               type="text"
               required

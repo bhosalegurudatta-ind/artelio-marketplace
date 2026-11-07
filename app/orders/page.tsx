@@ -24,6 +24,10 @@ type OrderRow = {
   shipping_state?: string | null;
   shipping_postal_code?: string | null;
   dispute_reason?: string | null;
+  awb_number?: string | null;
+  courier?: string | null;
+  label_url?: string | null;
+  tracking_status?: string | null;
   artworks: {
     id: string;
     title: string;
@@ -54,11 +58,23 @@ function OrdersContent() {
   const [invoiceData, setInvoiceData] = useState<any | null>(null);
 
   async function loadOrders(uid: string) {
-    const { data } = await supabase
+    const res = await supabase
       .from('orders')
-      .select('id, status, created_at, shipped_at, delivered_at, courier_name, tracking_note, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, artworks(id, title, price, image_url, is_digital, artist_id, medium)')
+      .select('id, status, created_at, shipped_at, delivered_at, courier_name, tracking_note, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, awb_number, courier, label_url, tracking_status, artworks(id, title, price, image_url, is_digital, artist_id, medium)')
       .eq('customer_id', uid)
       .order('created_at', { ascending: false });
+
+    let data: any = res.data;
+    const error = res.error;
+
+    if (error && (error.code === '42703' || error.message?.includes('does not exist'))) {
+      const fallbackRes = await supabase
+        .from('orders')
+        .select('id, status, created_at, shipped_at, delivered_at, courier_name, tracking_note, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, artworks(id, title, price, image_url, is_digital, artist_id, medium)')
+        .eq('customer_id', uid)
+        .order('created_at', { ascending: false });
+      data = fallbackRes.data;
+    }
     setOrders((data as any) ?? []);
   }
 
@@ -332,24 +348,31 @@ function OrdersContent() {
                       </div>
                     </div>
 
-                    {/* Tracking details callout if shipped */}
-                    {order.status === 'shipped' && order.tracking_note && (
-                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-brand/20 bg-brand/5 p-3 text-xs">
-                        <div>
-                          <span className="font-semibold text-brand-dark">Tracking / AWB: </span>
-                          <span className="font-mono font-bold text-ink">{order.tracking_note}</span>
-                          <span className="text-ink/60"> ({order.courier_name || 'Courier Partner'})</span>
+                    {/* Tracking details and tracking status callout */}
+                    {(order.awb_number || order.tracking_note || order.tracking_status || order.status === 'shipped') && (
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-brand/20 bg-brand/5 p-3 text-xs">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <div>
+                            <span className="font-semibold text-brand-dark">Tracking / AWB: </span>
+                            <span className="font-mono font-bold text-ink">{order.awb_number || order.tracking_note || 'Processing'}</span>
+                            <span className="text-ink/60"> ({order.courier || order.courier_name || 'Courier Partner'})</span>
+                          </div>
+                          {order.tracking_status && (
+                            <span className="rounded-full bg-brand/15 px-2.5 py-0.5 text-[11px] font-semibold text-brand-dark capitalize">
+                              {order.tracking_status.replace(/_/g, ' ')}
+                            </span>
+                          )}
                         </div>
-                        {order.tracking_url && (
+                        <div className="flex items-center gap-2">
                           <a
-                            href={order.tracking_url}
+                            href={order.tracking_url || `/track?id=${order.id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="font-bold text-brand hover:underline"
+                            className="inline-flex items-center gap-1 font-bold text-brand hover:underline"
                           >
-                            Live Tracking ↗
+                            <span>🔍 Live Tracking</span> ↗
                           </a>
-                        )}
+                        </div>
                       </div>
                     )}
                   </div>

@@ -39,6 +39,10 @@ type Order = {
   shipping_state?: string | null;
   shipping_postal_code?: string | null;
   dispute_reason: string | null;
+  awb_number?: string | null;
+  courier?: string | null;
+  label_url?: string | null;
+  tracking_status?: string | null;
   artworks: { title: string; price: number; is_digital: boolean; medium?: string | null } | null;
   payouts: { payout_amount: number; status: string }[] | { payout_amount: number; status: string } | null;
 };
@@ -69,6 +73,7 @@ export default function Dashboard() {
   }>({ open: false, artworkId: null, title: null, imageUrl: null });
   const [coaData, setCoaData] = useState<any | null>(null);
   const [packagingGuideOpen, setPackagingGuideOpen] = useState(false);
+  const [creatingLabelId, setCreatingLabelId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const { data: userData } = await supabase.auth.getUser();
@@ -141,6 +146,41 @@ export default function Dashboard() {
     if (!r.ok) return setMessage(r.body.error ?? 'Could not mark as shipped.');
     setMessage('Marked as shipped. The payout releases 10 days after shipping if the buyer raises no problem.');
     load();
+  }
+
+  async function handleCreateLabel(orderId: string) {
+    setCreatingLabelId(orderId);
+    setMessage('');
+    try {
+      const r = await authed(`/api/orders/${orderId}/label`);
+      if (!r.ok) {
+        setMessage(r.body.error ?? 'Could not create shipping label.');
+      } else {
+        setMessage(`Shipping label generated via ${r.body.courier}! AWB: ${r.body.awb_number}`);
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  awb_number: r.body.awb_number,
+                  courier: r.body.courier,
+                  courier_name: r.body.courier,
+                  label_url: r.body.label_url,
+                  tracking_url: r.body.tracking_url,
+                  tracking_status: r.body.tracking_status,
+                }
+              : o
+          )
+        );
+        if (r.body.label_url) {
+          window.open(r.body.label_url, '_blank');
+        }
+      }
+    } catch {
+      setMessage('Failed to generate shipping label. Please try again.');
+    } finally {
+      setCreatingLabelId(null);
+    }
   }
 
   async function handleDelete(art: Artwork) {
@@ -437,18 +477,43 @@ export default function Dashboard() {
                   </span>
                 ) : o.status === 'shipped' ? (
                   <span>
-                    📦 Dispatched via <strong className="text-white">{o.courier_name || 'Courier'}</strong>
-                    {o.tracking_note && (
-                      <> · AWB / Tracking: <span className="font-mono text-marigold">{o.tracking_note}</span></>
+                    📦 Dispatched via <strong className="text-white">{o.courier || o.courier_name || 'Courier'}</strong>
+                    {(o.awb_number || o.tracking_note) && (
+                      <> · AWB / Tracking: <span className="font-mono text-marigold">{o.awb_number || o.tracking_note}</span></>
                     )}
-                    {o.tracking_url && (
-                      <> · <a href={o.tracking_url} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">Track parcel ↗</a></>
+                    {o.tracking_status && (
+                      <> · Status: <span className="font-semibold text-brand-soft capitalize">{o.tracking_status.replace(/_/g, ' ')}</span></>
+                    )}
+                    {(o.tracking_url || o.awb_number) && (
+                      <> · <a href={o.tracking_url || `/track?id=${o.id}`} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline">Track parcel ↗</a></>
                     )}
                   </span>
                 ) : (
                   'Digital masterwork delivered. Payout releases after the standard 7-day window.'
                 )}
               </p>
+              {o.status === 'shipped' && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  {o.label_url || o.awb_number ? (
+                    <a
+                      href={o.label_url || `/api/orders/${o.id}/label/print`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/40 bg-sky-500/15 px-3 py-1 text-xs font-semibold text-sky-200 transition hover:bg-sky-500/25"
+                    >
+                      <span>🏷️</span> Print Shipping Label
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => handleCreateLabel(o.id)}
+                      disabled={creatingLabelId === o.id}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand/20 px-3.5 py-1 text-xs font-semibold text-brand-soft hover:bg-brand/30 transition disabled:opacity-50"
+                    >
+                      <span>🏷️</span> {creatingLabelId === o.id ? 'Creating Label...' : 'Create Label'}
+                    </button>
+                  )}
+                </div>
+              )}
               {o.release_at && o.status === 'shipped' && (
                 <p className="mt-1 text-[11px] text-white/40">
                   Auto-release date: {new Date(o.release_at).toLocaleDateString('en-IN')} (or upon collector confirmation).

@@ -29,6 +29,10 @@ export async function POST(req: NextRequest) {
         courier_name,
         tracking_note,
         tracking_url,
+        awb_number,
+        courier,
+        label_url,
+        tracking_status,
         shipping_name,
         shipping_phone,
         shipping_city,
@@ -51,12 +55,55 @@ export async function POST(req: NextRequest) {
 
     if (cleanId.length === 36) {
       query = query.eq('id', cleanId);
+    } else if (cleanId.startsWith('awb-') || cleanId.startsWith('del-')) {
+      query = query.or(`awb_number.ilike.%${cleanId}%,tracking_note.ilike.%${cleanId}%`);
     } else {
       // Short prefix search
       query = query.ilike('id', `${cleanId}%`);
     }
 
-    const { data: matchedOrders, error } = await query.limit(5);
+    const initialRes = await query.limit(5);
+    let matchedOrders: any = initialRes.data;
+    let error: any = initialRes.error;
+
+    // If new columns error, fallback
+    if (error && (error.code === '42703' || error.message?.includes('does not exist'))) {
+      const fallbackQuery = supabaseAdmin
+        .from('orders')
+        .select(`
+          id,
+          created_at,
+          status,
+          shipped_at,
+          delivered_at,
+          courier_name,
+          tracking_note,
+          tracking_url,
+          shipping_name,
+          shipping_phone,
+          shipping_city,
+          shipping_state,
+          shipping_postal_code,
+          customer_id,
+          artworks (
+            id,
+            title,
+            price,
+            medium,
+            image_url,
+            is_digital,
+            artist_id,
+            users (
+              name
+            )
+          )
+        `);
+      const fbRes = cleanId.length === 36
+        ? await fallbackQuery.eq('id', cleanId).limit(5)
+        : await fallbackQuery.ilike('id', `${cleanId}%`).limit(5);
+      matchedOrders = fbRes.data;
+      error = fbRes.error;
+    }
 
     if (error || !matchedOrders || matchedOrders.length === 0) {
       return NextResponse.json(
@@ -118,8 +165,12 @@ export async function POST(req: NextRequest) {
         status: verifiedOrder.status,
         shipped_at: verifiedOrder.shipped_at,
         delivered_at: verifiedOrder.delivered_at,
-        courier_name: verifiedOrder.courier_name,
-        tracking_note: verifiedOrder.tracking_note,
+        courier_name: verifiedOrder.courier || verifiedOrder.courier_name,
+        courier: verifiedOrder.courier || verifiedOrder.courier_name,
+        awb_number: verifiedOrder.awb_number || verifiedOrder.tracking_note,
+        label_url: verifiedOrder.label_url,
+        tracking_status: verifiedOrder.tracking_status || (verifiedOrder.status === 'delivered' ? 'delivered' : verifiedOrder.status === 'shipped' ? 'in_transit' : 'label_created'),
+        tracking_note: verifiedOrder.awb_number || verifiedOrder.tracking_note,
         tracking_url: verifiedOrder.tracking_url,
         shipping_name: verifiedOrder.shipping_name,
         shipping_city: verifiedOrder.shipping_city,

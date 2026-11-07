@@ -11,11 +11,26 @@ export async function GET(req: NextRequest) {
   const ids = (mine ?? []).map((a: any) => a.id);
   if (ids.length === 0) return NextResponse.json({ orders: [] });
 
-  const { data, error } = await supabaseAdmin
+  const queryRes = await supabaseAdmin
     .from('orders')
-    .select('id, status, created_at, shipped_at, release_at, tracking_note, courier_name, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, artworks(title, price, is_digital, medium), payouts(payout_amount, status)')
+    .select('id, status, created_at, shipped_at, release_at, tracking_note, courier_name, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, awb_number, courier, label_url, tracking_status, artworks(title, price, is_digital, medium), payouts(payout_amount, status)')
     .in('artwork_id', ids)
     .order('created_at', { ascending: false });
+
+  let data: any = queryRes.data;
+  let error: any = queryRes.error;
+
+  // If columns don't exist yet, retry with standard columns
+  if (error && (error.code === '42703' || error.message?.includes('does not exist'))) {
+    const fallbackRes = await supabaseAdmin
+      .from('orders')
+      .select('id, status, created_at, shipped_at, release_at, tracking_note, courier_name, tracking_url, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_postal_code, dispute_reason, artworks(title, price, is_digital, medium), payouts(payout_amount, status)')
+      .in('artwork_id', ids)
+      .order('created_at', { ascending: false });
+    data = fallbackRes.data;
+    error = fallbackRes.error;
+  }
+
   if (error) return NextResponse.json({ error: 'Could not load orders.' }, { status: 500 });
   return NextResponse.json({ orders: data ?? [] });
 }

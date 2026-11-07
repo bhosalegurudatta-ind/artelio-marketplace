@@ -28,6 +28,7 @@ export default function FusionPage() {
   const [prompt, setPrompt] = useState('');
   const [remaining, setRemaining] = useState<number | null>(null);
   const [cap, setCap] = useState<number>(5);
+  const [isPremium, setIsPremium] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [generatedPiece, setGeneratedPiece] = useState<any | null>(null);
@@ -61,6 +62,7 @@ export default function FusionPage() {
           const quota = await res.json();
           setRemaining(quota.remaining);
           if (quota.cap) setCap(quota.cap);
+          setIsPremium(Boolean(quota.isPremium));
         }
       } catch (e) {
         console.error('Could not load fusion quota:', e);
@@ -161,34 +163,48 @@ export default function FusionPage() {
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-soft hover:underline"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#626262] hover:text-[#17223B] transition"
         >
           <span>←</span> Back to Studio
         </Link>
 
-        {/* Quota Indicator */}
+        {/* Quota & Premium Indicator */}
         <div className="flex items-center gap-2">
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-bold border ${
-              remaining !== null && remaining > 0
-                ? 'border-amber-400/30 bg-amber-400/10 text-amber-300'
-                : 'border-vermilion/30 bg-vermilion/10 text-vermilion'
-            }`}
-          >
-            ✨ {remaining !== null ? `${remaining} of ${cap}` : `${cap}`} monthly fusions left
-          </span>
+          {isPremium ? (
+            <span className="rounded-full px-3.5 py-1 text-xs font-bold border border-amber-300 bg-amber-50 text-amber-800 shadow-xs flex items-center gap-1.5">
+              <span>👑</span> Creator Pro: Unlimited AI Fusions
+            </span>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold border ${
+                  remaining !== null && remaining > 0
+                    ? 'border-amber-300 bg-amber-50 text-amber-800'
+                    : 'border-rose-300 bg-rose-50 text-rose-700'
+                }`}
+              >
+                ✨ {remaining !== null ? `${remaining} of ${cap}` : `${cap}`} free fusions left
+              </span>
+              <Link
+                href="/dashboard/billing"
+                className="rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-3 py-1 text-xs font-bold text-white shadow-xs hover:opacity-90 transition"
+              >
+                ⚡ Upgrade to Unlimited
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Header */}
       <div className="mb-8">
-        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs font-bold text-purple-300 mb-2">
+        <div className="inline-flex items-center gap-2 rounded-full border border-purple-500/30 bg-purple-500/10 px-3.5 py-1 text-xs font-bold text-purple-700 mb-2">
           <span>🎨</span> AI Style Fusion Generator
         </div>
-        <h1 className="font-serif text-2xl md:text-4xl font-bold text-white tracking-tight">
+        <h1 className="font-serif text-2xl md:text-4xl font-extrabold text-[#17223B] tracking-tight">
           Synthesize Your Signature Style
         </h1>
-        <p className="mt-2 text-xs md:text-sm text-white/60 max-w-2xl leading-relaxed">
+        <p className="mt-2 text-xs md:text-sm text-[#626262] max-w-2xl leading-relaxed">
           Blend the textures, brushwork, and color schemes of up to 3 of your own original pieces into a brand new
           digital masterpiece. Watermarked and safely saved to your drafts.
         </p>

@@ -37,6 +37,9 @@ export default function UploadArtwork() {
   const [existingUpi, setExistingUpi] = useState<string>('');
   const [firstTimeUpi, setFirstTimeUpi] = useState('');
   const [accountHolder, setAccountHolder] = useState('');
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const [qrPreview, setQrPreview] = useState<string | null>(null);
+  const [artistAskingPrice, setArtistAskingPrice] = useState<string>('');
 
   useEffect(() => {
     async function checkUserAndPayout() {
@@ -98,6 +101,15 @@ export default function UploadArtwork() {
     setFile(files[0]);
     return () => urls.forEach((u) => URL.revokeObjectURL(u));
   }, [files]);
+
+  function fileToBase64(f: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(f);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (err) => reject(err);
+    });
+  }
 
   function handleAddTags(input: string) {
     if (!input.trim()) return;
@@ -181,16 +193,26 @@ export default function UploadArtwork() {
       return;
     }
 
-    // Compulsory check: artist MUST have payout details configured to receive 90% artwork price
-    if (!payoutConfigured) {
-      if (!firstTimeUpi.trim() || !accountHolder.trim()) {
-        setErrorMsg('Compulsory: Please enter your Account Holder Name and UPI ID below so you can receive your artwork payout after commission.');
+    // Check or update payout details: artist receives 100% of their base asking price via UPI
+    let qrDataUrl = '';
+    if (qrFile) {
+      try {
+        qrDataUrl = await fileToBase64(qrFile);
+      } catch (err) {
+        console.warn('QR code conversion warning:', err);
+      }
+    }
+
+    if (!payoutConfigured || firstTimeUpi.trim() || qrDataUrl) {
+      const upiToUse = firstTimeUpi.trim() || existingUpi;
+      if (!upiToUse) {
+        setErrorMsg('Please enter your UPI ID so Artelio can transfer your artwork sale earnings directly to your account.');
         setStatus('error');
         return;
       }
 
       const upiRegex = /^[\w.-]+@[\w.-]+$/;
-      if (!upiRegex.test(firstTimeUpi.trim())) {
+      if (!upiRegex.test(upiToUse)) {
         setErrorMsg('Please enter a valid UPI ID (e.g. yourname@okaxis, 9876543210@paytm).');
         setStatus('error');
         return;
@@ -201,12 +223,13 @@ export default function UploadArtwork() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           method: 'upi',
-          upiId: firstTimeUpi.trim(),
-          accountHolder: accountHolder.trim(),
+          upiId: upiToUse,
+          qrCodeUrl: qrDataUrl || undefined,
+          accountHolder: accountHolder.trim() || 'Studio Artist',
         }),
       });
 
-      if (!payRes.ok) {
+      if (!payRes.ok && !payoutConfigured) {
         const pErr = await payRes.json().catch(() => ({}));
         setErrorMsg(pErr.error || 'Failed to save payout details. Please double-check your UPI ID.');
         setStatus('error');
@@ -214,7 +237,7 @@ export default function UploadArtwork() {
       }
 
       setPayoutConfigured(true);
-      setExistingUpi(firstTimeUpi.trim());
+      setExistingUpi(upiToUse);
     }
 
     let fullDescription = form.description;
@@ -517,11 +540,57 @@ export default function UploadArtwork() {
           )}
         </div>
 
-        <label className="block">
-          <span className={labelClass}>Price (₹) <span className="text-clay">*</span></span>
-          <input type="number" required min={1} className={inputClass} value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
-          {priceHint && <span className="mt-1.5 block text-xs text-brand-dark">{priceHint}</span>}
-        </label>
+        {/* Dynamic Pricing: Artist Asking Price + 10% Platform Commission */}
+        <div className="rounded-2xl border border-[#DEDBDB] bg-white p-5 shadow-xs space-y-3">
+          <div>
+            <label className="block">
+              <span className={labelClass}>
+                Your Desired Payout / Asking Price (₹) <span className="text-clay">*</span>
+              </span>
+              <input
+                type="number"
+                required
+                min={1}
+                className={inputClass}
+                placeholder="Enter the exact amount you want to earn (e.g. 5000)"
+                value={artistAskingPrice || form.price}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setArtistAskingPrice(val);
+                  const num = Number(val) || 0;
+                  setForm({ ...form, price: num > 0 ? String(Math.round(num * 1.10)) : '' });
+                }}
+              />
+              {priceHint && <span className="mt-1.5 block text-xs text-brand-dark">{priceHint}</span>}
+            </label>
+          </div>
+
+          {(Number(artistAskingPrice) > 0 || Number(form.price) > 0) && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-emerald-950">
+                <span>Your Payout (100% of What You Earn):</span>
+                <span className="font-bold text-sm text-[#F83758]">
+                  ₹{Number(artistAskingPrice || Math.round(Number(form.price) / 1.1)).toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs text-emerald-800">
+                <span>Artelio Marketplace Commission (10%):</span>
+                <span className="font-medium">
+                  +₹{Math.round(Number(artistAskingPrice || Math.round(Number(form.price) / 1.1)) * 0.10).toLocaleString('en-IN')}
+                </span>
+              </div>
+              <div className="border-t border-emerald-200 pt-2 flex items-center justify-between text-sm font-extrabold text-[#17223B]">
+                <span>Total Listed Price for Customers:</span>
+                <span className="font-serif text-lg font-black text-emerald-700">
+                  ₹{Number(form.price || Math.round(Number(artistAskingPrice) * 1.1)).toLocaleString('en-IN')}
+                </span>
+              </div>
+              <p className="text-[11px] text-emerald-800/80 pt-1">
+                ✓ No deductions: Buyers pay the listed price on our website, and you will receive 100% of your asking price directly to your UPI ID upon sale.
+              </p>
+            </div>
+          )}
+        </div>
 
         <label className="flex items-start gap-3 rounded-xl border border-ink/10 p-4">
           <input type="checkbox" checked={isDigital} onChange={(e) => setIsDigital(e.target.checked)} className="mt-1 h-4 w-4 accent-brand" />
@@ -571,76 +640,88 @@ export default function UploadArtwork() {
           </span>
         </label>
 
-        {/* Compulsory Sales Payout Destination & UPI Section */}
-        {payoutConfigured === true ? (
-          <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400 font-bold">
-                ✓
-              </span>
-              <div>
-                <span className="text-xs font-bold text-emerald-400 block">
-                  ✓ Compulsory Payout Destination Configured (90% Net Earnings)
+        {/* Sales Payout Destination & UPI / QR Code Section */}
+        <div className="rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50/50 via-white to-white p-5 space-y-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-700 text-lg">
+              📱
+            </span>
+            <div>
+              <h3 className="text-sm font-bold text-[#17223B] flex items-center gap-2">
+                <span>Artist Payment Details (UPI ID &amp; QR Code)</span>
+                <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 border border-emerald-300 uppercase">
+                  Payouts Destination
                 </span>
-                <span className="text-xs text-white font-mono">{existingUpi}</span>
-              </div>
+              </h3>
+              <p className="text-xs text-[#626262] mt-0.5">
+                Artelio transfers 100% of your asking price directly to your UPI ID or QR code when your artwork sells.
+              </p>
             </div>
-            <Link
-              href="/settings"
-              className="text-xs text-amber-400 underline hover:text-amber-300 font-medium self-end sm:self-auto"
-            >
-              Update in Settings
-            </Link>
           </div>
-        ) : (
-          <div className="rounded-2xl border-2 border-amber-500/50 bg-gradient-to-b from-amber-500/15 to-[#121826] p-5 space-y-4 shadow-xl">
-            <div className="flex items-start gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-lg">
-                ⚡
-              </span>
-              <div>
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <span>Compulsory: Enter Your UPI Payout Details</span>
-                  <span className="rounded bg-amber-500/30 px-2 py-0.5 text-[10px] font-extrabold text-amber-300 border border-amber-500/40 uppercase">
-                    Mandatory for Artists
-                  </span>
-                </h3>
-                <p className="text-xs text-slate-300 mt-1">
-                  You must enter your payment details so Artelio can transfer your 90% artwork earnings directly to your UPI/bank account after deducting the 10% platform commission.
-                </p>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label className="block">
-                <span className={labelClass}>Account Holder Full Name <span className="text-amber-400">*</span></span>
-                <input
-                  type="text"
-                  required
-                  value={accountHolder}
-                  onChange={(e) => setAccountHolder(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. Gurudatta Bhosale"
-                />
-              </label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label className="block">
+              <span className={labelClass}>Account Holder Name <span className="text-clay">*</span></span>
+              <input
+                type="text"
+                required
+                value={accountHolder}
+                onChange={(e) => setAccountHolder(e.target.value)}
+                className={inputClass}
+                placeholder="e.g. Gurudatta Bhosale"
+              />
+            </label>
 
-              <label className="block">
-                <span className={labelClass}>UPI ID (VPA) <span className="text-amber-400">*</span></span>
-                <input
-                  type="text"
-                  required
-                  value={firstTimeUpi}
-                  onChange={(e) => setFirstTimeUpi(e.target.value)}
-                  className={inputClass}
-                  placeholder="e.g. yourname@okaxis or 9876543210@paytm"
-                />
-              </label>
-            </div>
-            <p className="text-[11px] text-slate-400">
-              🔒 Safe & Direct: Powered by Razorpay Escrow. Your 90% payout is settled directly to this UPI address after sales.
+            <label className="block">
+              <span className={labelClass}>UPI ID (VPA) <span className="text-clay">*</span></span>
+              <input
+                type="text"
+                required
+                value={firstTimeUpi || existingUpi}
+                onChange={(e) => {
+                  setFirstTimeUpi(e.target.value);
+                  setExistingUpi(e.target.value);
+                }}
+                className={inputClass}
+                placeholder="e.g. yourname@okaxis, 9876543210@paytm"
+              />
+            </label>
+          </div>
+
+          {/* QR Code Upload Section */}
+          <div className="pt-2 border-t border-[#E8E8E8]">
+            <span className={labelClass}>Upload Your Payment QR Code (Optional)</span>
+            <p className="text-xs text-[#626262] mb-2">
+              Upload your PhonePe, GPay, Paytm, or BHIM UPI QR Code image so the admin can scan and transfer payments directly to you.
             </p>
+
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) {
+                    setQrFile(f);
+                    setQrPreview(URL.createObjectURL(f));
+                  }
+                }}
+                className="w-full text-xs text-[#626262] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#17223B] file:text-white hover:file:bg-black"
+              />
+
+              {qrPreview && (
+                <div className="relative h-16 w-16 shrink-0 rounded-xl overflow-hidden border border-[#DEDBDB] shadow-xs">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrPreview} alt="QR Preview" className="h-full w-full object-contain p-1" />
+                </div>
+              )}
+            </div>
           </div>
-        )}
+
+          <p className="text-[11px] text-emerald-800/80 pt-1">
+            🔒 Safe &amp; Direct: 100% of your earnings are settled directly to this UPI address or QR code after each sale.
+          </p>
+        </div>
 
         {errorMsg && <p className="text-sm text-clay">{errorMsg}</p>}
 

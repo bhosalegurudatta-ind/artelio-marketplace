@@ -33,8 +33,9 @@ export async function GET(req: NextRequest) {
       configured: hasConfig,
       method: profile.payout_method || 'upi',
       upiId: profile.payout_upi_id || '',
+      qrCodeUrl: profile.payout_method === 'upi' ? (profile.payout_bank_name || '') : '',
       accountHolder: profile.payout_account_holder || '',
-      bankName: profile.payout_bank_name || '',
+      bankName: profile.payout_method === 'bank' ? (profile.payout_bank_name || '') : '',
       ifsc: profile.payout_ifsc || '',
       accountNumberMasked,
     });
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
     if (!user) return fail('Please log in.', 401);
 
     const body = await req.json().catch(() => ({}));
-    const { method, upiId, accountHolder, accountNumber, ifsc, bankName } = body;
+    const { method, upiId, qrCodeUrl, accountHolder, accountNumber, ifsc, bankName } = body;
 
     if (!['upi', 'bank'].includes(method)) {
       return fail('Please select either UPI or Bank Transfer as your payout method.', 400);
@@ -72,10 +73,11 @@ export async function POST(req: NextRequest) {
         return fail('Please enter a valid UPI ID (e.g. artist@okaxis, yourname@upi).', 400);
       }
       updates.payout_upi_id = cleanUpi;
+      // Store QR code URL in payout_bank_name when method is UPI
+      updates.payout_bank_name = qrCodeUrl ? String(qrCodeUrl).trim() : null;
       // Clear bank specific if switching to upi
       updates.payout_account_number = null;
       updates.payout_ifsc = null;
-      updates.payout_bank_name = null;
     } else {
       const cleanAcc = String(accountNumber || '').replace(/\s+/g, '');
       const cleanIfsc = String(ifsc || '').trim().toUpperCase();

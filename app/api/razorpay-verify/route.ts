@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { supabaseAdmin, getUserFromRequest } from '@/lib/supabaseAdmin';
-import { COMMISSION_RATE, DIGITAL_RELEASE_DAYS, DAY } from '@/lib/mvp';
+import { COMMISSION_RATE, DIGITAL_RELEASE_DAYS, DAY, calculateCommissionAndPayout } from '@/lib/mvp';
 import { sendOrderEmails } from '@/lib/mailer';
 import { sendNewOrderArtistEmail } from '@/lib/email';
 
@@ -129,15 +129,15 @@ export async function POST(req: NextRequest) {
       return fail('Could not record your order. Please contact support with your payment ID.', 500);
     }
 
-    // 7. Split the money. The artist's share is HELD until delivery is confirmed.
-    const commission = Math.round(price * COMMISSION_RATE * 100) / 100;
+    // 7. Split the money. Artist gets 100% of base asking price; 10% platform commission is debited to admin account.
+    const { artistPayout, platformCommission } = calculateCommissionAndPayout(price);
     const { error: payoutError } = await supabaseAdmin.from('payouts').insert({
       order_id: order.id,
       artist_id: artwork.artist_id,
       sale_amount: price,
-      commission_amount: commission,
-      payout_amount: Math.round((price - commission) * 100) / 100,
-      status: 'held',
+      commission_amount: platformCommission,
+      payout_amount: artistPayout,
+      status: artwork.is_digital ? 'released' : 'held',
     });
     if (payoutError) console.error('Payout insert failed (order was saved):', payoutError);
 

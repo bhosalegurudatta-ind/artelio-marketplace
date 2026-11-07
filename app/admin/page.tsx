@@ -190,15 +190,23 @@ export default function AdminOverviewPage() {
           </div>
 
           {/* 5. Commission Total */}
-          <div className="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white p-6 shadow-sm relative overflow-hidden group">
+          <div className="rounded-2xl border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 via-white to-white p-6 shadow-sm relative overflow-hidden group">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-800">Commission Total (10%)</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Admin Money Received (10%)</span>
               <span className="text-2xl">💰</span>
             </div>
-            <p className="mt-4 font-serif text-3xl md:text-4xl font-extrabold text-amber-700">
+            <p className="mt-4 font-serif text-3xl md:text-4xl font-black text-emerald-700">
               ₹{stats.commissionTotal.toLocaleString('en-IN')}
             </p>
-            <p className="mt-1 text-xs text-amber-800/80">Cumulative platform revenue earned</p>
+            <div className="mt-1 flex items-center justify-between text-xs">
+              <span className="text-emerald-800/80">Credited to admin account</span>
+              <Link
+                href="/admin/sales"
+                className="font-bold text-emerald-700 hover:underline"
+              >
+                View sales ledger →
+              </Link>
+            </div>
           </div>
 
           {/* 6. Open Reports */}
@@ -228,14 +236,25 @@ export default function AdminOverviewPage() {
       {/* Quick Action Hub */}
       <div className="rounded-2xl border border-[#E8E8E8] bg-white p-6 md:p-8 shadow-sm">
         <h2 className="font-serif text-xl font-bold text-[#17223B] mb-4">Governance & Curatorial Management</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <Link
+            href="/admin/sales"
+            className="flex items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50/40 p-4 hover:border-emerald-500 hover:bg-emerald-50 hover:shadow-xs transition-all group"
+          >
+            <span className="text-3xl">💰</span>
+            <div>
+              <p className="font-bold text-[#17223B] text-sm group-hover:text-emerald-700 transition-colors">Sales &amp; Earnings</p>
+              <p className="text-xs text-[#626262]">Track sold artworks, 10% commission &amp; artist UPI.</p>
+            </div>
+          </Link>
+
           <Link
             href="/admin/approvals"
             className="flex items-center gap-3 rounded-xl border border-[#E8E8E8] bg-[#FAFAFA] p-4 hover:border-brand hover:bg-[#FDF0F3] hover:shadow-xs transition-all group"
           >
             <span className="text-3xl">🧑‍🎨</span>
             <div>
-              <p className="font-bold text-[#17223B] text-sm group-hover:text-brand transition-colors">Vetting & Approvals</p>
+              <p className="font-bold text-[#17223B] text-sm group-hover:text-brand transition-colors">Vetting &amp; Approvals</p>
               <p className="text-xs text-[#626262]">Review artist applications and grant 30-day listing trials.</p>
             </div>
           </Link>
@@ -247,7 +266,7 @@ export default function AdminOverviewPage() {
             <span className="text-3xl">✓</span>
             <div>
               <p className="font-bold text-[#17223B] text-sm group-hover:text-brand transition-colors">Artist Verification</p>
-              <p className="text-xs text-[#626262]">Award verified badges to creators with ≥10 completed sales & 0 disputes.</p>
+              <p className="text-xs text-[#626262]">Award verified badges to creators with ≥10 sales.</p>
             </div>
           </Link>
 
@@ -258,7 +277,7 @@ export default function AdminOverviewPage() {
             <span className="text-3xl">💳</span>
             <div>
               <p className="font-bold text-[#17223B] text-sm group-hover:text-brand transition-colors">Payouts Ledger</p>
-              <p className="text-xs text-[#626262]">Monitor escrow releases, bank transfers and retry failed payouts.</p>
+              <p className="text-xs text-[#626262]">Monitor escrow releases, bank transfers and retries.</p>
             </div>
           </Link>
 
@@ -269,7 +288,7 @@ export default function AdminOverviewPage() {
             <span className="text-3xl">🚨</span>
             <div>
               <p className="font-bold text-[#17223B] text-sm group-hover:text-brand transition-colors">Infringement Reports</p>
-              <p className="text-xs text-[#626262]">Resolve or dismiss copyright and policy dispute reports.</p>
+              <p className="text-xs text-[#626262]">Resolve or dismiss copyright dispute reports.</p>
             </div>
           </Link>
         </div>

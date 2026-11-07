@@ -406,8 +406,12 @@ export default function Checkout() {
 
               <div className="mt-4 space-y-2.5 text-sm text-[#626262]">
                 <div className="flex justify-between">
-                  <span>Artwork Price</span>
-                  <span className="font-bold text-[#17223B]">₹{artwork.price.toLocaleString('en-IN')}</span>
+                  <span>Artist Value / Original Work</span>
+                  <span className="font-bold text-[#17223B]">₹{Math.round(Number(artwork.price) / 1.1).toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-[#626262]">Platform Marketplace Fee (10%)</span>
+                  <span className="font-semibold text-emerald-700">+₹{(Number(artwork.price) - Math.round(Number(artwork.price) / 1.1)).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping Fee</span>
@@ -425,10 +429,6 @@ export default function Checkout() {
                     <span>Within 7 days of payment</span>
                   </div>
                 )}
-                <div className="flex justify-between">
-                  <span>Convenience &amp; Insurance</span>
-                  <span className="font-bold text-emerald-600">Free</span>
-                </div>
                 <div className="flex justify-between">
                   <span>Certificate of Authenticity</span>
                   <span className="font-bold text-emerald-600">Included (₹0)</span>

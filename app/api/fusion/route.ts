@@ -25,6 +25,15 @@ export async function GET(req: NextRequest) {
     const user = await getUserFromRequest(req);
     if (!user) return fail('Please log in.', 401);
 
+    // Check if artist has active Creator Pro premium plan
+    const { data: profile } = await supabaseAdmin
+      .from('users')
+      .select('paid_until, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const isPremium = Boolean(profile?.paid_until && new Date(profile.paid_until).getTime() > Date.now());
+
     const month = getCurrentMonth();
     const { data: usage } = await supabaseAdmin
       .from('fusion_usage')
@@ -34,12 +43,14 @@ export async function GET(req: NextRequest) {
       .maybeSingle();
 
     const used = usage?.count || 0;
-    const remaining = Math.max(0, FUSION_MONTHLY_CAP - used);
+    const effectiveCap = isPremium ? 999 : FUSION_MONTHLY_CAP;
+    const remaining = isPremium ? 999 : Math.max(0, FUSION_MONTHLY_CAP - used);
 
     return NextResponse.json({
       remaining,
       used,
-      cap: FUSION_MONTHLY_CAP,
+      cap: effectiveCap,
+      isPremium,
       month,
     });
   } catch (err: any) {
@@ -54,7 +65,16 @@ export async function POST(req: NextRequest) {
     const user = await getUserFromRequest(req);
     if (!user) return fail('Please log in to use AI style-fusion.', 401);
 
-    // 1. Check monthly cap in fusion_usage
+    // Check if user is a paid Creator Pro subscriber
+    const { data: profile } = await supabaseAdmin
+      .from('users')
+      .select('paid_until, role')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    const isPremium = Boolean(profile?.paid_until && new Date(profile.paid_until).getTime() > Date.now());
+
+    // 1. Check monthly cap in fusion_usage (Premium users bypass free cap)
     const month = getCurrentMonth();
     const { data: usage } = await supabaseAdmin
       .from('fusion_usage')
@@ -64,9 +84,9 @@ export async function POST(req: NextRequest) {
       .maybeSingle();
 
     const currentUsed = usage?.count || 0;
-    if (currentUsed >= FUSION_MONTHLY_CAP) {
+    if (!isPremium && currentUsed >= FUSION_MONTHLY_CAP) {
       return fail(
-        `You have reached your monthly cap of ${FUSION_MONTHLY_CAP} AI style-fusions for this month. Quota refreshes next month.`,
+        `You have reached your free monthly cap of ${FUSION_MONTHLY_CAP} AI style-fusions. Upgrade to Creator Pro for unlimited generations.`,
         429
       );
     }

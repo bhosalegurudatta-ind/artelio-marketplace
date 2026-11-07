@@ -1,8 +1,9 @@
 import Link from 'next/link';
 
-export default function AdminNav({ active }: { active: 'overview' | 'approvals' | 'reports' | 'listings' | 'payouts' | 'verification' }) {
+export default function AdminNav({ active }: { active: 'overview' | 'sales' | 'approvals' | 'reports' | 'listings' | 'payouts' | 'verification' }) {
   const tabs = [
     { id: 'overview', label: '📊 Overview', href: '/admin' },
+    { id: 'sales', label: '💰 Sales & Admin Earnings', href: '/admin/sales' },
     { id: 'approvals', label: '🧑‍🎨 Artist Approvals', href: '/admin/approvals' },
     { id: 'reports', label: '🚨 Reports & Moderation', href: '/admin/reports' },
     { id: 'listings', label: '🖼️ Artworks & Listings', href: '/admin/listings' },

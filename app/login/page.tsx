@@ -93,7 +93,7 @@ function LoginForm() {
         if (msg.toLowerCase().includes('email not confirmed')) {
           setErrorMsg('Your email address has not been confirmed yet.');
         } else if (msg.toLowerCase().includes('invalid login credentials')) {
-          setErrorMsg('Invalid username/email or password. Use password123 for test accounts or click 1-Click Fast Login below.');
+          setErrorMsg('Invalid email or password. Please verify your credentials and try again.');
         } else {
           setErrorMsg(msg);
         }
@@ -104,30 +104,6 @@ function LoginForm() {
       await handlePostLoginRedirect(data.user, data.session);
     } catch (err: any) {
       setErrorMsg(err.message || 'An unexpected error occurred during login.');
-      setLoading(false);
-    }
-  }
-
-  async function handleQuickLogin(targetEmail: string, targetPass: string = 'password123') {
-    setEmail(targetEmail);
-    setPassword(targetPass);
-    setLoading(true);
-    setErrorMsg('');
-    setInfoMsg('');
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: targetEmail,
-        password: targetPass,
-      });
-
-      if (error || !data.user) {
-        throw error || new Error('Sign in failed');
-      }
-
-      await handlePostLoginRedirect(data.user, data.session);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Quick login failed.');
       setLoading(false);
     }
   }
@@ -306,94 +282,28 @@ function LoginForm() {
         )}
       </form>
 
-      {/* Quick 1-Click Login for Development / Testing */}
+      {/* - OR Continue with Google - */}
       {!isForgot && (
-        <div className="mt-6 rounded-2xl border border-dashed border-[#F83758]/30 bg-[#FDF0F3]/60 p-3.5">
-          <p className="text-[11px] font-extrabold uppercase tracking-wider text-[#F83758] mb-2 flex items-center gap-1.5">
-            <span>⚡</span> 1-Click Fast Login (Instant Access)
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin('bhosalegurudatta@gmail.com', 'password123')}
-              className="flex flex-col items-start p-2.5 rounded-xl border border-white bg-white hover:border-[#F83758] hover:shadow-xs transition text-left active:scale-95 disabled:opacity-50"
-            >
-              <span className="text-xs font-bold text-[#17223B]">👑 Admin</span>
-              <span className="text-[10px] text-[#626262] truncate w-full">bhosalegurudatta</span>
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin('bhosalegurudatta2248663@gmail.com', 'password123')}
-              className="flex flex-col items-start p-2.5 rounded-xl border border-white bg-white hover:border-[#F83758] hover:shadow-xs transition text-left active:scale-95 disabled:opacity-50"
-            >
-              <span className="text-xs font-bold text-[#17223B]">🎨 Artist (Jack)</span>
-              <span className="text-[10px] text-[#626262] truncate w-full">Studio Seller</span>
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin('bhosalegurudatta2007@gmail.com', 'password123')}
-              className="flex flex-col items-start p-2.5 rounded-xl border border-white bg-white hover:border-[#F83758] hover:shadow-xs transition text-left active:scale-95 disabled:opacity-50"
-            >
-              <span className="text-xs font-bold text-[#17223B]">🛍️ Collector</span>
-              <span className="text-[10px] text-[#626262] truncate w-full">Buyer Account</span>
-            </button>
+        <div className="mt-8 text-center space-y-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-[#DEDBDB]" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 text-[#626262] font-medium">OR Continue with</span>
+            </div>
           </div>
-          <p className="mt-2 text-[10px] text-[#626262] text-center">
-            Password: <code className="font-mono font-bold text-[#17223B]">password123</code>
-          </p>
-        </div>
-      )}
 
-      {/* - OR Continue with - (Exact Figma Section) */}
-      {!isForgot && (
-        <div className="mt-8 text-center">
-          <p className="text-xs text-[#626262] mb-4">- OR Continue with -</p>
-
-          {/* Social Circles: Google, Apple, Facebook */}
-          <div className="flex items-center justify-center gap-4">
-            {/* Google Button */}
-            <GoogleAuthButton compact={true} />
-
-            {/* Apple Icon Button */}
-            <button
-              type="button"
-              onClick={() => alert('Apple ID sign-in is available in iOS Safari or via Google Account.')}
-              className="w-12 h-12 rounded-full border border-[#DEDBDB] bg-white flex items-center justify-center hover:border-[#F83758] hover:bg-[#FDF0F3] transition text-[#17223B] shadow-xs"
-              title="Apple Sign In"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.84c.64-.78 1.08-1.87.96-2.96-.94.04-2.07.63-2.73 1.4-.58.68-1.1 1.77-.96 2.84 1.05.08 2.09-.5 2.73-1.28z" />
-              </svg>
-            </button>
-
-            {/* Facebook Icon Button */}
-            <button
-              type="button"
-              onClick={() => alert('Facebook sign-in is connecting. Please use Google or Email.')}
-              className="w-12 h-12 rounded-full border border-[#DEDBDB] bg-white flex items-center justify-center hover:border-[#F83758] hover:bg-[#FDF0F3] transition text-[#4392F9] shadow-xs"
-              title="Facebook Sign In"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-              </svg>
-            </button>
+          {/* Full-width Google Sign-In Button */}
+          <div className="w-full pt-1">
+            <GoogleAuthButton compact={false} label="Continue with Google" />
           </div>
 
           {/* Bottom Link: "Create An Account Sign Up" */}
-          <div className="mt-8 text-xs text-[#17223B]">
-            <span>Create An Account </span>
+          <div className="pt-4 text-xs text-[#17223B]">
+            <span>Don&apos;t have an account? </span>
             <Link href="/customer-signup" className="font-bold text-[#F83758] hover:underline ml-1">
               Sign Up
-            </Link>
-          </div>
-
-          {/* Admin Command Portal Link */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <Link href="/admin" className="text-[11px] text-[#A8A8A9] hover:text-[#F83758] transition">
-              🔒 Admin Command Center
             </Link>
           </div>
         </div>

@@ -82,9 +82,12 @@ export default function AuthCallback() {
         });
 
         const data = await res.json().catch(() => ({}));
+        const userEmail = data?.profile?.email || data?.user?.email;
         const userRole = data?.profile?.role || queryRole;
 
-        if (userRole === 'artist') {
+        if (userEmail === 'bhosalegurudatta@gmail.com' || userRole === 'admin') {
+          router.push('/admin');
+        } else if (userRole === 'artist') {
           router.push('/dashboard');
         } else {
           router.push('/profile');

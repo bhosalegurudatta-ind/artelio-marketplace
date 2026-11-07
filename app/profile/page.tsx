@@ -241,8 +241,26 @@ function ProfileContent() {
                   {profile.name}
                 </h1>
                 <span className="rounded-full bg-[#F3F3F3] px-2.5 py-0.5 text-[11px] font-bold text-[#626262]">
-                  {isArtist ? '🎨 Artist Atelier' : '🛍️ Buyer / Collector'}
+                  {profile.email === 'bhosalegurudatta@gmail.com'
+                    ? '🛡️ Platform Administrator'
+                    : isArtist
+                    ? '🎨 Artist Atelier'
+                    : '🛍️ Buyer / Collector'}
                 </span>
+                {profile.paid_until && new Date(profile.paid_until).getTime() > Date.now() ? (
+                  <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-800 border border-amber-300 flex items-center gap-1 shadow-2xs">
+                    <span>👑</span>
+                    <span>Creator Pro (Unlimited AI Fusions Active)</span>
+                  </span>
+                ) : (
+                  <Link
+                    href="/dashboard/billing"
+                    className="rounded-full bg-[#FDF0F3] hover:bg-[#FCE8ED] px-2.5 py-0.5 text-[11px] font-bold text-[#F83758] border border-[#F83758]/30 flex items-center gap-1 transition"
+                  >
+                    <span>⚡</span>
+                    <span>Free Plan · Upgrade to Pro</span>
+                  </Link>
+                )}
                 {isArtist && profile.payout_upi_id && (
                   <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200 flex items-center gap-1">
                     <span>⚡ UPI:</span>
@@ -258,6 +276,14 @@ function ProfileContent() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2">
+            {profile.email === 'bhosalegurudatta@gmail.com' && (
+              <Link
+                href="/admin"
+                className="rounded-md bg-[#17223B] hover:bg-black px-4 py-2 text-xs font-bold text-white shadow-xs transition"
+              >
+                🛡️ Admin Dashboard
+              </Link>
+            )}
             {isArtist ? (
               <>
                 <Link

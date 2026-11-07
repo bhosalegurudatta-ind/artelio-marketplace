@@ -219,22 +219,22 @@ export default function FusionPage() {
 
       {/* Success View when a piece is generated */}
       {generatedPiece && (
-        <div className="mb-10 rounded-2xl border border-amber-400/40 bg-gradient-to-b from-amber-400/10 via-[#121826] to-[#121826] p-6 text-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+        <div className="mb-10 rounded-2xl border border-amber-300 bg-gradient-to-b from-amber-50/70 via-white to-white p-6 shadow-sm">
+          <div className="flex items-center justify-between border-b border-[#E8E8E8] pb-4 mb-6">
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-malachite text-white text-xs font-bold">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white text-xs font-bold">
                 ✓
               </span>
               <div>
-                <h2 className="text-lg font-bold text-white">Style Fusion Generated &amp; Saved!</h2>
-                <p className="text-xs text-white/60">Stored as a private draft in your studio</p>
+                <h2 className="text-lg font-bold text-[#17223B]">Style Fusion Generated &amp; Saved!</h2>
+                <p className="text-xs text-[#626262]">Stored as a private draft in your studio</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
+              <span className="rounded-full bg-amber-100 border border-amber-300 px-2.5 py-0.5 text-[11px] font-bold text-amber-800">
                 🔒 Hidden Draft
               </span>
-              <span className="rounded-full bg-brand/20 px-2.5 py-0.5 text-[11px] font-semibold text-brand-soft">
+              <span className="rounded-full bg-[#FDF0F3] border border-brand/30 px-2.5 py-0.5 text-[11px] font-bold text-brand">
                 ✦ AI-Assisted
               </span>
             </div>
@@ -243,32 +243,32 @@ export default function FusionPage() {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
             <div className="md:col-span-5">
               <div
-                className="relative aspect-square w-full rounded-xl bg-paper bg-cover bg-center border border-white/15 overflow-hidden shadow-md"
+                className="relative aspect-square w-full rounded-xl bg-[#F3F3F3] bg-cover bg-center border border-[#DEDBDB] overflow-hidden shadow-xs"
                 style={generatedPiece.image_url ? { backgroundImage: `url(${generatedPiece.image_url})` } : undefined}
               >
-                <div className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[10px] text-white/70">
+                <div className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[10px] text-white/90 font-medium">
                   Watermarked Preview
                 </div>
               </div>
             </div>
 
             <div className="md:col-span-7 space-y-3">
-              <h3 className="font-serif text-xl font-bold text-white">{generatedPiece.title}</h3>
-              <p className="text-xs text-white/70 whitespace-pre-line leading-relaxed">
+              <h3 className="font-serif text-xl font-bold text-[#17223B]">{generatedPiece.title}</h3>
+              <p className="text-xs text-[#626262] whitespace-pre-line leading-relaxed">
                 {generatedPiece.description}
               </p>
 
-              <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs text-white/60 space-y-1">
-                <p className="text-white/90 font-medium">📋 Draft Artwork Status:</p>
-                <p>• Marked as <strong className="text-white">is_ai_assisted = true</strong></p>
-                <p>• Marked as <strong className="text-white">is_hidden = true</strong> (not visible in public gallery until published)</p>
+              <div className="rounded-xl border border-[#E8E8E8] bg-[#FAFAFA] p-3 text-xs text-[#626262] space-y-1">
+                <p className="text-[#17223B] font-semibold">📋 Draft Artwork Status:</p>
+                <p>• Marked as <strong className="text-[#17223B]">is_ai_assisted = true</strong></p>
+                <p>• Marked as <strong className="text-[#17223B]">is_hidden = true</strong> (not visible in public gallery until published)</p>
                 <p>• Watermarked with official Artelio diagonal fine-art pattern via makePreview</p>
               </div>
 
               <div className="pt-3 flex flex-wrap items-center gap-3">
                 <Link
                   href={`/dashboard/artwork/${generatedPiece.id}/edit`}
-                  className="rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-5 py-2.5 text-xs font-bold text-white shadow-md hover:scale-105 transition-all"
+                  className="rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-5 py-2.5 text-xs font-bold text-white shadow-md hover:opacity-95 transition-all"
                 >
                   ✏️ Edit Pricing &amp; Publish Artwork
                 </Link>
@@ -278,13 +278,13 @@ export default function FusionPage() {
                     setPrompt('');
                     setSelectedIds([]);
                   }}
-                  className="rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-xs font-semibold text-white/80 hover:bg-white/10 transition"
+                  className="rounded-full border border-[#DEDBDB] bg-white px-4 py-2.5 text-xs font-semibold text-[#17223B] hover:bg-[#F3F3F3] transition shadow-xs"
                 >
                   ✨ Create Another Fusion
                 </button>
                 <Link
                   href="/dashboard"
-                  className="rounded-full border border-white/20 px-4 py-2.5 text-xs font-semibold text-white/60 hover:text-white transition"
+                  className="rounded-full border border-[#DEDBDB] px-4 py-2.5 text-xs font-semibold text-[#626262] hover:text-[#17223B] transition"
                 >
                   View in Dashboard
                 </Link>
@@ -297,13 +297,13 @@ export default function FusionPage() {
       {/* Main Generation Form */}
       <form onSubmit={handleGenerate} className="space-y-8">
         {/* Step 1: Select up to 3 Reference Artworks */}
-        <section className="rounded-2xl border border-white/10 bg-[#121826] p-6 shadow-md">
+        <section className="rounded-2xl border border-[#E8E8E8] bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+              <h2 className="text-sm font-bold uppercase tracking-wider text-[#17223B]">
                 Step 1: Pick Up To 3 Reference Artworks ({selectedIds.length}/3)
               </h2>
-              <p className="text-xs text-white/50">
+              <p className="text-xs text-[#626262]">
                 Click to select 1, 2, or 3 of your existing works to infuse their style, palette, and texture.
               </p>
             </div>
@@ -311,7 +311,7 @@ export default function FusionPage() {
               <button
                 type="button"
                 onClick={() => setSelectedIds([])}
-                className="text-xs text-brand-soft hover:underline"
+                className="text-xs font-bold text-[#F83758] hover:underline"
               >
                 Clear selection
               </button>
@@ -319,11 +319,11 @@ export default function FusionPage() {
           </div>
 
           {userArtworks.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-white/15 p-8 text-center text-xs text-white/60">
+            <div className="rounded-xl border border-dashed border-[#DEDBDB] p-8 text-center text-xs text-[#626262] bg-[#FAFAFA]">
               <p>You have not uploaded any artworks to your portfolio yet.</p>
               <Link
                 href="/dashboard/upload"
-                className="mt-3 inline-block rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark"
+                className="mt-3 inline-block rounded-full bg-brand px-4 py-1.5 text-xs font-semibold text-white hover:bg-brand-dark shadow-xs"
               >
                 + Upload your first artwork
               </Link>
@@ -339,22 +339,22 @@ export default function FusionPage() {
                     onClick={() => toggleSelect(art.id)}
                     className={`relative flex flex-col rounded-xl border text-left p-2 transition-all group ${
                       isSelected
-                        ? 'border-amber-400 bg-amber-400/10 shadow-art-glow scale-[1.02]'
-                        : 'border-white/10 bg-white/5 hover:border-white/20'
+                        ? 'border-[#F83758] bg-[#FDF0F3] shadow-xs scale-[1.02]'
+                        : 'border-[#E8E8E8] bg-[#FAFAFA] hover:border-[#DEDBDB]'
                     }`}
                   >
                     <div
-                      className="relative aspect-square w-full rounded-lg bg-paper bg-cover bg-center overflow-hidden mb-2"
+                      className="relative aspect-square w-full rounded-lg bg-[#F3F3F3] bg-cover bg-center overflow-hidden mb-2 border border-[#E8E8E8]"
                       style={art.image_url ? { backgroundImage: `url(${art.image_url})` } : undefined}
                     >
                       {isSelected && (
-                        <div className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-amber-400 text-black flex items-center justify-center text-xs font-bold shadow-md">
+                        <div className="absolute top-1.5 right-1.5 h-6 w-6 rounded-full bg-[#F83758] text-white flex items-center justify-center text-xs font-bold shadow-md">
                           ✓
                         </div>
                       )}
                     </div>
-                    <p className="text-xs font-semibold text-white truncate w-full">{art.title}</p>
-                    <p className="text-[11px] text-white/50 truncate w-full">{art.medium || 'Artwork'}</p>
+                    <p className="text-xs font-bold text-[#17223B] truncate w-full">{art.title}</p>
+                    <p className="text-[11px] text-[#626262] truncate w-full">{art.medium || 'Artwork'}</p>
                   </button>
                 );
               })}
@@ -363,12 +363,12 @@ export default function FusionPage() {
         </section>
 
         {/* Step 2: Write a Short Prompt */}
-        <section className="rounded-2xl border border-white/10 bg-[#121826] p-6 shadow-md">
+        <section className="rounded-2xl border border-[#E8E8E8] bg-white p-6 shadow-sm">
           <div className="mb-3">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#17223B]">
               Step 2: Artistic Direction &amp; Vision Prompt
             </h2>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-[#626262]">
               Describe the new subject, mood, or setting you want to generate using your selected styles.
             </p>
           </div>
@@ -379,18 +379,18 @@ export default function FusionPage() {
             placeholder="e.g. Floating lotus temple in cosmic indigo nebula, thick textured brushstrokes, golden luminescence..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            className="w-full rounded-xl border border-white/15 bg-white/5 p-3.5 text-sm text-white placeholder:text-white/30 focus:border-amber-400 focus:outline-none transition"
+            className="w-full rounded-xl border border-[#DEDBDB] bg-[#FAFAFA] p-3.5 text-sm text-[#17223B] placeholder-[#9E9E9E] focus:border-brand focus:bg-white focus:outline-none transition"
           />
 
           {/* Quick inspiration chips */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-[11px] text-white/40">Inspiration:</span>
+            <span className="text-[11px] text-[#626262] font-semibold">Inspiration:</span>
             {SUGGESTED_PROMPTS.map((p) => (
               <button
                 type="button"
                 key={p}
                 onClick={() => setPrompt(p)}
-                className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-white/70 hover:bg-white/10 transition"
+                className="rounded-full border border-[#DEDBDB] bg-[#F3F3F3] px-2.5 py-1 text-[11px] font-medium text-[#17223B] hover:bg-[#E8E8E8] transition"
               >
                 {p}
               </button>
@@ -400,15 +400,15 @@ export default function FusionPage() {
 
         {/* Action Button & Disclaimer */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
-          <div className="text-xs text-white/50 space-y-0.5 text-center sm:text-left">
+          <div className="text-xs text-[#626262] space-y-0.5 text-center sm:text-left">
             <p>• Powered by Google Imagen 3 fine-art diffusion</p>
             <p>• Watermarked with official Artelio pattern &amp; saved to private drafts</p>
           </div>
 
           <button
             type="submit"
-            disabled={generating || selectedIds.length === 0 || !prompt.trim() || (remaining !== null && remaining <= 0)}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg hover:shadow-art-glow hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
+            disabled={generating || selectedIds.length === 0 || !prompt.trim() || (remaining !== null && remaining <= 0 && !isPremium)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-vermilion via-magenta to-brand px-8 py-3.5 text-sm font-bold text-white shadow-md hover:shadow-stylish-btn hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
           >
             {generating ? (
               <>

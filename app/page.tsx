@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import ArtworkCard, { Artwork, artworkImageStyle } from '@/components/ArtworkCard';
 import HeroBanner from '@/components/HeroBanner';
+import LandingPage from '@/components/LandingPage';
 import { supabase } from '@/lib/supabaseClient';
 
 // Circular Category Stories matching Screen 9 in Figma UI Kit
@@ -18,11 +19,38 @@ const STYLISH_CATEGORIES = [
 ];
 
 export default function Home() {
+  const [session, setSession] = useState<any>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const [guestBrowseMode, setGuestBrowseMode] = useState(false);
+
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Live Deal of the Day Countdown Timer
   const [timeLeft, setTimeLeft] = useState({ hours: 22, minutes: 55, seconds: 20 });
+
+  // 1. Session check: First-time / non-logged in visitors see LandingPage
+  useEffect(() => {
+    async function checkUserSession() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        setSession(data.session);
+      } catch (err) {
+        console.error('Session check error:', err);
+      } finally {
+        setCheckingAuth(false);
+      }
+    }
+    checkUserSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+      setSession(newSession);
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -111,6 +139,22 @@ export default function Home() {
   const trendingPieces = useMemo(() => artworks.slice(2, 6), [artworks]);
   const allProducts = useMemo(() => artworks.slice(0, 12), [artworks]);
 
+  // Loading skeleton while checking session
+  if (checkingAuth) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-20 text-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-3 border-[#F83758] border-r-transparent" />
+        <p className="mt-3 text-xs text-[#626262] font-medium">Entering Artelio Studio…</p>
+      </div>
+    );
+  }
+
+  // Non-logged-in first-time visitors see the high-end Everlane-inspired Landing Page
+  if (!session && !guestBrowseMode) {
+    return <LandingPage onExplore={() => setGuestBrowseMode(true)} />;
+  }
+
+  // Logged-in users (or guests who clicked explore) see the full marketplace
   return (
     <div className="mx-auto max-w-[1240px] px-3 sm:px-6 py-2 pb-24 md:pb-12">
       {/* 1. FIGMA CATEGORY AVATARS ROW */}

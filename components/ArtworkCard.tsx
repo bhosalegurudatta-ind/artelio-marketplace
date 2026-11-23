@@ -14,6 +14,8 @@ export type Artwork = {
   artistId?: string | null;
   isPromoted?: boolean;
   artistVerified?: boolean;
+  isAiAssisted?: boolean;
+  isDigital?: boolean;
 };
 
 export function artworkImageStyle(a: Artwork): React.CSSProperties | null {
@@ -63,6 +65,9 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
             )}
             <span className="rounded bg-[#F83758] px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs">
               40% OFF
+            </span>
+            <span className="rounded bg-black/60 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+              {artwork.isAiAssisted ? '✨ AI-Assisted' : '🖌️ Original'}
             </span>
           </div>
 

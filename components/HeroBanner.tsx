@@ -6,6 +6,15 @@ import { Artwork, artworkImageStyle } from './ArtworkCard';
 
 const SLIDES = [
   {
+    bg: 'bg-gradient-to-r from-[#17223B] via-[#1E2E4A] to-[#0A1128]',
+    tag: '✦ AI LISTING ASSISTANT',
+    title: 'From photo to listing in one click.',
+    sub: 'Upload an image and get a suggested title, description and price range. Edit anything before you publish.',
+    cta: 'Start as artist',
+    href: '/dashboard/upload',
+    imgBadge: 'AI Listing Assistant',
+  },
+  {
     bg: 'bg-gradient-to-r from-[#F83758] via-[#FA7189] to-[#FF8C94]',
     tag: '50-40% OFF',
     title: 'Now in (art) products',
@@ -77,7 +86,7 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
               href="/spaces"
               className="rounded-lg border border-white/40 bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-bold text-white transition backdrop-blur-xs"
             >
-              3D Room Try-On
+              + Collector Spaces
             </Link>
           </div>
         </div>

@@ -127,6 +127,7 @@ export default function Home() {
           artistId: a.artist_id,
           isPromoted: activePromoIds.has(a.id),
           artistVerified: Boolean(a.users?.verified),
+          isAiAssisted: Boolean(a.is_ai_assisted),
         }))
       );
       setLoading(false);

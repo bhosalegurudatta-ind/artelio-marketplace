@@ -363,10 +363,10 @@ export default function SpacesPage() {
               </span>
             </div>
             <h1 className="mt-2 font-serif text-3xl font-black text-white md:text-4xl">
-              Collector’s Private Spaces
+              + My Collector’s Spaces
             </h1>
             <p className="mt-2 max-w-lg text-xs md:text-sm text-white/70 leading-relaxed">
-              Your curated spatial sanctum — preview how original works harmonize with real architectural interiors, lighting, and finishes in 4K.
+              Your personal gallery — saved room visualisations in living room, bedroom, and gallery.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">

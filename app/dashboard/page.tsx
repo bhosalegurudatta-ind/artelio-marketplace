@@ -420,10 +420,10 @@ export default function Dashboard() {
 
       <div className="mb-1">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          <Stat label="Listed works" value={artworks.length.toString()} />
-          <Stat label="Awaiting shipment" value={toShip.length.toString()} />
-          <Stat label="Earnings released" value={money(released)} />
-          <Stat label="Held until delivery" value={money(held)} />
+          <Stat label="Artworks listed" value={artworks.length.toString()} />
+          <Stat label="Sales this month" value={orders.filter((o) => o.status === 'paid' || o.status === 'delivered').length.toString()} />
+          <Stat label="Earnings after commission" value={money(released + held)} />
+          <Stat label="Held in escrow (90/10)" value={money(held)} />
         </div>
         <div className="mt-2 mb-10 flex flex-wrap items-center justify-between rounded-xl border border-white/10 bg-[#121826] px-5 py-3 text-xs text-white/60">
           <div className="flex items-center gap-2">

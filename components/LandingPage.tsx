@@ -102,50 +102,57 @@ export default function LandingPage({ onExplore }: { onExplore?: () => void }) {
             {/* Left Narrative Column */}
             <div className="lg:col-span-6 space-y-6">
               <div className="inline-flex items-center gap-2 rounded-full bg-[#FDF0F3] border border-[#F83758]/20 px-3.5 py-1 text-xs font-bold text-[#F83758]">
-                <span>Artelio Studio Marketplace</span>
-                <span className="text-[10px] bg-[#F83758] text-white px-1.5 py-0.2 rounded-full">New Edit</span>
+                <span>✦ AI Listing Assistant</span>
+                <span className="text-[10px] bg-[#F83758] text-white px-2 py-0.5 rounded-full">One Click</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-black tracking-tight text-[#17223B] leading-[1.08]">
-                Where Master Artisans &amp; Connoisseurs Meet.
+                From photo to listing in one click.
               </h1>
 
               <p className="text-sm sm:text-base text-[#6E6B67] leading-relaxed max-w-xl font-normal">
-                Discover authentic sculptural lighting, handmade festive craft, and original canvas masterpieces direct from independent ateliers. No corporate markups — artists retain 90% of their earnings with transparent escrow protection.
+                Upload an image and get an AI-suggested title, curatorial description, and data-backed price range. Edit anything before you publish. Connect directly with art collectors across India with zero middlemen.
               </p>
 
-              {/* Action Buttons matching Everlane clean aesthetic */}
+              {/* Action Buttons matching Slide 14 & 21 */}
               <div className="flex flex-wrap items-center gap-3.5 pt-2">
                 <Link
-                  href="/login"
+                  href="/login?role=artist"
                   className="rounded-full bg-[#F83758] hover:bg-[#E02244] px-7 py-3.5 text-xs sm:text-sm font-bold text-white shadow-stylish-btn transition active:scale-95 inline-flex items-center gap-2"
                 >
-                  <span>Sign In / Create Account</span>
+                  <span>Start as Artist</span>
                   <span>→</span>
+                </Link>
+
+                <Link
+                  href="/spaces"
+                  className="rounded-full border-2 border-[#17223B] bg-[#17223B] hover:bg-black px-6 py-3.5 text-xs sm:text-sm font-bold text-white transition shadow-sm"
+                >
+                  + Collector Spaces
                 </Link>
 
                 <button
                   type="button"
                   onClick={onExplore}
-                  className="rounded-full border border-[#DEDBDB] bg-white hover:bg-[#FAF9F6] hover:border-[#17223B] px-6 py-3.5 text-xs sm:text-sm font-bold text-[#17223B] transition"
+                  className="rounded-full border border-[#DEDBDB] bg-white hover:bg-[#FAF9F6] hover:border-[#17223B] px-5 py-3.5 text-xs sm:text-sm font-bold text-[#17223B] transition"
                 >
-                  Explore Catalog as Guest
+                  Explore Catalog
                 </button>
               </div>
 
-              {/* Trust Metric Badges */}
-              <div className="pt-6 border-t border-[#F0ECE6] grid grid-cols-3 gap-4 text-left">
+              {/* Trust Metric Badges (Slide 14 & 21 Ribbon) */}
+              <div className="pt-6 border-t border-[#F0ECE6] grid grid-cols-3 gap-3 text-left">
                 <div>
-                  <span className="block text-xl sm:text-2xl font-black font-serif text-[#17223B]">90%</span>
-                  <span className="text-[11px] text-[#8C8882] uppercase tracking-wider font-semibold">Artist Payout</span>
+                  <span className="block text-xl sm:text-2xl font-black font-serif text-[#17223B]">2,000+</span>
+                  <span className="text-[10.5px] text-[#8C8882] uppercase tracking-wider font-semibold">Original Artworks</span>
                 </div>
                 <div>
-                  <span className="block text-xl sm:text-2xl font-black font-serif text-[#17223B]">100%</span>
-                  <span className="text-[11px] text-[#8C8882] uppercase tracking-wider font-semibold">Verified Proof</span>
+                  <span className="block text-xl sm:text-2xl font-black font-serif text-[#17223B]">90%</span>
+                  <span className="text-[10.5px] text-[#8C8882] uppercase tracking-wider font-semibold">Direct Artist Payout</span>
                 </div>
                 <div>
                   <span className="block text-xl sm:text-2xl font-black font-serif text-[#17223B]">Razorpay</span>
-                  <span className="text-[11px] text-[#8C8882] uppercase tracking-wider font-semibold">Escrow Protection</span>
+                  <span className="text-[10.5px] text-[#8C8882] uppercase tracking-wider font-semibold">Escrow Protection</span>
                 </div>
               </div>
             </div>

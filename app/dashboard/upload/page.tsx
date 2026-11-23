@@ -421,17 +421,31 @@ export default function UploadArtwork() {
               ))}
             </div>
 
-            <div className="pt-2 border-t border-ink/10">
+            <div className="pt-3 border-t border-ink/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-[#FDF0F3]/60 p-3 rounded-xl border border-[#F83758]/20">
+              <div>
+                <span className="block text-xs font-bold text-[#17223B]">✦ AI Listing Assistant</span>
+                <span className="text-[11px] text-[#6E6B67]">From photo to listing in one click: auto-generates title, curatorial notes &amp; price range.</span>
+              </div>
               <button
                 type="button"
                 onClick={handleAiSuggest}
                 disabled={aiLoading}
-                className="rounded-full bg-gradient-to-r from-purple-600 via-brand to-magenta px-5 py-2 text-xs font-bold text-white shadow-sm hover:shadow-art-glow hover:scale-[1.01] transition-all disabled:opacity-50"
+                className="shrink-0 rounded-full bg-[#F83758] hover:bg-[#E02244] px-5 py-2.5 text-xs font-bold text-white shadow-stylish-btn transition-all disabled:opacity-50 active:scale-95 flex items-center gap-1.5 justify-center"
               >
-                {aiLoading ? 'Looking at your artwork…' : '✨ Suggest title, description & price with Gemini AI'}
+                {aiLoading ? (
+                  <>
+                    <span className="animate-spin text-sm">⏳</span>
+                    <span>Analyzing Artwork…</span>
+                  </>
+                ) : (
+                  <>
+                    <span>✨</span>
+                    <span>Auto-Fill with AI</span>
+                  </>
+                )}
               </button>
-              {aiMsg && <p className="mt-2 text-xs text-ink/60">{aiMsg}</p>}
             </div>
+            {aiMsg && <p className="mt-2 text-xs font-medium text-emerald-700">{aiMsg}</p>}
           </div>
         )}
 

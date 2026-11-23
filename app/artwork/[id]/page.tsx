@@ -23,6 +23,7 @@ type Detail = {
   artist_name: string;
   sold: boolean;
   is_digital: boolean;
+  is_ai_assisted?: boolean;
   artist_verified?: boolean;
 };
 
@@ -401,6 +402,9 @@ export default function ArtworkDetail() {
                 {art.medium}
               </span>
             )}
+            <span className="rounded bg-[#17223B] text-white px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
+              {art.is_ai_assisted ? '✨ AI-Assisted' : '🖌️ Original Handcrafted'}
+            </span>
             <button
               type="button"
               onClick={handleMessageArtist}

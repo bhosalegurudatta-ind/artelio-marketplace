@@ -164,8 +164,8 @@ export default function VerifyProvenancePage() {
                     required
                     value={textQuery}
                     onChange={(e) => setTextQuery(e.target.value)}
-                    placeholder="e.g. bd09c8f6-2b0d-4dca-8557-e52eed29c8c4 or Sacred Lotus"
-                    className="flex-1 rounded-xl border border-[#DEDBDB] px-4 py-3 text-xs sm:text-sm text-[#17223B] placeholder-[#A8A8A9] focus:border-[#F83758] focus:outline-none"
+                    placeholder="e.g. Diwali Diya, Sacred Lotus, or paste an Artwork ID"
+                    className="flex-1 rounded-xl border border-[#DEDBDB] bg-white px-4 py-3 text-xs sm:text-sm text-[#17223B] placeholder-[#A8A8A9] focus:border-[#F83758] focus:ring-1 focus:ring-[#F83758] focus:outline-none shadow-xs"
                   />
                   <button
                     type="submit"

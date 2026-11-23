@@ -144,6 +144,17 @@ export default function Navbar() {
 
             {loggedIn ? (
               <div className="flex items-center gap-2">
+                {(userEmail === 'bhosalegurudatta@gmail.com' || role === 'admin') && (
+                  <Link
+                    href="/admin"
+                    className="inline-flex items-center gap-1 rounded-md bg-[#17223B] hover:bg-black px-2.5 py-1.5 text-xs font-bold text-white shadow-xs transition"
+                    title="Marketplace Administration"
+                  >
+                    <span>⚙️</span>
+                    <span className="hidden sm:inline">Admin</span>
+                  </Link>
+                )}
+
                 {role === 'artist' && (
                   <Link
                     href="/dashboard/upload"
@@ -300,6 +311,11 @@ export default function Navbar() {
                   )}
 
                   <div className="pt-2 border-t border-gray-100">
+                    {(userEmail === 'bhosalegurudatta@gmail.com' || role === 'admin') && (
+                      <Link href="/admin" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        ⚙️ Admin Panel
+                      </Link>
+                    )}
                     <Link href="/profile" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                       👤 Account Settings
                     </Link>

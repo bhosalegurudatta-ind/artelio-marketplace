@@ -10,8 +10,8 @@ const supabaseAdmin = createClient(
 // Models are tried in order. If the first is overloaded (503) or rate limited (429),
 // we retry once and then fall back to the next one. Change these in .env.local.
 const GEMINI_MODELS = [
-  process.env.GEMINI_MODEL || 'gemini-3.8-flash',
-  process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash',
+  process.env.GEMINI_MODEL || 'gemini-3.5-flash',
+  process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash-lite',
 ];
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024; // 4 MB keeps requests fast and cheap
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

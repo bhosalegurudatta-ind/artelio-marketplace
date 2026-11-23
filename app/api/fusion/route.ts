@@ -12,7 +12,7 @@ const fail = (message: string, status: number) =>
 
 // Confirmed model: imagen-3.0-generate-002
 const IMAGEN_MODEL = 'imagen-3.0-generate-002';
-const GEMINI_FALLBACK = 'gemini-3.8-flash';
+const GEMINI_FALLBACK = 'gemini-3.5-flash';
 
 // Helper to get current YYYY-MM
 function getCurrentMonth(): string {

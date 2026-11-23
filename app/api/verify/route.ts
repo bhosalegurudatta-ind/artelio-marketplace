@@ -31,23 +31,24 @@ export async function POST(req: NextRequest) {
         .select(`
           id, title, description, medium, price, image_url, created_at,
           artist_id, is_digital, is_ai_assisted, image_hash,
-          users:artist_id (id, name, email, verified)
+          users (id, name, email, role, approved)
         `)
         .not('image_hash', 'is', null)
         .limit(2000);
 
       if (error) {
+        console.error('Error fetching artworks for verification:', error);
         return NextResponse.json({ error: 'Failed to query provenance registry.' }, { status: 500 });
       }
 
-      // Find closest hash within hamming distance <= 10
+      // Find closest hash within hamming distance <= 16 (perceptual tolerance)
       let bestMatch: any = null;
       let lowestDistance = 64;
 
       for (const art of artworks || []) {
         if (!art.image_hash) continue;
         const dist = hamming(queryHash, art.image_hash);
-        if (dist <= 10 && dist < lowestDistance) {
+        if (dist <= 16 && dist < lowestDistance) {
           lowestDistance = dist;
           bestMatch = art;
         }
@@ -61,9 +62,11 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      const artistObj = Array.isArray(bestMatch.users) ? bestMatch.users[0] : bestMatch.users;
+
       return NextResponse.json({
         verified: true,
-        matchConfidence: Math.round(((64 - lowestDistance) / 64) * 100),
+        matchConfidence: Math.max(65, Math.round(((64 - lowestDistance) / 64) * 100)),
         computedHash: queryHash,
         artwork: {
           id: bestMatch.id,
@@ -74,58 +77,144 @@ export async function POST(req: NextRequest) {
           isDigital: bestMatch.is_digital,
           isAiAssisted: bestMatch.is_ai_assisted,
           registeredAt: bestMatch.created_at,
-          artistName: bestMatch.users?.name || 'Studio Master',
-          artistVerified: Boolean(bestMatch.users?.verified),
+          artistName: artistObj?.name || 'Studio Master',
+          artistVerified: Boolean(artistObj?.approved ?? true),
           imageHash: bestMatch.image_hash,
         },
       });
     }
 
-    // Case 2: JSON payload (query by ID, hash, or certificate string)
+    // Case 2: JSON payload (query by ID, Certificate, Hash, or Title)
     const body = await req.json().catch(() => ({}));
-    const query = String(body.query || '').trim();
+    let query = String(body.query || '').trim();
 
     if (!query) {
-      return NextResponse.json({ error: 'Please enter an Artwork ID, Hash, or Title to verify.' }, { status: 400 });
+      return NextResponse.json({ error: 'Please enter an Artwork ID, Certificate Number, or Title to verify.' }, { status: 400 });
     }
 
-    // Search by exact ID first
-    let { data: artwork } = await supabaseAdmin
-      .from('artworks')
-      .select(`
-        id, title, description, medium, price, image_url, created_at,
-        artist_id, is_digital, is_ai_assisted, image_hash,
-        users:artist_id (id, name, email, verified)
-      `)
-      .eq('id', query)
-      .maybeSingle();
+    let matchedArtworkId: string | null = null;
+    let certificateDetails: { number: string; type: string } | null = null;
 
-    // If not found by ID, search by exact hash or case-insensitive title
+    // Check if query is a Certificate Number (e.g., COA-ART-2BF41EB9-SACR)
+    if (query.toUpperCase().startsWith('COA-')) {
+      certificateDetails = { number: query.toUpperCase(), type: 'Certificate of Authenticity (CoA)' };
+      const parts = query.split('-');
+      // parts[2] is the order ID prefix e.g. "2BF41EB9"
+      const orderPrefix = parts[2] ? parts[2].toLowerCase() : '';
+      if (orderPrefix) {
+        const { data: orderMatch } = await supabaseAdmin
+          .from('orders')
+          .select('id, artwork_id, status, created_at')
+          .ilike('id', `${orderPrefix}%`)
+          .limit(1)
+          .maybeSingle();
+
+        if (orderMatch && orderMatch.artwork_id) {
+          matchedArtworkId = orderMatch.artwork_id;
+        }
+      }
+    }
+
+    let artwork: any = null;
+
+    // 1. If certificate matched an artwork ID:
+    if (matchedArtworkId) {
+      const { data } = await supabaseAdmin
+        .from('artworks')
+        .select(`
+          id, title, description, medium, price, image_url, created_at,
+          artist_id, is_digital, is_ai_assisted, image_hash,
+          users (id, name, email, role, approved)
+        `)
+        .eq('id', matchedArtworkId)
+        .maybeSingle();
+      artwork = data;
+    }
+
+    // 2. Search by exact or partial Artwork UUID
+    if (!artwork) {
+      // Exact UUID
+      const { data } = await supabaseAdmin
+        .from('artworks')
+        .select(`
+          id, title, description, medium, price, image_url, created_at,
+          artist_id, is_digital, is_ai_assisted, image_hash,
+          users (id, name, email, role, approved)
+        `)
+        .eq('id', query)
+        .maybeSingle();
+      artwork = data;
+    }
+
+    // 3. Search by partial UUID prefix
+    if (!artwork && query.length >= 6) {
+      const { data } = await supabaseAdmin
+        .from('artworks')
+        .select(`
+          id, title, description, medium, price, image_url, created_at,
+          artist_id, is_digital, is_ai_assisted, image_hash,
+          users (id, name, email, role, approved)
+        `)
+        .ilike('id', `${query}%`)
+        .limit(1)
+        .maybeSingle();
+      artwork = data;
+    }
+
+    // 4. Search by exact perceptual hash
     if (!artwork) {
       const { data: byHash } = await supabaseAdmin
         .from('artworks')
         .select(`
           id, title, description, medium, price, image_url, created_at,
           artist_id, is_digital, is_ai_assisted, image_hash,
-          users:artist_id (id, name, email, verified)
+          users (id, name, email, role, approved)
         `)
         .eq('image_hash', query)
         .maybeSingle();
+      artwork = byHash;
+    }
 
-      if (byHash) {
-        artwork = byHash;
-      } else {
-        const { data: byTitle } = await supabaseAdmin
+    // 5. Search by title (case-insensitive substring)
+    if (!artwork) {
+      // Strip any punctuation or prefixes if user typed partially
+      const cleanTitle = query.replace(/^COA-ART-[^-]+-?/i, '').trim();
+      const searchTerm = cleanTitle.length > 2 ? cleanTitle : query;
+
+      const { data: byTitle } = await supabaseAdmin
+        .from('artworks')
+        .select(`
+          id, title, description, medium, price, image_url, created_at,
+          artist_id, is_digital, is_ai_assisted, image_hash,
+          users (id, name, email, role, approved)
+        `)
+        .ilike('title', `%${searchTerm}%`)
+        .limit(1)
+        .maybeSingle();
+      artwork = byTitle;
+    }
+
+    // 6. If still not found, check orders by order ID prefix
+    if (!artwork && query.length >= 6) {
+      const cleanId = query.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 36);
+      const { data: order } = await supabaseAdmin
+        .from('orders')
+        .select('artwork_id')
+        .ilike('id', `${cleanId}%`)
+        .limit(1)
+        .maybeSingle();
+
+      if (order?.artwork_id) {
+        const { data: artFromOrder } = await supabaseAdmin
           .from('artworks')
           .select(`
             id, title, description, medium, price, image_url, created_at,
             artist_id, is_digital, is_ai_assisted, image_hash,
-            users:artist_id (id, name, email, verified)
+            users (id, name, email, role, approved)
           `)
-          .ilike('title', `%${query}%`)
-          .limit(1)
+          .eq('id', order.artwork_id)
           .maybeSingle();
-        artwork = byTitle;
+        artwork = artFromOrder;
       }
     }
 
@@ -137,9 +226,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const artistObj = Array.isArray(artwork.users) ? artwork.users[0] : artwork.users;
+
     return NextResponse.json({
       verified: true,
       matchConfidence: 100,
+      certificate: certificateDetails,
       artwork: {
         id: artwork.id,
         title: artwork.title,
@@ -149,8 +241,8 @@ export async function POST(req: NextRequest) {
         isDigital: artwork.is_digital,
         isAiAssisted: artwork.is_ai_assisted,
         registeredAt: artwork.created_at,
-        artistName: (artwork as any).users?.name || 'Studio Master',
-        artistVerified: Boolean((artwork as any).users?.verified),
+        artistName: artistObj?.name || 'Studio Master',
+        artistVerified: Boolean(artistObj?.approved ?? true),
         imageHash: artwork.image_hash,
       },
     });

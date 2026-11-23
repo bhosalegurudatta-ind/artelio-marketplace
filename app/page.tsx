@@ -9,13 +9,12 @@ import { supabase } from '@/lib/supabaseClient';
 
 // Curated Art Categories (Matching Slide 14 & 21)
 const ART_CATEGORIES = [
-  { label: 'Paintings', icon: '🎨', href: '/browse?category=paintings', border: 'border-[#F83758]' },
-  { label: 'Drawings', icon: '✏️', href: '/browse?category=drawings', border: 'border-[#FA7189]' },
-  { label: 'Digital Art', icon: '💻', href: '/browse?category=digital', border: 'border-[#4392F9]' },
-  { label: 'Sculpture', icon: '🗿', href: '/browse?category=sculpture', border: 'border-[#8B5CF6]' },
-  { label: 'Crafts', icon: '✨', href: '/browse?category=crafts', border: 'border-[#EC4899]' },
-  { label: 'Photography', icon: '📷', href: '/browse?category=photography', border: 'border-[#F9A825]' },
-  { label: 'Mixed Media', icon: '🖌️', href: '/browse?category=mixed-media', border: 'border-[#10B981]' },
+  { label: 'Customised Sketches', icon: '✏️', href: '/browse?category=customised-sketches', border: 'border-[#F83758]' },
+  { label: 'Handcrafted Decor', icon: '✨', href: '/browse?category=crafts', border: 'border-[#FA7189]' },
+  { label: 'Sculptures & Metalcraft', icon: '🗿', href: '/browse?category=sculpture', border: 'border-[#4392F9]' },
+  { label: 'Paintings', icon: '🎨', href: '/browse?category=paintings', border: 'border-[#8B5CF6]' },
+  { label: 'Drawings', icon: '📝', href: '/browse?category=drawings', border: 'border-[#EC4899]' },
+  { label: 'Digital Art', icon: '💻', href: '/browse?category=digital', border: 'border-[#10B981]' },
 ];
 
 export default function Home() {

@@ -335,7 +335,7 @@ function OrdersContent() {
                           {order.status === 'paid' ? 'Studio Packing' : 'Dispatched'}
                         </span>
                         <span className="text-[10px] text-ink/50">
-                          {order.courier_name || 'Insured Courier'}
+                          {order.courier_name || 'Direct Courier'}
                         </span>
                       </div>
 

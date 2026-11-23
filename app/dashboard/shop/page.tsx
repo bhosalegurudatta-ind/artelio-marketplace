@@ -300,7 +300,7 @@ export default function ShopSettingsPage() {
               type="button"
               onClick={() =>
                 setShippingPolicy(
-                  'All original pieces are packed with museum-grade protective glassine paper, heavy-duty edge guards, and waterproof bubble armor. Physical pieces are dispatched within 2–3 business days via insured white-glove courier partners with tracking number provided.'
+                  'All original pieces are packed securely with protective wrap and sturdy packaging. Packaging and dispatch timelines are coordinated directly between the artist and collector upon order confirmation.'
                 )
               }
               className="text-[11px] text-[#4392F9] hover:underline"
@@ -313,7 +313,7 @@ export default function ShopSettingsPage() {
             rows={3}
             value={shippingPolicy}
             onChange={(e) => setShippingPolicy(e.target.value)}
-            placeholder="Explain dispatch timelines, protective packaging, courier insurance, and delivery expectations..."
+            placeholder="Explain dispatch timelines, protective packaging, and direct delivery coordination with the collector..."
             className="w-full rounded-xl border border-white/10 bg-black/40 p-4 text-sm text-white placeholder-white/30 focus:border-[#F83758] focus:outline-none transition"
           />
         </div>

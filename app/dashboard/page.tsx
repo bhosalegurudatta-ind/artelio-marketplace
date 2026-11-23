@@ -474,22 +474,6 @@ export default function Dashboard() {
                     <span>📦</span> Packaging Guide
                   </button>
                   <button
-                    onClick={() =>
-                      setCoaData({
-                        orderId: o.id,
-                        orderDate: o.created_at,
-                        artworkTitle: o.artworks?.title || 'Fine Art',
-                        artistName: artistName || 'Artelio Studio Creator',
-                        medium: o.artworks?.medium,
-                        isDigital: o.artworks?.is_digital,
-                        collectorName: o.shipping_name,
-                      })
-                    }
-                    className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/80 transition hover:bg-white/10"
-                  >
-                    <span>📜</span> Print COA
-                  </button>
-                  <button
                     onClick={() => setSlipOrder(o)}
                     className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10"
                   >

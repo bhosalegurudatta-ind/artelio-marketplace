@@ -50,6 +50,13 @@ const FEATURED_PIECES: LandingArtwork[] = [
 
 const CURATED_COLLECTIONS = [
   {
+    title: 'Customised Sketches & Portraits',
+    tag: 'Custom Commission',
+    desc: 'Hand-drawn graphite and charcoal portrait sketches commissioned directly from your photo reference.',
+    image: '/artworks/custom-portrait-sketch.jpg',
+    link: '/browse?category=customised-sketches',
+  },
+  {
     title: 'Festive Velvet Lotus Diyas',
     tag: 'Sacred Lighting',
     desc: 'Signature Twillumi velvet lotus tea-light holders with delicate pearl rims and gold filigree candle cups.',
@@ -69,13 +76,6 @@ const CURATED_COLLECTIONS = [
     desc: 'One-of-a-kind sacred relief sculptures chiseled by hand from solid aged teakwood.',
     image: '/artworks/handcarved-wood-relief-sculpture.jpg',
     link: '/browse?category=sculpture',
-  },
-  {
-    title: 'Handmade Velvet Charms & Gifts',
-    tag: 'Plush Heritage',
-    desc: 'Individually boxed plush velvet floral ornaments, sculpted bow charms, and pearl keychains.',
-    image: '/artworks/handcrafted-velvet-charms-set.jpg',
-    link: '/browse?category=crafts',
   },
 ];
 
@@ -338,7 +338,7 @@ export default function LandingPage({ onExplore }: { onExplore?: () => void }) {
               </div>
               <h3 className="font-serif font-black text-lg text-[#17223B]">Doorstep Escrow Security</h3>
               <p className="mt-2 text-xs text-[#6E6B67] leading-relaxed">
-                Funds are held in secure Razorpay escrow. Artists dispatch with insured couriers (BlueDart / Delhivery) and funds are only released after safe doorstep arrival.
+                Funds are held in secure Razorpay escrow. The artist coordinates direct dispatch and tracking with the buyer, and funds are only released after doorstep delivery.
               </p>
             </div>
 

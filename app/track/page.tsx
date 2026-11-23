@@ -205,7 +205,7 @@ function TrackContent() {
                   {order.shipping_city}, {order.shipping_state} {order.shipping_postal_code ? `- ${order.shipping_postal_code}` : ''}
                 </p>
                 <p className="text-white/40 text-[11px] pt-1 border-t border-white/5 mt-1">
-                  Insured door-to-door transit via Artelio Logistics
+                  Direct dispatch coordinated with artist
                 </p>
               </div>
             </div>
@@ -241,7 +241,7 @@ function TrackContent() {
                     {isPaid ? 'Atelier Packaging' : 'Dispatched'}
                   </span>
                   <span className="text-[10px] text-white/50">
-                    {order.courier_name || 'Insured Courier'}
+                    {order.courier_name || 'Direct Courier'}
                   </span>
                 </div>
 
@@ -255,7 +255,7 @@ function TrackContent() {
                     {isDelivered ? '✓' : '3'}
                   </div>
                   <span className="mt-2 font-semibold text-white">Delivered</span>
-                  <span className="text-[10px] text-white/50">48h Unboxing Guarantee</span>
+                  <span className="text-[10px] text-white/50">Direct Delivery</span>
                 </div>
               </div>
 
@@ -265,7 +265,7 @@ function TrackContent() {
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-white/60">Courier Partner: </span>
-                      <strong className="text-white">{order.courier || order.courier_name || 'Insured Partner'}</strong>
+                      <strong className="text-white">{order.courier || order.courier_name || 'Courier Partner'}</strong>
                       {order.tracking_status && (
                         <span className="rounded-full bg-brand/20 px-2.5 py-0.5 text-[10px] font-bold uppercase text-brand-soft">
                           {order.tracking_status.replace(/_/g, ' ')}

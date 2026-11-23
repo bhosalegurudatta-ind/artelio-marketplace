@@ -3,6 +3,7 @@
 export type Category = { slug: string; label: string; keywords: string[] };
 
 export const CATEGORIES: Category[] = [
+  { slug: 'customised-sketches', label: 'Customised Sketches & Portraits', keywords: ['custom', 'sketch', 'portrait', 'graphite', 'pencil', 'commission', 'drawing'] },
   { slug: 'crafts', label: 'Handcrafted Heritage & Decor', keywords: ['craft', 'velvet', 'diya', 'pearl', 'filigree', 'decor', 'charm', 'bow', 'keychain'] },
   { slug: 'sculpture', label: 'Sculpture, Metalcraft & Wood Carving', keywords: ['sculpt', 'wood', 'carv', 'teak', 'relief', 'bidri', 'metal', 'silver', 'alloy', 'clay', 'ceramic'] },
   { slug: 'paintings', label: 'Paintings', keywords: ['paint', 'oil', 'acrylic', 'watercolo', 'gouache', 'canvas'] },

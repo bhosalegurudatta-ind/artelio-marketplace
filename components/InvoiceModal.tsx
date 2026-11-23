@@ -131,7 +131,7 @@ export default function InvoiceModal({
                 Settlement Status: <strong className="text-emerald-700">✓ Paid in Full (Escrow Protected)</strong>
               </p>
               <p className="text-gray-700 mt-1">
-                Fulfillment Mode: <strong>{data.isDigital ? 'Instant Lossless Digital Delivery' : 'Insured Door-to-Door Fine Art Courier'}</strong>
+                Fulfillment Mode: <strong>{data.isDigital ? 'Instant Lossless Digital Delivery' : 'Direct Fine Art Courier Dispatch'}</strong>
               </p>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function InvoiceModal({
                       {data.medium || (data.isDigital ? 'Digital Master Edition' : 'Fine Art Original')}
                     </p>
                     <p className="text-[10px] text-gray-400 mt-0.5">
-                      Includes 100% Provenance Guarantee & Signed Certificate of Authenticity (COA)
+                      Direct from verified artist atelier
                     </p>
                   </td>
                   <td className="py-4 px-3 font-medium text-gray-800">
@@ -184,8 +184,8 @@ export default function InvoiceModal({
                 <span className="font-mono">₹{gstAmount.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between text-gray-600">
-                <span>Insured Museum Packaging:</span>
-                <span className="font-bold text-emerald-700">FREE</span>
+                <span>Protective Packaging:</span>
+                <span className="font-bold text-emerald-700">Included</span>
               </div>
               <div className="flex justify-between border-t-2 border-gray-900 pt-2 text-sm font-bold text-gray-900">
                 <span>Total Paid:</span>

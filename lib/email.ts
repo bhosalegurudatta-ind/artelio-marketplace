@@ -250,12 +250,12 @@ export async function sendPieceShippedBuyerEmail({
   const html = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0F141F; color: #FFFFFF; padding: 36px 28px; border-radius: 16px;">
       <h1 style="color: #F83758; font-size: 26px; margin: 0 0 10px; font-weight: 800;">ARTELIO ATELIER</h1>
-      <p style="font-size: 13px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 24px;">White-Glove Courier Dispatch</p>
+      <p style="font-size: 13px; color: #94A3B8; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 24px;">Artist Direct Dispatch</p>
       
       <div style="border-top: 1px solid #1E293B; padding-top: 24px;">
         <p style="font-size: 16px; line-height: 1.6; margin-bottom: 16px;">Dear ${name},</p>
         <p style="font-size: 15px; color: #E2E8F0; line-height: 1.6; margin-bottom: 20px;">
-          Great news! The artist has dispatched your curated piece <strong>"${artworkTitle}"</strong>. It is now safely in transit with insured courier delivery.
+          Great news! The artist has dispatched your piece <strong>"${artworkTitle}"</strong> directly to your delivery address.
         </p>
 
         <div style="background: #182234; border: 1px solid #334155; border-radius: 12px; padding: 20px; margin-bottom: 24px;">

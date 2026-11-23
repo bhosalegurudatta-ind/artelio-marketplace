@@ -22,7 +22,7 @@ export default function ShippingPolicyPage() {
             <span>📦</span> 1. Courier Partners &amp; Coverage
           </h2>
           <p>
-            Artelio operates a nationwide courier network covering over 19,000 PIN codes across India through Tier-1 fine art capable logistics partners:
+            Physical original artworks are securely packaged and dispatched directly by the artist to the collector via established courier services across India:
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
             <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
@@ -31,7 +31,7 @@ export default function ShippingPolicyPage() {
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
               <span className="font-bold text-xs text-white">Delhivery</span>
-              <p className="text-[10px] text-white/50 mt-1">Insured Surface & Air</p>
+              <p className="text-[10px] text-white/50 mt-1">Standard Surface &amp; Air</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/5 p-3 text-center">
               <span className="font-bold text-xs text-white">DTDC</span>

@@ -55,6 +55,11 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
           {/* Top-Left Format & Creation Badge (Physical vs Digital, Original vs AI) */}
           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start">
+            {artwork.price === 0 && (
+              <span className="rounded bg-[#F83758] px-2 py-0.5 text-[9px] font-extrabold text-white shadow-xs tracking-wider uppercase">
+                ✏️ Custom Sketch
+              </span>
+            )}
             {artwork.isPromoted && (
               <span className="rounded bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs tracking-wider flex items-center gap-1 border border-amber-300/40">
                 <span className="text-[9px]">★</span> Featured
@@ -64,7 +69,7 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
               {artwork.isDigital ? '💾 Digital' : '📦 Physical Artwork'}
             </span>
             <span className="rounded bg-black/60 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
-              {artwork.isAiAssisted ? '✨ AI-Assisted' : '🖌️ Original'}
+              {artwork.isAiAssisted ? '✨ AI-Assisted' : '🖌️ Original Handcrafted'}
             </span>
           </div>
 
@@ -96,11 +101,17 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
             <span className="text-xs text-[#626262]">• {artwork.medium || 'Fine Art'}</span>
           </div>
 
-          {/* Genuine Artist Price (No fake discounts or strikethroughs) */}
+          {/* Genuine Artist Price (or Custom Commission) */}
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-base font-black text-[#17223B]">
-              ₹{artwork.price?.toLocaleString('en-IN')}
-            </span>
+            {artwork.price > 0 ? (
+              <span className="text-base font-black text-[#17223B]">
+                ₹{artwork.price?.toLocaleString('en-IN')}
+              </span>
+            ) : (
+              <span className="text-xs font-black text-[#F83758] bg-[#FDF0F3] border border-[#F83758]/20 px-2 py-0.5 rounded-full">
+                ✏️ Customised Sketch • Price on Request
+              </span>
+            )}
           </div>
 
           {/* Star Rating Stars */}
@@ -114,12 +125,21 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
 
         {/* Action Button Row */}
         <div className="mt-3 pt-2 border-t border-gray-100 flex items-center gap-2">
-          <Link
-            href={`/checkout/${artwork.id}`}
-            className="flex-1 rounded-md bg-[#F83758] hover:bg-[#E02244] text-white py-1.5 text-center text-xs font-bold transition shadow-xs active:scale-[0.98] uppercase tracking-wide"
-          >
-            Buy Now
-          </Link>
+          {artwork.price > 0 ? (
+            <Link
+              href={`/checkout/${artwork.id}`}
+              className="flex-1 rounded-md bg-[#F83758] hover:bg-[#E02244] text-white py-1.5 text-center text-xs font-bold transition shadow-xs active:scale-[0.98] uppercase tracking-wide"
+            >
+              Buy Now
+            </Link>
+          ) : (
+            <Link
+              href={`/artwork/${artwork.id}`}
+              className="flex-1 rounded-md bg-[#17223B] hover:bg-[#F83758] text-white py-1.5 text-center text-xs font-bold transition shadow-xs active:scale-[0.98] tracking-wide"
+            >
+              Request Custom Sketch
+            </Link>
+          )}
 
           <Link
             href={`/artwork/${artwork.id}`}

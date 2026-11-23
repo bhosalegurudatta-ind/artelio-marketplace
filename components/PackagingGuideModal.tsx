@@ -98,9 +98,9 @@ export default function PackagingGuideModal({
               5
             </div>
             <div>
-              <h3 className="font-semibold text-white text-sm">Enclose Certificate of Authenticity & Packing Slip</h3>
+              <h3 className="font-semibold text-white text-sm">Enclose Artist Packing Slip &amp; Care Note</h3>
               <p className="mt-1 text-xs text-white/70 leading-relaxed">
-                Place the signed <strong>Certificate of Authenticity</strong> in an archival envelope inside the box. Attach the Artelio Dispatch Label on the outside, then seal all outer seams with water-activated or heavy vinyl shipping tape.
+                Place your artist packing slip and handling care instructions inside the package. Ensure outer seams are sealed securely with heavy-duty packaging tape.
               </p>
             </div>
           </div>

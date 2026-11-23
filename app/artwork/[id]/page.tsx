@@ -427,11 +427,17 @@ export default function ArtworkDetail() {
 
           {/* Artist Stated Price (Clean & Honest, No Fake Strikethroughs) */}
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-2xl md:text-3xl font-black text-[#17223B]">
-              ₹{art.price.toLocaleString('en-IN')}
-            </span>
+            {art.price > 0 ? (
+              <span className="text-2xl md:text-3xl font-black text-[#17223B]">
+                ₹{art.price.toLocaleString('en-IN')}
+              </span>
+            ) : (
+              <span className="text-base sm:text-lg font-black text-[#F83758] bg-[#FDF0F3] border border-[#F83758]/20 px-3 py-1.5 rounded-lg">
+                ✏️ Customised Sketch • Price on Request
+              </span>
+            )}
             <span className="rounded bg-[#17223B] text-white px-2.5 py-1 text-xs font-bold uppercase tracking-wider">
-              {art.is_digital ? '💾 Digital Edition' : '📦 Handcrafted Physical Piece'}
+              {art.price === 0 ? '✏️ Custom Commission' : art.is_digital ? '💾 Digital Edition' : '📦 Handcrafted Physical Piece'}
             </span>
           </div>
 
@@ -462,40 +468,53 @@ export default function ArtworkDetail() {
             )}
           </div>
 
-          {/* Action Buttons matching Figma Screen 11: Heart / Go to Cart / Buy Now */}
+          {/* Action Buttons */}
           <div className="mt-6 flex items-center gap-3">
             <FavoriteButton
               artworkId={art.id}
               className="h-11 w-11 shrink-0 rounded-xl border border-[#DEDBDB] shadow-xs"
             />
-            <button
-              onClick={() => {
-                alert(`Added "${art.title}" (${selectedSize}) to your Bag!`);
-              }}
-              className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-[#F83758] bg-white py-3 text-xs md:text-sm font-bold text-[#F83758] shadow-xs hover:bg-[#FDF0F3] transition active:scale-[0.98]"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 0 1-8 0" />
-              </svg>
-              <span>Go to Cart</span>
-            </button>
-
-            {unavailable ? (
+            {art.price === 0 ? (
               <button
-                disabled
-                className="flex-1 rounded-md bg-gray-300 py-3 text-xs md:text-sm font-bold text-gray-500 cursor-not-allowed uppercase"
+                type="button"
+                onClick={handleMessageArtist}
+                disabled={messagingLoading}
+                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#F83758] hover:bg-[#E02244] py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-[0.98] uppercase tracking-wide cursor-pointer"
               >
-                Sold Out
+                <span>💬</span> {messagingLoading ? 'Connecting…' : 'Message Artist to Commission'}
               </button>
             ) : (
-              <Link
-                href={`/checkout/${art.id}`}
-                className="flex-1 flex items-center justify-center rounded-md bg-[#F83758] hover:bg-[#E02244] py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-[0.98] uppercase tracking-wide"
-              >
-                Buy Now
-              </Link>
+              <>
+                <button
+                  onClick={() => {
+                    alert(`Added "${art.title}" (${selectedSize}) to your Bag!`);
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-xl border border-[#F83758] bg-white py-3 text-xs md:text-sm font-bold text-[#F83758] shadow-xs hover:bg-[#FDF0F3] transition active:scale-[0.98]"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <path d="M16 10a4 4 0 0 1-8 0" />
+                  </svg>
+                  <span>Go to Cart</span>
+                </button>
+
+                {unavailable ? (
+                  <button
+                    disabled
+                    className="flex-1 rounded-md bg-gray-300 py-3 text-xs md:text-sm font-bold text-gray-500 cursor-not-allowed uppercase"
+                  >
+                    Sold Out
+                  </button>
+                ) : (
+                  <Link
+                    href={`/checkout/${art.id}`}
+                    className="flex-1 flex items-center justify-center rounded-md bg-[#F83758] hover:bg-[#E02244] py-3 text-xs md:text-sm font-bold text-white shadow-stylish-btn transition active:scale-[0.98] uppercase tracking-wide"
+                  >
+                    Buy Now
+                  </Link>
+                )}
+              </>
             )}
           </div>
 

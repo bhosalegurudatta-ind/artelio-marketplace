@@ -715,7 +715,7 @@ function ProfileContent() {
         <div className="rounded-2xl border border-[#DEDBDB] bg-white p-6 sm:p-8 shadow-stylish-card">
           <h2 className="text-base font-black text-[#17223B] mb-1">Saved Delivery Address</h2>
           <p className="text-xs text-[#626262] mb-6">
-            Pre-filled when you purchase original physical artworks for safe insured courier delivery.
+            Pre-filled when you purchase original physical artworks for courier delivery directly from the artist.
           </p>
 
           <div className="rounded-xl border border-[#F0F0F0] bg-[#FAFAFA] p-4">

@@ -3,8 +3,8 @@
 export type Category = { slug: string; label: string; keywords: string[] };
 
 export const CATEGORIES: Category[] = [
-  { slug: 'crafts', label: 'Handcrafted Heritage & Decor', keywords: ['craft', 'velvet', 'diya', 'pearl', 'filigree', 'decor'] },
-  { slug: 'sculpture', label: 'Sculptural Lighting & Woodwork', keywords: ['sculpt', 'clay', 'ceramic', 'driftwood', 'wood', 'lamp', 'mosaic', 'metal'] },
+  { slug: 'crafts', label: 'Handcrafted Heritage & Decor', keywords: ['craft', 'velvet', 'diya', 'pearl', 'filigree', 'decor', 'charm', 'bow', 'keychain'] },
+  { slug: 'sculpture', label: 'Sculpture, Metalcraft & Wood Carving', keywords: ['sculpt', 'wood', 'carv', 'teak', 'relief', 'bidri', 'metal', 'silver', 'alloy', 'clay', 'ceramic'] },
   { slug: 'paintings', label: 'Paintings', keywords: ['paint', 'oil', 'acrylic', 'watercolo', 'gouache', 'canvas'] },
   { slug: 'drawings', label: 'Drawings & Sketches', keywords: ['draw', 'sketch', 'charcoal', 'pencil', 'pastel', 'ink'] },
   { slug: 'digital', label: 'Digital Art', keywords: ['digital', 'illustration', 'vector'] },

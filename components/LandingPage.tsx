@@ -46,9 +46,32 @@ const FEATURED_PIECES: LandingArtwork[] = [
     artist: 'Gurudatta Bhosale',
     imageUrl: '/artworks/handcrafted-velvet-charms-set.jpg',
   },
+  {
+    id: 'fc9d7773-97b0-4cea-8de6-7ce073d14297',
+    title: 'Saffron Horizon at Dusk (Stick-On Wall Canvas)',
+    price: 1850,
+    medium: 'Textured Acrylic on Peel & Stick Wall Canvas',
+    artist: 'Gurudatta Bhosale',
+    imageUrl: '/artworks/saffron-horizon-wall-canvas.jpg',
+  },
+  {
+    id: '676c2326-2b79-4c27-97ed-dcc9b222c2c2',
+    title: 'Vibrant Banaras Ghats Sunrise (Stick-On Wall Canvas)',
+    price: 2400,
+    medium: 'Impasto Acrylic on Stick-on Wall Canvas Panel',
+    artist: 'Gurudatta Bhosale',
+    imageUrl: '/artworks/banaras-ghats-wall-canvas.jpg',
+  },
 ];
 
 const CURATED_COLLECTIONS = [
+  {
+    title: 'Stick-On Wall Canvas Paintings',
+    tag: 'Damage-Free Wall Decor',
+    desc: 'Ready-to-mount original acrylic & oil paintings with peel-and-stick adhesive backing. No drilling or nails required.',
+    image: '/artworks/saffron-horizon-wall-canvas.jpg',
+    link: '/browse?category=paintings',
+  },
   {
     title: 'Customised Sketches & Portraits',
     tag: 'Custom Commission',

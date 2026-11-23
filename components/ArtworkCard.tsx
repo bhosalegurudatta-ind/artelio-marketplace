@@ -61,11 +61,6 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
                 ✏️ Custom Sketch
               </span>
             )}
-            {(artwork.title?.toLowerCase().includes('stick') || artwork.title?.toLowerCase().includes('poster') || artwork.medium?.toLowerCase().includes('stick') || artwork.medium?.toLowerCase().includes('poster')) && (
-              <span className="rounded bg-emerald-600 px-2 py-0.5 text-[9px] font-extrabold text-white shadow-xs tracking-wider uppercase flex items-center gap-1">
-                🖼️ Wall Art / Poster
-              </span>
-            )}
             {artwork.isPromoted && (
               <span className="rounded bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs tracking-wider flex items-center gap-1 border border-amber-300/40">
                 <span className="text-[9px]">★</span> Featured

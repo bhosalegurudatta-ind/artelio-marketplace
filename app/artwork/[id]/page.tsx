@@ -442,11 +442,11 @@ export default function ArtworkDetail() {
           </div>
 
           {/* Stick on Wall Feature Highlight */}
-          {(art.title?.toLowerCase().includes('stick') || art.medium?.toLowerCase().includes('stick')) && (
+          {(art.title?.toLowerCase().includes('stick') || art.title?.toLowerCase().includes('poster') || art.medium?.toLowerCase().includes('stick') || art.medium?.toLowerCase().includes('poster')) && (
             <div className="mt-3 flex items-start gap-2.5 rounded-xl bg-emerald-50 border border-emerald-200/80 p-3 text-xs text-emerald-900 shadow-2xs">
               <span className="text-xl shrink-0">🖼️</span>
               <div>
-                <strong className="font-bold block text-emerald-950">Stick on Wall Canvas (Damage-Free Mount)</strong>
+                <strong className="font-bold block text-emerald-950">Stick-on Wall Art Poster / Canvas (Damage-Free Mount)</strong>
                 <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
                   Pre-fitted with wall-safe adhesive backing. Sticks firmly to any flat painted wall, tile, or wood surface without nails or drilling. Repositionable and leaves zero residue.
                 </p>

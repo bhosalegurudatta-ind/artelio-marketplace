@@ -6,7 +6,7 @@ export const CATEGORIES: Category[] = [
   { slug: 'customised-sketches', label: 'Customised Sketches & Portraits', keywords: ['custom', 'sketch', 'portrait', 'graphite', 'pencil', 'commission', 'drawing'] },
   { slug: 'crafts', label: 'Handcrafted Heritage & Decor', keywords: ['craft', 'velvet', 'diya', 'pearl', 'filigree', 'decor', 'charm', 'bow', 'keychain'] },
   { slug: 'sculpture', label: 'Sculpture, Metalcraft & Wood Carving', keywords: ['sculpt', 'wood', 'carv', 'teak', 'relief', 'bidri', 'metal', 'silver', 'alloy', 'clay', 'ceramic'] },
-  { slug: 'paintings', label: 'Paintings & Stick-on Wall Art', keywords: ['paint', 'oil', 'acrylic', 'watercolo', 'gouache', 'canvas', 'stick', 'peel', 'wall'] },
+  { slug: 'paintings', label: 'Paintings & Wall Art Posters', keywords: ['paint', 'oil', 'acrylic', 'watercolo', 'gouache', 'canvas', 'stick', 'peel', 'wall', 'poster'] },
   { slug: 'drawings', label: 'Drawings & Sketches', keywords: ['draw', 'sketch', 'charcoal', 'pencil', 'pastel', 'ink'] },
   { slug: 'digital', label: 'Digital Art', keywords: ['digital', 'illustration', 'vector'] },
   { slug: 'photography', label: 'Photography', keywords: ['photo'] },

@@ -48,28 +48,28 @@ const FEATURED_PIECES: LandingArtwork[] = [
   },
   {
     id: 'fc9d7773-97b0-4cea-8de6-7ce073d14297',
-    title: 'Saffron Horizon at Dusk (Stick-On Wall Canvas)',
+    title: 'Saffron Horizon at Dusk (Stick-On Wall Canvas Painting)',
     price: 1850,
     medium: 'Textured Acrylic on Peel & Stick Wall Canvas',
     artist: 'Gurudatta Bhosale',
-    imageUrl: '/artworks/saffron-horizon-wall-canvas.jpg',
+    imageUrl: '/artworks/warm-terracotta-canvas-wall-painting.jpg',
   },
   {
     id: '676c2326-2b79-4c27-97ed-dcc9b222c2c2',
-    title: 'Vibrant Banaras Ghats Sunrise (Stick-On Wall Canvas)',
-    price: 2400,
-    medium: 'Impasto Acrylic on Stick-on Wall Canvas Panel',
+    title: 'Architectural Arch & Modernist Gallery Wall Poster',
+    price: 1799,
+    medium: 'Gallery Wrapped Peel & Stick Canvas Wall Poster',
     artist: 'Gurudatta Bhosale',
-    imageUrl: '/artworks/banaras-ghats-wall-canvas.jpg',
+    imageUrl: '/artworks/modern-abstract-gallery-wall-poster.jpg',
   },
 ];
 
 const CURATED_COLLECTIONS = [
   {
-    title: 'Stick-On Wall Canvas Paintings',
+    title: 'Stick-On Wall Canvas Paintings & Posters',
     tag: 'Damage-Free Wall Decor',
-    desc: 'Ready-to-mount original acrylic & oil paintings with peel-and-stick adhesive backing. No drilling or nails required.',
-    image: '/artworks/saffron-horizon-wall-canvas.jpg',
+    desc: 'Ready-to-mount original gallery wall posters and canvas paintings with peel-and-stick adhesive backing. No drilling or nails required.',
+    image: '/artworks/modern-abstract-gallery-wall-poster.jpg',
     link: '/browse?category=paintings',
   },
   {

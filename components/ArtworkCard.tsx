@@ -42,7 +42,8 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
               loading="lazy"
               className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
               onError={(e) => {
-                e.currentTarget.src = '/artworks/sacred-lotus-digital-edition.jpg';
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = '/artworks/modern-abstract-gallery-wall-poster.jpg';
               }}
             />
           ) : imageStyle ? (
@@ -60,9 +61,9 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
                 ✏️ Custom Sketch
               </span>
             )}
-            {(artwork.title?.toLowerCase().includes('stick') || artwork.medium?.toLowerCase().includes('stick')) && (
+            {(artwork.title?.toLowerCase().includes('stick') || artwork.title?.toLowerCase().includes('poster') || artwork.medium?.toLowerCase().includes('stick') || artwork.medium?.toLowerCase().includes('poster')) && (
               <span className="rounded bg-emerald-600 px-2 py-0.5 text-[9px] font-extrabold text-white shadow-xs tracking-wider uppercase flex items-center gap-1">
-                🖼️ Stick on Wall
+                🖼️ Wall Art / Poster
               </span>
             )}
             {artwork.isPromoted && (

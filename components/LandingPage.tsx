@@ -87,11 +87,11 @@ export default function LandingPage({ onExplore }: { onExplore?: () => void }) {
         <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-4 sm:gap-8">
           <span>✨ Direct from Independent Ateliers</span>
           <span className="hidden sm:inline opacity-30">•</span>
-          <span>📜 Verified Certificate of Authenticity</span>
+          <span>🛡️ 64-bit dHash Provenance Registry</span>
           <span className="hidden md:inline opacity-30">•</span>
           <span>⚡ 90% Directly to Artists</span>
           <span className="hidden lg:inline opacity-30">•</span>
-          <span>🚚 Doorstep Inspection &amp; Escrow</span>
+          <span>📦 Direct Atelier Dispatch</span>
         </div>
       </div>
 
@@ -283,7 +283,7 @@ export default function LandingPage({ onExplore }: { onExplore?: () => void }) {
                 Traditional galleries take 40% to 50% commission, leaving artists struggling to sustain their studios. At Artelio, we built a fair-trade digital marketplace with a transparent 10% platform fee.
               </p>
               <p className="text-sm text-[#6E6B67] leading-relaxed">
-                Every acquisition triggers an immediate, verifiable split: 90% goes straight to the creator&apos;s UPI ID or bank account via Razorpay, while you receive an insured parcel with an immutable Certificate of Authenticity.
+                Every acquisition triggers an immediate, verifiable split: 90% goes straight to the creator&apos;s UPI ID or bank account via Razorpay, while original physical works are packaged and shipped directly from the creator&apos;s studio.
               </p>
 
               {/* Verified Quote Box */}
@@ -327,7 +327,7 @@ export default function LandingPage({ onExplore }: { onExplore?: () => void }) {
               </div>
               <h3 className="font-serif font-black text-lg text-[#17223B]">Immutable Provenance</h3>
               <p className="mt-2 text-xs text-[#6E6B67] leading-relaxed">
-                Every original and limited edition includes a serialized Certificate of Authenticity (CoA) bearing the artist&apos;s studio verification, physical dimensions, and medium.
+                Every original artwork is fingerprinted with a 64-bit perceptual difference hash (dHash) in the public registry confirming creator atelier identity, medium, and timestamp.
               </p>
             </div>
 

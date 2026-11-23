@@ -16,12 +16,12 @@ const SLIDES = [
   },
   {
     bg: 'bg-gradient-to-r from-[#F83758] via-[#FA7189] to-[#FF8C94]',
-    tag: '50-40% OFF',
-    title: 'Now in (art) products',
-    sub: 'All colours & styles available • 100% Certified Originals direct from artist studios',
-    cta: 'Shop Now',
+    tag: 'HANDCRAFTED ORIGINALS',
+    title: 'Direct from Creator Ateliers',
+    sub: 'Authentic canvas paintings, festive crafts, and limited digital editions direct from artists across India.',
+    cta: 'Explore Works',
     href: '/browse',
-    imgBadge: 'Summer Festive Sale',
+    imgBadge: 'Artist Curated',
   },
   {
     bg: 'bg-gradient-to-r from-[#4392F9] via-[#63A4FF] to-[#80B5FF]',
@@ -106,8 +106,8 @@ export default function HeroBanner({ pieces }: { pieces: Artwork[] }) {
                 {!piece.imageUrl && (
                   <div className="w-full h-full flex items-center justify-center text-3xl">🎨</div>
                 )}
-                <span className="absolute top-2 left-2 bg-[#F83758] text-white text-[9px] font-black px-1.5 py-0.5 rounded">
-                  40% OFF
+                <span className="absolute top-2 left-2 bg-[#17223B]/80 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                  {piece.isDigital ? 'Digital' : 'Physical'}
                 </span>
               </div>
               <h3 className="font-bold text-xs truncate mt-2 text-[#17223B]">{piece.title}</h3>

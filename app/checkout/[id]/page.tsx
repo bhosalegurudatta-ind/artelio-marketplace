@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import Script from 'next/script';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import CertificateModal from '@/components/CertificateModal';
 import InvoiceModal from '@/components/InvoiceModal';
 
 type Artwork = {
@@ -307,24 +306,6 @@ export default function Checkout() {
 
                 <button
                   onClick={() =>
-                    setCoaData({
-                      orderId: confirmedOrder.orderId,
-                      orderDate: new Date().toISOString(),
-                      artworkTitle: confirmedOrder.artwork.title,
-                      artistName: 'Artelio Verified Studio',
-                      medium: confirmedOrder.artwork.medium,
-                      isDigital: true,
-                      collectorName: userEmail || 'Verified Patron',
-                      imageUrl: confirmedOrder.artwork.image_url,
-                    })
-                  }
-                  className="rounded-xl border border-emerald-600/40 bg-white hover:bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800 transition shadow-xs inline-flex items-center gap-1.5"
-                >
-                  <span>📜 Certificate of Authenticity</span>
-                </button>
-
-                <button
-                  onClick={() =>
                     setInvoiceData({
                       orderId: confirmedOrder.orderId,
                       artworkTitle: confirmedOrder.artwork.title,
@@ -377,7 +358,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {coaData && <CertificateModal data={coaData} onClose={() => setCoaData(null)} />}
         {invoiceData && <InvoiceModal data={invoiceData} onClose={() => setInvoiceData(null)} />}
       </main>
     );
@@ -547,9 +527,9 @@ export default function Checkout() {
                 <p className="mt-0.5 text-[11px] text-ink/60">Payment held safely until you inspect the work.</p>
               </div>
               <div className="rounded-xl border border-ink/10 bg-white/40 p-3.5 text-center">
-                <div className="text-xl">📜</div>
-                <h3 className="mt-1 text-xs font-bold text-ink">Certificate of Origin</h3>
-                <p className="mt-0.5 text-[11px] text-ink/60">Verified direct from the artist's studio.</p>
+                <div className="text-xl">🎨</div>
+                <h3 className="mt-1 text-xs font-bold text-ink">Direct Studio Origin</h3>
+                <p className="mt-0.5 text-[11px] text-ink/60">Shipped directly from the artist's studio.</p>
               </div>
               <div className="rounded-xl border border-ink/10 bg-white/40 p-3.5 text-center">
                 <div className="text-xl">🔒</div>
@@ -578,7 +558,7 @@ export default function Checkout() {
                     ₹{artwork.price.toLocaleString('en-IN')}
                   </p>
                   <span className="mt-1 text-[11px] font-semibold text-emerald-600">
-                    {artwork.is_digital ? '✨ Instant Master Download' : '🖼️ Free Insured Delivery'}
+                    {artwork.is_digital ? '✨ Instant Master Download' : '📦 Direct Artist Dispatch'}
                   </span>
                 </div>
               </div>
@@ -608,19 +588,19 @@ export default function Checkout() {
                     {artwork.is_digital
                       ? 'N/A (Digital Edition)'
                       : shippingFee === 0
-                      ? 'Free Insured Shipping'
+                      ? 'Direct Studio Shipping'
                       : `₹${shippingFee.toLocaleString('en-IN')}`}
                   </span>
                 </div>
                 {!artwork.is_digital && (
                   <div className="flex justify-between text-xs text-emerald-600 font-medium">
-                    <span>Estimated Delivery</span>
-                    <span>Within 7 days of payment</span>
+                    <span>Direct Courier Coordination</span>
+                    <span>Direct dispatch by creator atelier</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span>Certificate of Authenticity</span>
-                  <span className="font-bold text-emerald-600">Included (₹0)</span>
+                  <span>Authenticity</span>
+                  <span className="font-bold text-emerald-600">Direct from Artist Atelier</span>
                 </div>
               </div>
 

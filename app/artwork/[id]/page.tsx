@@ -425,16 +425,13 @@ export default function ArtworkDetail() {
             <span className="text-xs text-[#A8A8A9]">({rating.count.toLocaleString()} reviews)</span>
           </div>
 
-          {/* Price with strike-through & 40% OFF */}
+          {/* Artist Stated Price (Clean & Honest, No Fake Strikethroughs) */}
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-xs font-medium text-[#A8A8A9] line-through">
-              ₹{mrp.toLocaleString('en-IN')}
-            </span>
-            <span className="text-2xl font-black text-[#17223B]">
+            <span className="text-2xl md:text-3xl font-black text-[#17223B]">
               ₹{art.price.toLocaleString('en-IN')}
             </span>
-            <span className="rounded bg-[#FDF0F3] px-2 py-0.5 text-xs font-bold text-[#F83758]">
-              40% Off
+            <span className="rounded bg-[#17223B] text-white px-2.5 py-1 text-xs font-bold uppercase tracking-wider">
+              {art.is_digital ? '💾 Digital Edition' : '📦 Handcrafted Physical Piece'}
             </span>
           </div>
 
@@ -443,7 +440,7 @@ export default function ArtworkDetail() {
             <h2 className="text-xs font-bold uppercase tracking-wider text-[#17223B]">Product Details</h2>
             <p className="mt-2 text-xs md:text-sm leading-relaxed text-[#626262]">
               {art.description ||
-                'Exquisite museum-grade original piece created with master pigments on archival stretched canvas. Accompanied by verified provenance documentation and certificate signed by the artist.'}
+                'Exquisite original artwork created directly in the artist atelier. Handcrafted with fine attention to detail and packaged with care for direct dispatch.'}
             </p>
 
             {/* Artwork Tags */}
@@ -502,34 +499,27 @@ export default function ArtworkDetail() {
             )}
           </div>
 
-          {/* Provenance & Zero-Custody Integrity Badge (ES Course Report) */}
+          {/* Direct Creator Authenticity Badge */}
           <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 text-xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 font-bold text-emerald-950">
-                <span className="text-base">🛡️</span>
-                <span>Zero-Custody Cryptographic Provenance</span>
-              </div>
-              <Link
-                href={`/verify?q=${art.id}`}
-                className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline flex items-center gap-1"
-                title="Verify perceptual dHash and public registry on Artelio"
-              >
-                Verify Artwork →
-              </Link>
+            <div className="flex items-center gap-2 font-bold text-emerald-950">
+              <span className="text-base">✨</span>
+              <span>100% Creator Authentic</span>
             </div>
             <p className="mt-1 text-[11px] text-emerald-800 leading-relaxed">
-              Protected by a 64-bit perceptual difference hash (dHash). The master file stays safely in the creator&apos;s zero-custody vault until verified payment.
+              Listed directly by verified artist {art.artist_name}. Zero intermediaries — collectors receive original masterworks direct from creator studios.
             </p>
           </div>
 
-          {/* Delivery Details Box with Pincode Check (Figma Screen 11) */}
+          {/* Direct Artist-to-Customer Delivery Coordination */}
           <div className="mt-6 rounded-xl border border-[#DEDBDB] bg-[#FAFAFA] p-4 text-xs">
             <div className="flex items-center gap-2 font-bold text-[#17223B]">
               <span className="text-[#F83758]">🚚</span>
-              <span>Delivery within 2-4 business days</span>
+              <span>{art.is_digital ? 'Instant Master File Access' : 'Direct Dispatch by Artist Atelier'}</span>
             </div>
             <p className="mt-1 text-[11px] text-[#626262]">
-              Insured courier delivery with live GPS tracking directly from the atelier.
+              {art.is_digital
+                ? 'High-resolution original master files are released immediately into your account upon payment.'
+                : 'Packaging, courier dispatch, and delivery are handled directly between the artist and customer.'}
             </p>
 
             <form onSubmit={handleCheckPincode} className="mt-3 flex gap-2">

@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import CertificateModal from '@/components/CertificateModal';
 import InvoiceModal from '@/components/InvoiceModal';
 
 type TrackedOrder = {
@@ -294,26 +293,8 @@ function TrackContent() {
               )}
             </div>
 
-            {/* Actions: Certificate of Authenticity & Concierge */}
+            {/* Actions: Invoice & Concierge */}
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-              <button
-                onClick={() =>
-                  setCoaData({
-                    orderId: order.id,
-                    orderDate: order.created_at,
-                    artworkTitle: art?.title || 'Fine Art',
-                    artistName: art?.artistName || 'Artelio Studio Creator',
-                    medium: art?.medium,
-                    isDigital: art?.isDigital,
-                    collectorName: order.shipping_name,
-                    imageUrl: art?.imageUrl,
-                  })
-                }
-                className="flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-400/20 transition-all shadow-sm"
-              >
-                <span>📜</span> Certificate (COA)
-              </button>
-
               <button
                 onClick={() =>
                   setInvoiceData({
@@ -354,9 +335,6 @@ function TrackContent() {
           </div>
         </div>
       )}
-
-      {/* Certificate Modal */}
-      <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
 
       {/* Invoice Modal */}
       <InvoiceModal data={invoiceData} onClose={() => setInvoiceData(null)} />

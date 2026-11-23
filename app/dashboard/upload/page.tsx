@@ -622,12 +622,48 @@ export default function UploadArtwork() {
           )}
         </div>
 
-        <label className="flex items-start gap-3 rounded-xl border border-ink/10 p-4">
-          <input type="checkbox" checked={isDigital} onChange={(e) => setIsDigital(e.target.checked)} className="mt-1 h-4 w-4 accent-brand" />
-          <span className="text-sm text-ink/80">
-            <span className="font-semibold text-ink">This is a digital artwork.</span> Buyers can download your full-quality file after they pay, and it can sell more than once. Leave unticked for a physical, one-off piece that you will ship yourself.
-          </span>
-        </label>
+        <div className="space-y-2">
+          <span className={labelClass}>Artwork Format &amp; Fulfillment <span className="text-clay">*</span></span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setIsDigital(false)}
+              className={`text-left p-4 rounded-2xl border-2 transition ${
+                !isDigital
+                  ? 'border-[#F83758] bg-[#FDF0F3]'
+                  : 'border-[#DEDBDB] bg-white hover:border-gray-400'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">📦</span>
+                {!isDigital && <span className="text-[10px] font-extrabold uppercase bg-[#F83758] text-white px-2 py-0.5 rounded-full">Selected</span>}
+              </div>
+              <h4 className="mt-2 text-sm font-bold text-[#17223B]">Physical Original Artwork</h4>
+              <p className="mt-1 text-xs text-[#626262] leading-relaxed">
+                Handcrafted original (paintings, sculptures, lamps, diyas, woodwork). You package and ship directly to the buyer.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsDigital(true)}
+              className={`text-left p-4 rounded-2xl border-2 transition ${
+                isDigital
+                  ? 'border-[#F83758] bg-[#FDF0F3]'
+                  : 'border-[#DEDBDB] bg-white hover:border-gray-400'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">💾</span>
+                {isDigital && <span className="text-[10px] font-extrabold uppercase bg-[#F83758] text-white px-2 py-0.5 rounded-full">Selected</span>}
+              </div>
+              <h4 className="mt-2 text-sm font-bold text-[#17223B]">Digital Artwork Edition</h4>
+              <p className="mt-1 text-xs text-[#626262] leading-relaxed">
+                Downloadable digital file. Collectors receive instant access upon escrow payment.
+              </p>
+            </button>
+          </div>
+        </div>
 
         {/* Shipping & Fulfillment (Requirement 1) */}
         {!isDigital && (
@@ -657,7 +693,7 @@ export default function UploadArtwork() {
                 onChange={(e) => setShippingFee(e.target.value)}
               />
               <span className="mt-1 block text-[11px] text-ink/50">
-                Courier &amp; packaging fee charged at checkout (0 = complimentary).
+                Courier &amp; packaging fee charged at checkout (0 = complimentary). Packaging and courier dispatch are handled directly between your atelier and the customer.
               </span>
             </label>
           </div>

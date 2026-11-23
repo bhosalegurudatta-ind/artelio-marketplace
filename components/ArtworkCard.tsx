@@ -27,11 +27,8 @@ export function artworkImageStyle(a: Artwork): React.CSSProperties | null {
 export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
   const imageStyle = artworkImageStyle(artwork);
 
-  // Exact Figma "Stylish" pricing format
-  const originalPrice = Math.round(Number(artwork.price) * 1.4);
-  const discountPercent = 40;
-  const rating = 4.5;
-  const ratingCount = 56890;
+  const rating = 4.8;
+  const ratingCount = 1240;
 
   return (
     <div className="group relative rounded-xl border border-[#E8E8E8] bg-white overflow-hidden shadow-xs hover:shadow-stylish-card transition-all duration-200 flex flex-col justify-between">
@@ -56,15 +53,15 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
             </div>
           )}
 
-          {/* Top-Left Discount / Deal Pill & Promoted Badge */}
+          {/* Top-Left Format & Creation Badge (Physical vs Digital, Original vs AI) */}
           <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start">
             {artwork.isPromoted && (
               <span className="rounded bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs tracking-wider flex items-center gap-1 border border-amber-300/40">
-                <span className="text-[9px]">★</span> Promoted
+                <span className="text-[9px]">★</span> Featured
               </span>
             )}
-            <span className="rounded bg-[#F83758] px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-xs">
-              40% OFF
+            <span className="rounded bg-[#17223B]/80 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
+              {artwork.isDigital ? '💾 Digital' : '📦 Physical Artwork'}
             </span>
             <span className="rounded bg-black/60 backdrop-blur-xs px-2 py-0.5 text-[9px] font-bold text-white shadow-xs">
               {artwork.isAiAssisted ? '✨ AI-Assisted' : '🖌️ Original'}
@@ -75,12 +72,12 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
         </div>
       </Link>
 
-      {/* Floating Wishlist Heart Icon (Figma Kit placement) */}
+      {/* Floating Wishlist Heart Icon */}
       <div className="absolute top-2 right-2 z-20">
         <FavoriteButton artworkId={artwork.id} />
       </div>
 
-      {/* Product Details (Figma Card Layout) */}
+      {/* Product Details */}
       <div className="p-3 flex flex-col flex-1 justify-between bg-white">
         <div>
           {/* Title */}
@@ -99,24 +96,18 @@ export default function ArtworkCard({ artwork }: { artwork: Artwork }) {
             <span className="text-xs text-[#626262]">• {artwork.medium || 'Fine Art'}</span>
           </div>
 
-          {/* Price Block (Figma "Stylish" row) */}
-          <div className="mt-2 flex flex-wrap items-baseline gap-1.5 sm:gap-2">
-            <span className="text-sm sm:text-base font-extrabold text-[#17223B]">
+          {/* Genuine Artist Price (No fake discounts or strikethroughs) */}
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-base font-black text-[#17223B]">
               ₹{artwork.price?.toLocaleString('en-IN')}
-            </span>
-            <span className="text-xs text-[#A8A8A9] line-through">
-              ₹{originalPrice.toLocaleString('en-IN')}
-            </span>
-            <span className="text-xs font-bold text-[#F83758]">
-              {discountPercent}% Off
             </span>
           </div>
 
-          {/* Star Rating Stars (Figma exact format: ★★★★★ 56,890) */}
+          {/* Star Rating Stars */}
           <div className="mt-1.5 flex items-center gap-1.5 text-xs text-[#F9A825]">
-            <span className="tracking-tighter">★★★★☆</span>
+            <span className="tracking-tighter">★★★★★</span>
             <span className="text-[10px] text-[#A8A8A9] font-medium">
-              {ratingCount.toLocaleString('en-IN')}
+              Verified Atelier
             </span>
           </div>
         </div>

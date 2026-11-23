@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import CertificateModal from '@/components/CertificateModal';
 import InvoiceModal from '@/components/InvoiceModal';
 import ShipOrderModal from '@/components/ShipOrderModal';
 import PackingSlipModal from '@/components/PackingSlipModal';
@@ -740,7 +739,6 @@ function ProfileContent() {
       )}
 
       {/* Modals */}
-      {coaData && <CertificateModal {...coaData} onClose={() => setCoaData(null)} />}
       {invoiceData && <InvoiceModal {...invoiceData} onClose={() => setInvoiceData(null)} />}
       {shippingOrder && (
         <ShipOrderModal

@@ -10,7 +10,6 @@ import UpgradeModal from '@/components/UpgradeModal';
 import PackingSlipModal from '@/components/PackingSlipModal';
 import ShipOrderModal from '@/components/ShipOrderModal';
 import PayoutSettingsModal from '@/components/PayoutSettingsModal';
-import CertificateModal from '@/components/CertificateModal';
 import PackagingGuideModal from '@/components/PackagingGuideModal';
 import PromoteArtworkModal from '@/components/PromoteArtworkModal';
 
@@ -583,22 +582,7 @@ export default function Dashboard() {
                 </p>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/5 pt-2">
-                <button
-                  onClick={() =>
-                    setCoaData({
-                      orderId: o.id,
-                      orderDate: o.created_at,
-                      artworkTitle: o.artworks?.title || 'Fine Art',
-                      artistName: artistName || 'Artelio Studio Creator',
-                      medium: o.artworks?.medium,
-                      isDigital: o.artworks?.is_digital,
-                      collectorName: o.shipping_name,
-                    })
-                  }
-                  className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 hover:bg-white/10 transition"
-                >
-                  <span>📜</span> Certificate of Authenticity (COA)
-                </button>
+
                 <button
                   onClick={() => setSlipOrder(o)}
                   className="flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 hover:bg-white/10 transition"
@@ -868,8 +852,7 @@ export default function Dashboard() {
         }}
       />
 
-      <CertificateModal data={coaData} onClose={() => setCoaData(null)} />
-      {packagingGuideOpen && <PackagingGuideModal onClose={() => setPackagingGuideOpen(false)} />}
+            {packagingGuideOpen && <PackagingGuideModal onClose={() => setPackagingGuideOpen(false)} />}
       <PromoteArtworkModal
         artwork={promoteModalArtwork}
         isOpen={Boolean(promoteModalArtwork)}

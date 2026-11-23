@@ -20,13 +20,13 @@ export default function Footer() {
           </div>
           <div>
             <span className="text-2xl">🚚</span>
-            <h4 className="text-xs font-bold text-[#17223B] mt-1">Free Insured Delivery</h4>
-            <p className="text-[11px] text-[#626262]">Across all states in India with live tracking</p>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">Direct Artist Dispatch</h4>
+            <p className="text-[11px] text-[#626262]">Packaging and shipping handled directly by creators</p>
           </div>
           <div>
-            <span className="text-2xl">📜</span>
-            <h4 className="text-xs font-bold text-[#17223B] mt-1">Physical Signed COA</h4>
-            <p className="text-[11px] text-[#626262]">Certificate of Authenticity with every piece</p>
+            <span className="text-2xl">🎨</span>
+            <h4 className="text-xs font-bold text-[#17223B] mt-1">Direct Creator Connection</h4>
+            <p className="text-[11px] text-[#626262]">Commission &amp; communicate directly with artists</p>
           </div>
           <div>
             <span className="text-2xl">🔒</span>
@@ -85,7 +85,6 @@ export default function Footer() {
           <ul className="space-y-1.5">
             <li><Link href="/browse" className={linkClass}>All Featured Products</Link></li>
             <li><Link href="/spaces" className={linkClass}>3D Room Visualizer</Link></li>
-            <li><Link href="/verify" className={linkClass}>🛡️ Provenance &amp; dHash Check</Link></li>
             <li><Link href="/plans" className={linkClass}>Collector VIP &amp; Artist Plans</Link></li>
             <li><Link href="/track" className={linkClass}>Track My Delivery</Link></li>
             <li><Link href="/contact" className={linkClass}>Art Concierge Help</Link></li>

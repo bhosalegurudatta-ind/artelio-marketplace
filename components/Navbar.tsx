@@ -82,17 +82,7 @@ export default function Navbar() {
 
   return (
     <>
-      {/* 1. TOP PROMO RIBBON (Matching Artelio Grand Art Utsav Banner) */}
-      <div className="bg-[#FA1E78] text-white py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-2.5 flex-wrap shadow-xs">
-        <span className="inline-flex items-center gap-1 rounded-md bg-white/20 border border-white/25 px-2.5 py-0.5 text-[10.5px] sm:text-[11.5px] font-extrabold text-white shadow-xs tracking-wider">
-          ✦ ARTELIO GRAND ART UTSAV
-        </span>
-        <span className="text-[11px] sm:text-xs font-bold text-white drop-shadow-xs">
-          Get Up to 40% Off on Curated Originals + Free Insured White-Glove Courier Delivery Across India!
-        </span>
-      </div>
-
-      {/* 2. FIGMA "STYLISH" APP HEADER */}
+      {/* APP HEADER */}
       <header className="sticky top-0 z-50 bg-white border-b border-[#E8E8E8]">
         <div className="mx-auto max-w-[1240px] px-4 py-2.5 sm:px-6 flex items-center justify-between gap-3">
           
@@ -126,12 +116,12 @@ export default function Navbar() {
           {/* Right: User Avatar Photo Circle (Matching Figma screen) */}
           <div className="flex items-center gap-2.5">
             <Link
-              href="/verify"
+              href="/browse"
               className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#F3F3F3] hover:bg-[#FDF0F3] text-xs font-bold text-[#17223B] hover:text-[#F83758] transition"
-              title="Verify Artwork Authenticity & Perceptual dHash"
+              title="Explore Original Artworks"
             >
-              <span>🛡️</span>
-              <span className="hidden md:inline text-[11px]">Verify Art</span>
+              <span>🎨</span>
+              <span className="hidden md:inline text-[11px]">Explore Art</span>
             </Link>
 
             <Link
@@ -268,38 +258,52 @@ export default function Navbar() {
                     🏠 Home
                   </Link>
                   <Link href="/browse" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    🎨 All Artworks
+                    🎨 Browse Artworks
                   </Link>
-                  <Link href="/verify" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    🛡️ Verify Provenance (dHash)
-                  </Link>
-                  <Link href="/plans" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    💎 Plans &amp; Subscriptions
-                  </Link>
-                  <Link href="/following" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    ✨ Following Feed
-                  </Link>
-                  <Link href="/favourites" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    ❤️ My Favourites
-                  </Link>
-                  <Link href="/messages" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    💬 Studio Messages
-                  </Link>
-                  <Link href="/spaces" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    ✨ 3D Room Visualizer
-                  </Link>
-                  <Link href="/orders" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    📦 My Orders
-                  </Link>
-                  <Link href="/profile" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    👤 Account Profile
-                  </Link>
-                  <Link href="/track" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
-                    🚚 Track Delivery
-                  </Link>
-                  <Link href="/artist-signup" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#4392F9] hover:underline">
-                    🖌️ Sell Art on Artelio
-                  </Link>
+
+                  {role === 'artist' ? (
+                    <>
+                      <div className="pt-2 pb-1 border-t border-gray-100">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#F83758]">Artist Atelier</span>
+                      </div>
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        🎨 Studio Dashboard
+                      </Link>
+                      <Link href="/dashboard/upload" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#F83758] hover:underline">
+                        ➕ Upload New Artwork
+                      </Link>
+                      <Link href="/dashboard/payouts" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        💳 Payouts (90% Direct)
+                      </Link>
+                      <Link href="/dashboard/ai-studio" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        ✨ AI Style-Fusion Studio
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="pt-2 pb-1 border-t border-gray-100">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#4392F9]">Collector Hub</span>
+                      </div>
+                      <Link href="/spaces" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        🛋️ My Collector Spaces
+                      </Link>
+                      <Link href="/favourites" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        ❤️ Saved Favourites
+                      </Link>
+                      <Link href="/orders" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                        📦 My Purchases (Direct Delivery)
+                      </Link>
+                      <Link href="/artist-signup" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#4392F9] hover:underline">
+                        🖌️ Sell Your Art on Artelio
+                      </Link>
+                    </>
+                  )}
+
+                  <div className="pt-2 border-t border-gray-100">
+                    <Link href="/profile" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                      👤 Account Settings
+                    </Link>
+                  </div>
                 </div>
               </div>
 

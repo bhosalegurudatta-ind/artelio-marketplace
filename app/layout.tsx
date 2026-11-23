@@ -24,7 +24,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: 'Artelio | India’s Premier Art & Fine Living Destination',
   description:
-    'Discover authentic original paintings, sculptures, and curated masterworks directly from independent artist ateliers. 100% authentic with Certificates of Authenticity.',
+    'Discover authentic original paintings, sculptures, and curated masterworks directly from independent artist ateliers. Direct creator connection and safe escrow.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

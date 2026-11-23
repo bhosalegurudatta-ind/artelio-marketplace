@@ -350,6 +350,22 @@ export default function UploadArtwork() {
         Exclusive to verified artists. Upload your original physical or digital masterpiece. Buyers see a watermarked preview; full-resolution files and originals are secured in escrow.
       </p>
 
+      {/* Zero-Custody Architecture & dHash Callout (ES Course Report) */}
+      <div className="mt-6 rounded-2xl border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 p-4 text-xs shadow-xs">
+        <div className="flex items-center gap-2 font-bold text-emerald-900">
+          <span className="text-base">🛡️</span>
+          <span>Zero-Custody &amp; Cryptographic Provenance Protection</span>
+        </div>
+        <p className="mt-1 text-emerald-800 leading-relaxed text-[11.5px]">
+          Artelio follows a strict <strong>Zero-Custody architecture</strong>: your uploads are automatically watermarked and fingerprinted with a <strong>64-bit perceptual difference hash (dHash)</strong>. High-resolution originals remain protected in your custody and are released only upon confirmed escrow payment.
+        </p>
+        <div className="mt-2 flex items-center gap-3 text-[11px] font-semibold text-emerald-700">
+          <span>✓ Auto-watermarked low-res preview</span>
+          <span>✓ Public dHash registry lookup</span>
+          <span>✓ 90% direct payout</span>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
         <label className="block">
           <span className={labelClass}>Artwork Photos (Up to 6) <span className="text-clay">*</span></span>

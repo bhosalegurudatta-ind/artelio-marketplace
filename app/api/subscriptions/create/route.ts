@@ -132,10 +132,10 @@ export async function POST(req: NextRequest) {
           period: 'monthly',
           interval: 1,
           item: {
-            name: 'Artelio Artist Atelier Plan',
-            amount: 49900, // Rs. 499 in paise
+            name: 'Artelio Artist Professional Plan',
+            amount: 99900, // Rs. 999 in paise (ES Report Section 5.1)
             currency: 'INR',
-            description: 'Artist subscription - Rs. 499 per month',
+            description: 'Artist Professional Subscription - Rs. 999 per month',
           },
           notes: {
             app: 'artelio',
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
         planId = plan.id;
       } catch (planError: any) {
         console.warn('Could not create plan via Razorpay SDK (will use fallback test plan):', planError?.message);
-        planId = 'plan_artelio_artist_499';
+        planId = 'plan_artelio_artist_999';
       }
     }
 

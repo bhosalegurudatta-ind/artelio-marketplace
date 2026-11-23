@@ -85,6 +85,8 @@ export default function Footer() {
           <ul className="space-y-1.5">
             <li><Link href="/browse" className={linkClass}>All Featured Products</Link></li>
             <li><Link href="/spaces" className={linkClass}>3D Room Visualizer</Link></li>
+            <li><Link href="/verify" className={linkClass}>🛡️ Provenance &amp; dHash Check</Link></li>
+            <li><Link href="/plans" className={linkClass}>Collector VIP &amp; Artist Plans</Link></li>
             <li><Link href="/track" className={linkClass}>Track My Delivery</Link></li>
             <li><Link href="/contact" className={linkClass}>Art Concierge Help</Link></li>
           </ul>

@@ -10,7 +10,9 @@ export default function PlansPage() {
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'artist' | 'customer'>('artist');
 
-  const plans = Object.values(SUBSCRIPTION_PLANS);
+  const plans = Array.from(
+    new Map(Object.values(SUBSCRIPTION_PLANS).map((p) => [p.id, p])).values()
+  );
 
   function openModal(target: 'artist' | 'customer') {
     setSelectedRole(target);

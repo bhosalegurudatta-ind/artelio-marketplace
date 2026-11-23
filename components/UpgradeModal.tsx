@@ -29,8 +29,12 @@ export default function UpgradeModal({
 
   if (!isOpen) return null;
 
-  const relevantPlans = Object.values(SUBSCRIPTION_PLANS).filter(
-    (p) => p.targetRole === role
+  const relevantPlans = Array.from(
+    new Map(
+      Object.values(SUBSCRIPTION_PLANS)
+        .filter((p) => p.targetRole === role)
+        .map((p) => [p.id, p])
+    ).values()
   );
 
   async function handleSubscribe(plan: Plan) {

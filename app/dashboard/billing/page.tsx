@@ -109,7 +109,7 @@ export default function BillingPage() {
           key: keyId,
           subscription_id: subscriptionId,
           name: 'Artelio Atelier',
-          description: 'Artist Atelier Monthly Subscription - ₹499/month',
+          description: 'Artist Professional Subscription - ₹999/month',
           image: '/favicon.ico',
           handler: async function (response: any) {
             setSuccessMsg('Payment received! Subscription is being processed.');
@@ -260,12 +260,12 @@ export default function BillingPage() {
           <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Current Plan</span>
             <div className="mt-2 flex items-baseline gap-1">
-              <span className="font-serif text-2xl font-bold text-[#17223B]">₹499</span>
+              <span className="font-serif text-2xl font-bold text-[#17223B]">₹999</span>
               <span className="text-xs text-gray-500 font-medium">/ month</span>
             </div>
-            <p className="mt-2 text-xs font-bold text-[#F83758]">Artist Atelier Pro</p>
+            <p className="mt-2 text-xs font-bold text-[#F83758]">Artist Professional</p>
             <p className="mt-1 text-[11px] text-gray-500 leading-relaxed">
-              10% commission on sales. Payment held until buyer receipt or 7/10 days after shipment.
+              10% transparent commission on sales. Access to AI Style-Fusion and Zero-Custody Provenance Registry.
             </p>
           </div>
 

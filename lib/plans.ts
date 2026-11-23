@@ -10,52 +10,59 @@ export interface Plan {
 }
 
 export const SUBSCRIPTION_PLANS: Record<string, Plan> = {
-  creator_pro_monthly: {
-    id: 'creator_pro_monthly',
-    name: 'Creator Pro',
+  artist_pro_monthly: {
+    id: 'artist_pro_monthly',
+    name: 'Artist Professional',
     targetRole: 'artist',
-    price: 499,
+    price: 999,
     billingInterval: 'month',
-    description: 'Empower your studio with state-of-the-art AI art creation, critique lab, and zero sales surcharges.',
+    description: "Access to the platform's AI generation tool, watermarking and provenance records, and marketplace listing rights.",
     features: [
-      'AI Artwork Studio (Concept & Vector Art Generator)',
-      'AI Critique Lab (Composition & Palette Direction)',
-      'AI Artwork Master Prompt & Style Recipe Engine',
-      'Full Studio Listing Access & High-Res Storage',
-      'Featured Marketplace Placement',
-      'Zero monthly platform commission surcharge',
+      'Platform AI Generation & Style-Fusion Studio',
+      'RAG-assisted generation drawing on your own references',
+      'Automated watermarking & cryptographic dHash provenance',
+      'Zero-custody listing rights (keep your original master files)',
+      'Guaranteed 90% net sales payout directly to UPI / bank',
+      'Public Provenance Registry verification & serialized CoA',
     ],
     popular: true,
   },
-  creator_pro_annual: {
-    id: 'creator_pro_annual',
-    name: 'Creator Pro Annual',
+  artist_pro_annual: {
+    id: 'artist_pro_annual',
+    name: 'Artist Professional Annual',
     targetRole: 'artist',
-    price: 4999,
+    price: 9990,
     billingInterval: 'year',
-    description: 'Annual studio access with 2 months free, generative art creation tools, and exhibition launch kits.',
+    description: 'Annual professional studio membership with 2 months free, unlimited AI generations, and priority exhibition drops.',
     features: [
-      'All Creator Pro monthly features',
+      'All Artist Professional monthly features',
       'Unlimited AI Artwork Studio generations',
-      '2 months free (Save ₹989/yr)',
+      '2 months free (Save ₹1,998/yr)',
       'Priority curator review for gallery showcases',
       'Exhibition & Social Media Launch Kit',
+      'VIP badge in Artelio Provenance Registry',
     ],
   },
-  collector_club_monthly: {
-    id: 'collector_club_monthly',
-    name: 'Collector Club Pass',
+  collector_vip_monthly: {
+    id: 'collector_vip_monthly',
+    name: 'Collector VIP Pass',
     targetRole: 'customer',
-    price: 199,
+    price: 499,
     billingInterval: 'month',
-    description: 'Unlock AI art co-creation, custom commission ideas, and room visualizer tools for your living spaces.',
+    description: 'Room and framing previews, early access to limited drops, and private virtual galleries.',
     features: [
-      'AI Artwork Studio (Co-create & Commission Generator)',
-      'Unlimited "View on Your Wall" room visualizer',
-      'AI Interior Stylist & Decor Color Matcher',
-      'High-resolution mockup downloads in My Spaces',
-      'Direct private messaging with independent artists',
+      '"View on Your Wall" room and framing previews',
+      'Private virtual galleries (My Spaces exhibition rooms)',
+      'Early access to limited drops & exclusive atelier releases',
+      'AI Interior Stylist & Decor Color Harmony Matcher',
+      'Direct private messaging & custom commissions with creators',
+      'Lossless digital masterwork download vault',
     ],
     popular: true,
   },
 };
+
+// Aliases to maintain backwards compatibility with existing UI / database bindings
+SUBSCRIPTION_PLANS.creator_pro_monthly = SUBSCRIPTION_PLANS.artist_pro_monthly;
+SUBSCRIPTION_PLANS.creator_pro_annual = SUBSCRIPTION_PLANS.artist_pro_annual;
+SUBSCRIPTION_PLANS.collector_club_monthly = SUBSCRIPTION_PLANS.collector_vip_monthly;

@@ -498,6 +498,26 @@ export default function ArtworkDetail() {
             )}
           </div>
 
+          {/* Provenance & Zero-Custody Integrity Badge (ES Course Report) */}
+          <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3.5 text-xs">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-emerald-950">
+                <span className="text-base">🛡️</span>
+                <span>Zero-Custody Cryptographic Provenance</span>
+              </div>
+              <Link
+                href={`/verify?q=${art.id}`}
+                className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 underline flex items-center gap-1"
+                title="Verify perceptual dHash and public registry on Artelio"
+              >
+                Verify Artwork →
+              </Link>
+            </div>
+            <p className="mt-1 text-[11px] text-emerald-800 leading-relaxed">
+              Protected by a 64-bit perceptual difference hash (dHash). The master file stays safely in the creator&apos;s zero-custody vault until verified payment.
+            </p>
+          </div>
+
           {/* Delivery Details Box with Pincode Check (Figma Screen 11) */}
           <div className="mt-6 rounded-xl border border-[#DEDBDB] bg-[#FAFAFA] p-4 text-xs">
             <div className="flex items-center gap-2 font-bold text-[#17223B]">

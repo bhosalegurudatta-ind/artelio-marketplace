@@ -126,6 +126,15 @@ export default function Navbar() {
           {/* Right: User Avatar Photo Circle (Matching Figma screen) */}
           <div className="flex items-center gap-2.5">
             <Link
+              href="/verify"
+              className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-[#F3F3F3] hover:bg-[#FDF0F3] text-xs font-bold text-[#17223B] hover:text-[#F83758] transition"
+              title="Verify Artwork Authenticity & Perceptual dHash"
+            >
+              <span>🛡️</span>
+              <span className="hidden md:inline text-[11px]">Verify Art</span>
+            </Link>
+
+            <Link
               href="/following"
               className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full bg-[#F3F3F3] text-[#17223B] hover:text-[#F83758] hover:bg-[#FDF0F3] transition"
               title="Following Feed"
@@ -260,6 +269,12 @@ export default function Navbar() {
                   </Link>
                   <Link href="/browse" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     🎨 All Artworks
+                  </Link>
+                  <Link href="/verify" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    🛡️ Verify Provenance (dHash)
+                  </Link>
+                  <Link href="/plans" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                    💎 Plans &amp; Subscriptions
                   </Link>
                   <Link href="/following" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                     ✨ Following Feed

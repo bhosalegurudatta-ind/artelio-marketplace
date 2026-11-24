@@ -286,7 +286,7 @@ export default function Navbar() {
                       <Link href="/dashboard/payouts" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                         💳 Payouts (90% Direct)
                       </Link>
-                      <Link href="/dashboard/ai-studio" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
+                      <Link href="/create/fusion" onClick={() => setMenuOpen(false)} className="block py-2 text-sm font-bold text-[#17223B] hover:text-[#F83758]">
                         ✨ AI Style-Fusion Studio
                       </Link>
                     </>

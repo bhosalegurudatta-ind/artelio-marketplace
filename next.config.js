@@ -15,6 +15,24 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['sharp'],
   },
+  async redirects() {
+    return [
+      { source: '/products', destination: '/browse', permanent: true },
+      { source: '/product', destination: '/browse', permanent: true },
+      { source: '/shop', destination: '/browse', permanent: true },
+      { source: '/catalog', destination: '/browse', permanent: true },
+      { source: '/gallery', destination: '/browse', permanent: true },
+      { source: '/items', destination: '/browse', permanent: true },
+      { source: '/artworks', destination: '/browse', permanent: true },
+      { source: '/cart', destination: '/browse', permanent: true },
+      { source: '/dashboard/ai-studio', destination: '/create/fusion', permanent: true },
+      { source: '/ai-studio', destination: '/create/fusion', permanent: true },
+      { source: '/fusion', destination: '/create/fusion', permanent: true },
+      { source: '/upload', destination: '/dashboard/upload', permanent: true },
+      { source: '/billing', destination: '/dashboard/billing', permanent: true },
+      { source: '/payouts', destination: '/dashboard/payouts', permanent: true },
+    ];
+  },
 };
 
 module.exports = nextConfig;

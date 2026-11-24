@@ -16,6 +16,7 @@ export type Artwork = {
   artistVerified?: boolean;
   isAiAssisted?: boolean;
   isDigital?: boolean;
+  searchScore?: number;
 };
 
 export function artworkImageStyle(a: Artwork): React.CSSProperties | null {

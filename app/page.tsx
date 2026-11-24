@@ -52,20 +52,14 @@ export default function Home() {
     async function load() {
       let { data, error } = await supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, is_hidden, users(name, verified)')
+        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_ai_assisted, users(name, approved)')
         .eq('sold', false)
         .order('created_at', { ascending: false })
         .limit(40);
 
-      // Fallback if is_hidden or verified column does not exist in db
       if (error || !data) {
-        const fallback = await supabase
-          .from('artworks')
-          .select('id, title, price, medium, image_url, created_at, artist_id, users(name)')
-          .eq('sold', false)
-          .order('created_at', { ascending: false })
-          .limit(40);
-        data = fallback.data as any;
+        console.error('Error loading home artworks:', error);
+        data = [];
       }
 
       // Fetch active promotions: stop showing when budget is spent or end date passes
@@ -110,7 +104,7 @@ export default function Home() {
           createdAt: a.created_at,
           artistId: a.artist_id,
           isPromoted: activePromoIds.has(a.id),
-          artistVerified: Boolean(a.users?.verified),
+          artistVerified: Boolean(a.users?.approved),
           isAiAssisted: Boolean(a.is_ai_assisted),
         }))
       );

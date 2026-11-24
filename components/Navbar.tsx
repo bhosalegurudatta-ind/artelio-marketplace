@@ -18,6 +18,14 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get('q');
+      if (q) setQuery(q);
+    }
+  }, []);
+
+  useEffect(() => {
     let active = true;
 
     async function refresh() {
@@ -204,8 +212,27 @@ export default function Navbar() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search any Product.."
-              className="w-full rounded-xl border border-transparent bg-[#F3F3F3] hover:bg-white hover:border-[#DEDBDB] focus:bg-white focus:border-[#F83758] pl-11 pr-11 py-2.5 text-sm text-[#17223B] placeholder-[#A8A8A9] focus:outline-none focus:ring-1 focus:ring-[#F83758] transition shadow-xs"
+              className="w-full rounded-xl border border-transparent bg-[#F3F3F3] hover:bg-white hover:border-[#DEDBDB] focus:bg-white focus:border-[#F83758] pl-11 pr-20 py-2.5 text-sm text-[#17223B] placeholder-[#A8A8A9] focus:outline-none focus:ring-1 focus:ring-[#F83758] transition shadow-xs"
             />
+
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/browse')) {
+                    router.push('/browse');
+                  }
+                }}
+                className="absolute right-10 text-[#A8A8A9] hover:text-[#17223B] p-1 transition"
+                title="Clear search"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            )}
 
             {/* Microphone Icon (from Figma design) */}
             <button

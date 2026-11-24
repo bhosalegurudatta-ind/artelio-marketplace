@@ -19,6 +19,92 @@ const PRICE_TIERS = [
   { label: '₹25,000+', min: 25000, max: null },
 ];
 
+const STOP_WORDS = new Set(['and', 'or', 'the', 'with', 'a', 'an', 'in', 'on', 'of', 'for', 'by', 'to', 'at']);
+
+function stemWord(w: string): string {
+  let word = w.toLowerCase().trim();
+  if (word.endsWith('es') && word.length > 4) word = word.slice(0, -2);
+  else if (word.endsWith('s') && !word.endsWith('ss') && word.length > 3) word = word.slice(0, -1);
+  else if (word.endsWith('ing') && word.length > 5) word = word.slice(0, -3);
+  else if (word.endsWith('ed') && word.length > 4) word = word.slice(0, -2);
+  return word;
+}
+
+function extractSearchTerms(query: string): string[] {
+  if (!query) return [];
+  const cleanStr = query.toLowerCase().trim();
+  const rawWords = cleanStr.split(/[\s,+/]+/).filter((w) => w.length > 1 && !STOP_WORDS.has(w));
+  const terms: string[] = [];
+  for (const w of rawWords) {
+    terms.push(stemWord(w));
+    if (w.includes('-')) {
+      const parts = w.split('-').filter((p) => p.length > 1 && !STOP_WORDS.has(p));
+      for (const p of parts) {
+        terms.push(stemWord(p));
+      }
+    }
+  }
+  return Array.from(new Set(terms));
+}
+
+function scoreArtwork(
+  artwork: any,
+  terms: string[],
+  rawQuery: string,
+  matchingTagIds: Set<string>
+): { score: number; matchedTermsCount: number } {
+  const qLower = rawQuery.toLowerCase().trim();
+  const title = (artwork.title || '').toLowerCase();
+  const desc = (artwork.description || '').toLowerCase();
+  const med = (artwork.medium || '').toLowerCase();
+  const artist = (artwork.artist || artwork.users?.name || '').toLowerCase();
+
+  let score = 0;
+  let matchedTermsCount = 0;
+
+  // Exact phrase match bonus
+  if (title.includes(qLower)) score += 200;
+  else if (med.includes(qLower)) score += 100;
+  else if (desc.includes(qLower)) score += 50;
+  else if (artist.includes(qLower)) score += 80;
+
+  // Matching tag bonus
+  if (matchingTagIds.has(artwork.id)) {
+    score += 60;
+    matchedTermsCount++;
+  }
+
+  // Individual term matching
+  for (const term of terms) {
+    let termFound = false;
+    const inTitle = title.includes(term);
+    const inMed = med.includes(term);
+    const inArtist = artist.includes(term);
+    const inDesc = desc.includes(term);
+
+    if (inTitle) {
+      score += 40;
+      termFound = true;
+    }
+    if (inMed) {
+      score += 25;
+      termFound = true;
+    }
+    if (inArtist) {
+      score += 30;
+      termFound = true;
+    }
+    if (inDesc) {
+      score += 15;
+      termFound = true;
+    }
+
+    if (termFound) matchedTermsCount++;
+  }
+
+  return { score, matchedTermsCount };
+}
+
 function clean(text: string) {
   return text.replace(/[,()%*]/g, ' ').trim();
 }
@@ -52,14 +138,6 @@ function BrowseInner() {
     async function load() {
       setLoading(true);
 
-      // Check if current user is admin
-      let isAdmin = false;
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user) {
-        const { data: prof } = await supabase.from('users').select('role').eq('id', userData.user.id).maybeSingle();
-        if (prof?.role === 'admin') isAdmin = true;
-      }
-
       // 1. Tag filter matching: get artwork IDs associated with ?tag=
       let tagFilteredIds: string[] | null = null;
       if (tagParam) {
@@ -70,19 +148,28 @@ function BrowseInner() {
         tagFilteredIds = (tagRows ?? []).map((r: any) => r.artwork_id);
       }
 
-      // 2. Include tags in search: get artwork IDs whose tags match ?q=
+      // 2. Include tags in search: get artwork IDs whose tags match any query token
       let searchTagIds: string[] = [];
       if (qParam) {
-        const { data: sTagRows } = await supabase
-          .from('artwork_tags')
-          .select('artwork_id')
-          .ilike('tag', `%${qParam}%`);
-        searchTagIds = (sTagRows ?? []).map((r: any) => r.artwork_id);
+        const terms = extractSearchTerms(qParam);
+        if (terms.length > 0) {
+          const { data: sTagRows } = await supabase
+            .from('artwork_tags')
+            .select('artwork_id, tag');
+          if (sTagRows) {
+            searchTagIds = sTagRows
+              .filter((r: any) => {
+                const t = (r.tag || '').toLowerCase();
+                return terms.some((term) => t.includes(term));
+              })
+              .map((r: any) => r.artwork_id);
+          }
+        }
       }
 
       let query = supabase
         .from('artworks')
-        .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, is_hidden, is_ai_assisted, users(name, verified)')
+        .select('id, title, price, medium, description, image_url, created_at, artist_id, is_digital, is_ai_assisted, users(name, approved)')
         .eq('sold', false);
 
       // Apply explicit tag filter (?tag=)
@@ -96,13 +183,8 @@ function BrowseInner() {
         query = query.in('id', tagFilteredIds);
       }
 
-      // Search query includes title, medium, description, AND matching tags
-      if (qParam) {
-        const tagInClause = searchTagIds.length > 0 ? `,id.in.(${searchTagIds.slice(0, 50).join(',')})` : '';
-        query = query.or(`title.ilike.%${qParam}%,medium.ilike.%${qParam}%,description.ilike.%${qParam}%${tagInClause}`);
-      }
       if (categoryParam) {
-        query = query.or(categoryParam.keywords.map((k) => `medium.ilike.%${k}%`).join(','));
+        query = query.or(categoryParam.keywords.map((k) => `medium.ilike.%${k}%,title.ilike.%${k}%`).join(','));
       }
       if (minParam !== null) {
         query = query.gte('price', minParam);
@@ -116,20 +198,15 @@ function BrowseInner() {
         query = query.eq('is_digital', true);
       }
 
-      let { data, error } = await query.order('created_at', { ascending: false }).limit(100);
-      if (error || !data) {
-        let fallbackQuery = supabase
-          .from('artworks')
-          .select('id, title, price, medium, image_url, created_at, artist_id, is_digital, users(name)')
-          .eq('sold', false);
-        if (minParam !== null) fallbackQuery = fallbackQuery.gte('price', minParam);
-        if (maxParam !== null) fallbackQuery = fallbackQuery.lte('price', maxParam);
-        if (format === 'physical') fallbackQuery = fallbackQuery.eq('is_digital', false);
-        else if (format === 'digital') fallbackQuery = fallbackQuery.eq('is_digital', true);
-        const fbRes = await fallbackQuery.order('created_at', { ascending: false }).limit(100);
-        data = fbRes.data as any;
-      }
+      const { data, error } = await query.order('created_at', { ascending: false }).limit(100);
       if (!active) return;
+
+      if (error || !data) {
+        console.error('Error fetching artworks from Supabase:', error);
+        setItems([]);
+        setLoading(false);
+        return;
+      }
 
       // Fetch active promotions: stop showing when budget is spent or end date passes
       const nowIso = new Date().toISOString();
@@ -142,7 +219,6 @@ function BrowseInner() {
           .gt('ends_at', nowIso);
 
         (promoRows || []).forEach((p: any) => {
-          // Stop showing if budget is spent (spent >= budget > 0)
           if (!(p.budget > 0 && p.spent >= p.budget)) {
             activePromoIds.add(p.artwork_id);
           }
@@ -151,23 +227,47 @@ function BrowseInner() {
         // Fallback gracefully if promotions table is not yet migrated
       }
 
-      const visible = (data ?? []).filter((a: any) => isAdmin || !a.is_hidden);
+      let mappedArtworks: Artwork[] = data.map((a: any) => ({
+        id: a.id,
+        title: a.title,
+        price: a.price,
+        medium: a.medium ?? '',
+        artist: a.users?.name ?? 'Unknown artist',
+        imageUrl: a.image_url || null,
+        createdAt: a.created_at,
+        artistId: a.artist_id,
+        isPromoted: activePromoIds.has(a.id),
+        artistVerified: Boolean(a.users?.approved),
+        isAiAssisted: Boolean(a.is_ai_assisted),
+        searchScore: 0,
+      }));
 
-      setItems(
-        visible.map((a: any) => ({
-          id: a.id,
-          title: a.title,
-          price: a.price,
-          medium: a.medium ?? '',
-          artist: a.users?.name ?? 'Unknown artist',
-          imageUrl: a.image_url || null,
-          createdAt: a.created_at,
-          artistId: a.artist_id,
-          isPromoted: activePromoIds.has(a.id),
-          artistVerified: Boolean(a.users?.verified),
-          isAiAssisted: Boolean(a.is_ai_assisted),
-        }))
-      );
+      // If search query is present, apply smart relevance filtering & scoring
+      if (qParam) {
+        const terms = extractSearchTerms(qParam);
+        const tagIdSet = new Set(searchTagIds);
+        const scored = mappedArtworks.map((art) => {
+          const rawItem = data.find((d: any) => d.id === art.id);
+          const { score, matchedTermsCount } = scoreArtwork(
+            { ...art, description: rawItem?.description || '' },
+            terms,
+            qParam,
+            tagIdSet
+          );
+          return { ...art, searchScore: score, matchedTermsCount };
+        });
+
+        const maxMatches = Math.max(0, ...scored.map((s: any) => s.matchedTermsCount));
+        // Threshold: For multi-word queries, require matching at least half the query terms or maxMatches
+        const requiredMatches =
+          terms.length <= 1 ? 1 : Math.min(maxMatches, Math.max(2, Math.ceil(terms.length * 0.5)));
+
+        mappedArtworks = scored.filter(
+          (a: any) => a.searchScore > 0 && a.matchedTermsCount >= requiredMatches
+        );
+      }
+
+      setItems(mappedArtworks);
       setLoading(false);
     }
 
@@ -186,10 +286,16 @@ function BrowseInner() {
 
       if (sort === 'low') return a.price - b.price;
       if (sort === 'high') return b.price - a.price;
+
+      // If search query is active and default 'new' sort, sort by highest search relevance score
+      if (qParam && (b.searchScore ?? 0) !== (a.searchScore ?? 0)) {
+        return (b.searchScore ?? 0) - (a.searchScore ?? 0);
+      }
+
       return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
     });
     return copy;
-  }, [items, sort]);
+  }, [items, sort, qParam]);
 
   function updateFilter(updates: Record<string, string | null>) {
     const next = new URLSearchParams(searchParams.toString());
@@ -214,7 +320,7 @@ function BrowseInner() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-4 md:px-6">
-      {/* Figma Screen 10 Top Search Bar with Mic */}
+      {/* Figma Screen 10 Top Search Bar with Mic & Clear */}
       <div className="mb-4">
         <form onSubmit={handleSearchSubmit} className="relative flex items-center">
           <span className="absolute left-3.5 text-[#BBBBBB]">
@@ -227,12 +333,28 @@ function BrowseInner() {
             type="text"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search any Product or Art style.."
-            className="w-full rounded-xl bg-[#F3F3F3] py-2.5 pl-10 pr-12 text-xs md:text-sm text-[#17223B] placeholder-[#BBBBBB] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#F83758] border border-transparent focus:border-[#F83758] transition"
+            placeholder="Search any Product, Artist, or Art style..."
+            className="w-full rounded-xl bg-[#F3F3F3] py-2.5 pl-10 pr-20 text-xs md:text-sm text-[#17223B] placeholder-[#BBBBBB] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#F83758] border border-transparent focus:border-[#F83758] transition"
           />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchInput('');
+                updateFilter({ q: null });
+              }}
+              className="absolute right-10 text-[#BBBBBB] hover:text-[#17223B] p-1 transition"
+              title="Clear search"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => alert('Voice search activated. Listening...')}
+            onClick={() => alert('Voice search ready: Try searching for "Oil Painting" or "Handmade Pichwai"')}
             className="absolute right-3 text-[#BBBBBB] hover:text-[#F83758] transition"
             title="Voice Search"
           >
@@ -246,14 +368,23 @@ function BrowseInner() {
         </form>
       </div>
 
-      {/* Figma Screen 10: "52,082+ Items" Header + Sort & Filter Buttons */}
+      {/* Header + Sort & Filter Buttons */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#F0F0F0] pb-3">
         <div>
           <h1 className="text-base md:text-lg font-black text-[#17223B] tracking-tight">
-            {sorted.length > 0 ? `${sorted.length.toLocaleString()}+ Items` : 'Featured Items'}
+            {sorted.length > 0
+              ? `${sorted.length} ${sorted.length === 1 ? 'Artwork' : 'Artworks'}`
+              : qParam
+              ? '0 Artworks'
+              : 'Featured Artworks'}
           </h1>
-          {categoryParam && (
-            <p className="text-[11px] font-medium text-[#F83758]">{categoryParam.label}</p>
+          {qParam && (
+            <p className="text-[11px] font-medium text-[#F83758] mt-0.5">
+              Showing results for &ldquo;{qParam}&rdquo;
+            </p>
+          )}
+          {categoryParam && !qParam && (
+            <p className="text-[11px] font-medium text-[#F83758] mt-0.5">{categoryParam.label}</p>
           )}
           {tagParam && (
             <div className="mt-1 flex items-center gap-1.5">
@@ -446,16 +577,23 @@ function BrowseInner() {
         </div>
       ) : sorted.length === 0 ? (
         <div className="mt-12 rounded-2xl bg-white border border-[#DEDBDB] p-10 text-center shadow-stylish-card">
-          <span className="text-4xl">🛍️</span>
-          <h2 className="mt-3 text-base font-bold text-[#17223B]">No products found</h2>
+          <span className="text-4xl">🎨</span>
+          <h2 className="mt-3 text-base font-bold text-[#17223B]">
+            {qParam ? `No artworks found for "${qParam}"` : 'No products found'}
+          </h2>
           <p className="mt-1 text-xs text-[#626262]">
-            Try adjusting your search query or removing filters.
+            {qParam
+              ? 'Try checking for typos or searching for more general terms like "sketch", "pichwai", "sculpture", or "velvet".'
+              : 'Try adjusting your filters or category selection.'}
           </p>
           <button
-            onClick={() => router.push('/browse')}
+            onClick={() => {
+              setSearchInput('');
+              router.push('/browse');
+            }}
             className="mt-4 inline-block rounded-md bg-[#F83758] px-6 py-2.5 text-xs font-bold text-white shadow-stylish-btn hover:bg-[#E02244] transition"
           >
-            View All Products
+            Clear Search & View All Artworks
           </button>
         </div>
       ) : (
